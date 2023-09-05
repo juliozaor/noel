@@ -1,0 +1,48 @@
+.navbar{
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding-left: var(--ancho-menu-lateral);
+  z-index: var(--z-index-barra-navegacion);
+  box-shadow: 0px 3px 6px #00000029;
+  /* background: linear-gradient(241deg, var(--azul) 30%, var(--azul-oscuro) 100%); */
+  background: transparent linear-gradient(90deg, var(--rojo-uno) 0%, var(--rojo-dos) 31%, var(--rojo-tres) 63%, var(--rojo-cuatro) 100%) 0% 0% no-repeat padding-box;
+}
+
+.items:hover{
+cursor: pointer;
+}
+
+.selector{
+color:var(--azul);
+}
+
+.selector:hover{
+background-color:transparent;
+color:#01b3ff;
+}
+
+.material-symbols-outlined{
+color: white;
+}
+
+.icono-usuario{
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#alternar{
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .navbar{
+      padding-left: 10px !important;
+  }
+  #alternar{
+      display: block;
+  }
+}

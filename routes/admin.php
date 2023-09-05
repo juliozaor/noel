@@ -1,0 +1,14 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\HomeController;
+use App\Http\Controllers\Admin\EventController;
+
+Route::get('', [HomeController::class, 'index']);
+Route::get('events/register', [EventController::class, 'indexRegister'])->name('admin.events.register');
+
+Route::resource('events', EventController::class)->names('admin.events')->only([
+  'index','create','show','edit'
+]);
+
+

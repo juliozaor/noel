@@ -1,0 +1,14 @@
+:root{
+  --ancho-menu-lateral: 250px;
+  --z-index-menu-lateral: 10;
+  --z-index-barra-navegacion: 5;
+  --alto-barra-navegacion: 51px;
+  --gris: #4B4B4B;
+  --rojo-oscuro:#258724;
+  --rojo-uno: #8A1F1F;
+  --rojo-dos: #EE2825;
+  --rojo-tres: #E52727;
+  --rojo-cuatro: #FF4848;
+  --gris-claro:#D6D6D6;
+  
+}
