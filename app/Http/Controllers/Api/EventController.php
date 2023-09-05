@@ -17,7 +17,7 @@ class EventController extends Controller
         ->selectRaw('SUM(programmings.quota_available) as quota_available')
         ->join('programmings', 'events.id', '=', 'programmings.event_id')
         ->where('programmings.waiting','<>',1)
-        ->groupBy('events.id','programmings.initial_date')
+        ->groupBy('events.id','programmings.initial_date','events.name')
         ->get();
         return $events;
     }
