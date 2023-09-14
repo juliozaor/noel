@@ -11,7 +11,9 @@
                 <div class="col-2">
                     @livewire('create-user')
                 </div>
-
+                @livewire('create-reservation')
+                @livewire('create-members')
+                
             </div>
         </div>
     </x-slot>

@@ -4,18 +4,19 @@ namespace App\Http\Livewire;
 
 use App\Models\Profile;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
 class CreateUser extends Component
 {
-    public $openNewRegister = true;
+    public $openNewRegister = false;
     public $document, $name, $cell, $address, $neighborhood, $birth, $eps, $reference, $email;
     public $profile;
     public $experience2022;
     public $epsState = 0;
 
-    public $user;
-
+    protected $listeners = ['open','resetDates'];
 
     public function updatedEpsState()
     {
@@ -80,38 +81,86 @@ class CreateUser extends Component
 
     public function saveUpdateContinue()
     {
-        
+
         $this->validate();
 
-        $user = Profile::where('document', $this->document)->with('user')->first();
-        if($user){
-            $this->user = $user;
-            //Actualizar usuario y perfil
-        }else{
-           // crear usuario y perfil
+        $appUrl = env('APP_URL') . '/api/auth';
+
+        $profile = Profile::where('document', $this->document)->with('user')->first();
+        if ($profile) {
+            $user = User::find($profile->user_id);
+
+            $apiUrl = $appUrl . '/update/' . $user->id;
+
+            $token = $user->createToken('Authorization')->plainTextToken;
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+            ])->put($apiUrl, [
+                "name" => $this->name,
+                'document' => $this->document,
+                'cell' => $this->cell,
+                'address' => $this->address,
+                'neighborhood' => $this->neighborhood,
+                'birth' => $this->birth,
+                'eps' => $this->eps ?? '',
+                'reference' => $this->reference ?? '',
+                'experience2022' => $this->experience2022 ?? false
+            ]);
+
+            // Verificar la respuesta de la API
+            if ($response->successful()) {
+                // La solicitud fue exitosa, puedes manejar la respuesta aquí
+                $data = $response->json(); // Convierte la respuesta JSON en un array
+                //return $data;
+            }
+        } else {
+
+            $apiUrl = $appUrl . '/register';
+            $response = Http::post($apiUrl, [
+                "name" => $this->name,
+                "email" => strtolower($this->email),
+                "password" => Hash::make('No3l2023*'),
+                'document' => $this->document,
+                'cell' => $this->cell,
+                'address' => $this->address,
+                'neighborhood' => $this->neighborhood,
+                'birth' => $this->birth,
+                'eps' => $this->eps ?? '',
+                'reference' => $this->reference ?? '',
+                'experience2022' => $this->experience2022 ?? false
+            ]);
+
+            // Verificar la respuesta de la API
+            if ($response->successful()) {
+                //$data = $response->json(); 
+                
+            }
         }
 
-        /*  $event = Event::findOrFail($this->eventId);
-        $this->hour = date('H:i', strtotime($this->time) + 7200); // 7200 segundos = 2 horas
+        //Siguiente paso
+        $this->openModalreservation();
 
-        $programmingData = [
-            'initial_date' => $this->date . ' ' . $this->time,
-            'final_date' => $this->date . ' ' . $this->hour,
-            'quota' => $this->quota,
-            'quota_available' => $this->quota,
-            'state' => $this->state
-        ];
-
-        $programming = new Programming($programmingData);
-
-        // Guardar la programación asociada al evento
-        $event->programming()->save($programming);
-        $this->reset(['open', 'time', 'date']);
-        $this->emitTo('tablet-programming', 'render');
-        $this->emit('alert', 'Guardado con éxito'); */
     }
 
-   private function resetDates(){
-    $this->reset(['user', 'name', 'cell', 'address', 'neighborhood', 'birth', 'email']);
+    private function resetDates()
+    {
+        $this->reset(['name', 'cell', 'address', 'neighborhood', 'birth', 'email']);
+    }
+
+    public function openModalreservation()
+    {
+        $params = [
+            'userId' => $this->profile->user_id,
+            'email' => strtolower($this->email),
+        ];
+
+        $this->openNewRegister = false;
+        $this->emitTo('create-reservation', 'open',  $params);
+    }
+
+    public function open()
+    {
+        $this->openNewRegister = true;
     }
 }

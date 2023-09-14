@@ -38,20 +38,20 @@
                                             ID evento
                                             <i class="fas fa-sort ml-1 mt-1"></i>
                                         </th>
-                                        <th scope="col" class="cursor-pointer" wire:click="order()">
-                                            Nombre evento
-                                            <i class="fas fa-sort ml-1 mt-1"></i>
-                                        </th>
                                         <th scope="col" class="cursor-pointer" wire:click="order('initial_date')">
                                             Fecha evento
                                             <i class="fas fa-sort ml-1 mt-1"></i>
                                         </th>
-                                        <th scope="col" class="cursor-pointer" wire:click="order('quota')">
-                                            Cupos disponibles
+                                        <th scope="col" class="cursor-pointer" wire:click="order('initial_date')">
+                                            Hora evento
                                             <i class="fas fa-sort ml-1 mt-1"></i>
                                         </th>
                                         <th scope="col" class="cursor-pointer" wire:click="order('quota_available')">
                                             Cupos totales
+                                            <i class="fas fa-sort ml-1 mt-1"></i>
+                                        </th>
+                                        <th scope="col" class="cursor-pointer" wire:click="order('quota')">
+                                            Cupos disponibles
                                             <i class="fas fa-sort ml-1 mt-1"></i>
                                         </th>
                                         <th colspan="2">Acciones</th>
@@ -64,8 +64,10 @@
 
 
                                                 <td>{{ $programming->id }}</td>
-                                                <td>{{ $programming->event->name }}</td>
                                                 <td>{{ $programming->initial_date }}</td>
+                                                
+                                                <td>{{ \Carbon\Carbon::parse($programming->initial_time)
+                                                ->format('h:i A') }}</td>
                                                 <td>{{ $programming->quota }}</td>
                                                 <td>{{ $programming->quota_available }}</td>
                                                 <td>
@@ -126,7 +128,7 @@
                 <x-input-error for="name" />
             </div>
 
-            <div class="mb-3">
+           {{--  <div class="mb-3">
                 <x-label value="Detalle evento" />
                 <x-input type="text" class="w-full" wire:model.defer="detail" disabled />
                 <x-input-error for="detail" />
@@ -136,7 +138,7 @@
                 <x-label value="Descripción" />
                 <x-input type="text" class="w-full" wire:model.defer="description" disabled />
                 <x-input-error for="description" />
-            </div>
+            </div> --}}
 
 
             <div class="d-flex justify-content-between ">

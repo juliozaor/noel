@@ -37,24 +37,32 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::resource('members', MemberController::class)->names('api.members')->only([
         'store'
     ]);
-    Route::post('members/reservation',
-    [MemberController::class, 'updateMemberReservation'])->name('api.members.updateMembersReservation');
-    
+    Route::post(
+        'members/reservation',
+        [MemberController::class, 'updateMemberReservation']
+    )->name('api.members.updateMembersReservation');
+
     // Reservations
     Route::resource('reservations', ReservationController::class)->names('api.reservations')->only([
         'store'
     ]);
 
     Route::post('waiting-list', [ReservationController::class, 'waitingList'])
-    ->name('api.reservations.waitingList');
+        ->name('api.reservations.waitingList');
 
-    Route::get('reservations/user/{userId}',
-    [ReservationController::class, 'perUser'])
-    ->name('api.reservations.perUser');
+    Route::get(
+        'reservations/user/{userId}',
+        [ReservationController::class, 'perUser']
+    )
+        ->name('api.reservations.perUser');
 
-    Route::get('reservations/{reservationId}/members',
-    [ReservationController::class, 'getMembersByReservation'])
-    ->name('api.reservations.perReservation');
+    Route::get(
+        'reservations/{reservationId}/members',
+        [ReservationController::class, 'getMembersByReservation']
+    )
+        ->name('api.reservations.perReservation');
+
+    Route::put('auth/update/{userId}', [UserController::class, 'update'])->name('auth.update');
 });
 
 Route::get(
@@ -63,8 +71,10 @@ Route::get(
 )->name('api.reservations.confirmet');
 
 Route::get('programmings/event', [ProgrammingController::class, 'showEvent'])->name('api.programmings.event');
-Route::get('programmings/updateState',
-[ProgrammingController::class, 'updateStat'])->name('api.programmings.updateState');
+Route::get(
+    'programmings/updateState',
+    [ProgrammingController::class, 'updateStat']
+)->name('api.programmings.updateState');
 
 
 Route::resource('events', EventController::class)->names('api.events')->only([

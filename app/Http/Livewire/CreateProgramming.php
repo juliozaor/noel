@@ -17,8 +17,8 @@ class CreateProgramming extends Component
 
     protected $rules = [
         'name' => ['required', 'string'],
-        'detail' => ['required', 'string', 'max:30'],
-        'description' => ['required', 'string', 'max:60'],
+       /*  'detail' => ['required', 'string', 'max:30'],
+        'description' => ['required', 'string', 'max:60'], */
         'date' => ['required', 'date'],
         'time' => ['required', 'date_format:H:i'],
         'quota' => ['required', 'integer'],
@@ -39,8 +39,9 @@ class CreateProgramming extends Component
         $this->hour = date('H:i', strtotime($this->time) + 7200); // 7200 segundos = 2 horas
 
         $programmingData = [
-            'initial_date' => $this->date . ' ' . $this->time,
-            'final_date' => $this->date . ' ' . $this->hour,
+            'initial_date' => $this->date,
+            'initial_time' => $this->time,
+           // 'final_date' => $this->date . ' ' . $this->hour,
             'quota' => $this->quota,
             'quota_available' => $this->quota,
             'state' => $this->state
@@ -59,8 +60,8 @@ class CreateProgramming extends Component
     {
         $event = Event::findOrFail(1);
         $this->name = $event->name;
-        $this->detail = $event->detail;
-        $this->description = $event->description;
+      /*   $this->detail = $event->detail;
+        $this->description = $event->description; */
         $this->eventId = $event->id;
         return view('livewire.create-programming');
     }

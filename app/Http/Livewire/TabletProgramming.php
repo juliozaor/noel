@@ -34,8 +34,8 @@ class TabletProgramming extends Component
 
     protected $rules = [
         'name' => ['required', 'string'],
-        'detail' => ['required', 'string', 'max:30'],
-        'description' => ['required', 'string', 'max:60'],
+        /* 'detail' => ['required', 'string', 'max:30'],
+        'description' => ['required', 'string', 'max:60'], */
         'date' => ['required', 'date'],
         'time' => ['required', 'date_format:H:i'],
         'quota' => ['required', 'integer'],
@@ -51,7 +51,7 @@ class TabletProgramming extends Component
             $query->orWhere('quota', 'like', '%' . $this->search . '%')
                 ->orWhere('quota_available', 'like', '%' . $this->search . '%')
                 ->orWhere('initial_date', 'like', '%' . $this->search . '%');
-        });
+        })->where('programmings.waiting','<>',1);
 
         $this->count = $programmingsQuery->count();
 
@@ -89,8 +89,8 @@ class TabletProgramming extends Component
         $this->date = date('Y-m-d', strtotime($programming->initial_date));
         $this->time = date('H:i', strtotime($programming->initial_date));
         $this->name = $programming->event->name;
-        $this->detail = $programming->event->detail;
-        $this->description = $programming->event->description;
+     /*    $this->detail = $programming->event->detail;
+        $this->description = $programming->event->description; */
         $this->eventId = $programming->event->id;
         $this->quota = $programming->quota;
         $this->state = $programming->state;
@@ -106,7 +106,8 @@ class TabletProgramming extends Component
 
         $programming->update([
             'initial_date' => $this->date . ' ' . $this->time,
-            'final_date' => $this->date . ' ' . $this->hour,
+            'initial_time' => $this->time,
+           // 'final_date' => $this->date . ' ' . $this->hour,
             'quota' => $this->quota,
             'quota_available' => $this->quota,
             'state' => $this->state

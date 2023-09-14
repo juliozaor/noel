@@ -59,7 +59,7 @@ class UserController extends Controller
             'status' => true,
             'message' => 'User created successfully',
             'data' =>$user,
-            'token' => $user->createToken('API TOKEN')->plainTextToken
+            'token' => $user->createToken('Authorization')->plainTextToken
         ], 200);
     }
 
@@ -96,7 +96,7 @@ class UserController extends Controller
             'status' => true,
             'message' => 'User logged in successfully',
             'data' => $user,
-            'token' => $user->createToken('API TOKEN')->plainTextToken
+            'token' => $user->createToken('Authorization')->plainTextToken
         ], 200);
     }
 
@@ -106,6 +106,61 @@ class UserController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'User logged out successfully'
+        ], 200);
+    }
+
+    public function update(Request $request)
+    {
+
+        $rules = [
+            'name' => ['required', 'string', 'max:100'],
+            'cell' => ['integer'],
+            'address' => ['string'],
+            'neighborhood' => ['string'],
+            'birth' => ['date'],
+        ];
+
+
+
+        $validator = Validator::make($request->input(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()->all()
+            ], 400);
+        }
+
+
+        $user = User::find($request->userId);
+
+        // Actualiza los campos del usuario
+        $user->name = $request->name;
+       /*  $user->email = strtolower($request->email);
+        $user->password = Hash::make($request->document); // Asegúrate de que esta sea la lógica adecuada */
+        
+        // Guarda los cambios en el usuario
+        $user->save();
+        
+        // Supongamos que también tienes el perfil asociado al usuario
+        $profile = $user->profile;
+        
+        // Actualiza los campos del perfil
+        $profile->cell = $request->cell;
+        $profile->address = $request->address;
+        $profile->neighborhood = $request->neighborhood;
+        $profile->birth = $request->birth;
+        $profile->eps = $request->eps ?? '';
+        $profile->reference = $request->reference ?? '';
+        $profile->experience2022 = $request->experience2022 ?? false;
+        
+        // Guarda los cambios en el perfil
+        $profile->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User update successfully',
+            'data' =>$user,
+            'token' => $user->createToken('Authorization')->plainTextToken
         ], 200);
     }
 

@@ -17,7 +17,7 @@
                 <x-input-error for="name" />
             </div>
 
-            <div class="mb-3">
+ {{--            <div class="mb-3">
                 <x-label value="Detalle evento" />
                 <x-input type="text" class="w-full" wire:model.defer="detail" disabled />
                 <x-input-error for="detail" />
@@ -27,7 +27,7 @@
                 <x-label value="Descripción" />
                 <x-input type="text" class="w-full" wire:model.defer="description" disabled />
                 <x-input-error for="description" />
-            </div>
+            </div> --}}
 
 
             <div class="d-flex justify-content-between ">

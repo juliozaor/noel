@@ -27,9 +27,17 @@ class ReservationController extends Controller
                 ], 404);
     
         }
+        $user = auth()->user(); // Accede al usuario autenticado
+
+
+        $isreservation = Reservation::where('programming_id', $request->programming_id)
+        ->where('user_id',$user->id)->get();
+
+        if(sizeof($isreservation) >= 1 ){
+            return response()->json(['status' => true,'message'=>'Ya existe una reserva para esta programacion'],201);
+        }
         
         if ($programming->quota_available >= $request->quota) {
-            $user = auth()->user(); // Accede al usuario autenticado
 
             $reservation = new Reservation();
             $reservation->quota = $request->quota;
