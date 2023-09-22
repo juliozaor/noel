@@ -170,3 +170,11 @@ input:checked+.slider:before {
   height: 300px;
   overflow-y: scroll;
 }
+.encabezadoRegistro{
+  background: #d6d6d6d3 0% 0% no-repeat padding-box;
+}
+
+.encabezadoTabs{
+  background: transparent linear-gradient(90deg, #8A1F1F 0%, #EE2825 31%, #E52727 63%, #FF4848 100%) 0% 0% no-repeat padding-box;
+box-shadow: 0px 3px 6px #00000029;
+}

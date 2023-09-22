@@ -4,7 +4,9 @@ namespace App\Http\Livewire;
 
 use App\Events\updateProgrammingEvent;
 use App\Models\Programming;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\Paginator;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -14,20 +16,23 @@ class TabletRegister extends Component
     use WithPagination;
 
     public $title;
-    public $search = '';
     public $sort = 'id';
     public $direction = 'desc';
     public $programming;
-    public $openEditProgramming = false;
+    public $openRegisterUserInEvent = false;
     public $hour;
     public $count = 0;
+    public $begin = '2023-08-01';
+    public $end = '2024-03-20';
+    public $all = 0;
+    public $users;
+    public $links;
 
     public $cant = '10';
     protected $queryString = [
         'cant' => ['except' => '10'],
         'sort' => ['except' => 'id'],
         'direction' => ['except' => 'desc'],
-        'search' => ['except' => '']
     ]; // informacion en la url
 
     public $name, $detail, $description, $eventId;
@@ -48,24 +53,29 @@ class TabletRegister extends Component
     public function render()
     {
 
-        $programmingsQuery = Programming::where(function (Builder $query) {
-            $query->orWhere('quota', 'like', '%' . $this->search . '%')
-                ->orWhere('quota_available', 'like', '%' . $this->search . '%')
-                ->orWhere('initial_date', 'like', '%' . $this->search . '%');
-        });
 
-        $this->count = $programmingsQuery->count();
+        $programmingsQuery = Programming::where('programmings.waiting', '<>', 1);
 
-        $programmings = $programmingsQuery
-            ->orderBy($this->sort, $this->direction)
-            ->paginate($this->cant);
+        if ($this->all == 1) {
+            $programmingsQuery->where('quota', '>', 0);
+        } elseif ($this->all == 2) {
+            $programmingsQuery->where('quota', '<=', 0);
+        }
+
+        $programmingsQuery->where('state', 1);
+        $dateInitial = $this->begin;
+        $dateEnd = $this->end;
+
+        $programmings = $programmingsQuery->where(function ($query) use ($dateInitial, $dateEnd) {
+            $query->whereBetween('initial_date', [$dateInitial, $dateEnd]);
+        })->orderBy($this->sort, $this->direction)
+            ->paginate($this->cant, ['*'], 'commentsPage');
+
+        $this->count = $programmings->count();
 
 
 
-
-
-
-        return view('livewire.tablet-programming', compact('programmings'));
+        return view('livewire.tablet-register', compact('programmings'));
     }
 
     public function order($sort)
@@ -83,18 +93,15 @@ class TabletRegister extends Component
         }
     }
 
-    public function editProgramming(Programming $programming)
+   
+    public function registerUserInEvent(Programming $programming)
     {
-        $this->programming = $programming;
-        $this->openEditProgramming = true;
-        $this->date = date('Y-m-d', strtotime($programming->initial_date));
-        $this->time = date('H:i', strtotime($programming->initial_date));
-        $this->name = $programming->event->name;
-        $this->detail = $programming->event->detail;
-        $this->description = $programming->event->description;
-        $this->eventId = $programming->event->id;
-        $this->quota = $programming->quota;
-        $this->state = $programming->state;
+
+        $params = [
+            'programmigId' => $programming->id
+        ];
+
+        $this->emitTo('register-user-in-event', 'open',  $params);
     }
 
     public function update()
@@ -115,14 +122,11 @@ class TabletRegister extends Component
 
         $programming->save();
 
-        $this->reset(['openEditProgramming']);
+        // $this->reset(['openEditProgramming']);
         $this->emitTo('tablet-programming', 'render');
         $this->emit('alert', 'Actualizado con éxito');
         event(new updateProgrammingEvent($this->programming->id));
     }
 
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
+  
 }

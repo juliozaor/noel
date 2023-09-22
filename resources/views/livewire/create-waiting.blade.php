@@ -1,6 +1,6 @@
 <div>
     <x-button wire:click="$set('openNewRegister', true)">
-        Nuevo Registro
+        Registrar lista de espera
     </x-button>
   
 

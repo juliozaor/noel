@@ -140,4 +140,15 @@ class ReservationController extends Controller
         
     }
 
+    public function destroy($id)
+    {
+        $reservation = Reservation::findOrFail($id);
+        $reservation->delete();
+        return response()->json([
+            'status' => true,
+            'message' => 'Reservation delete successfully'
+        ], 200);
+        
+    }
+
 }

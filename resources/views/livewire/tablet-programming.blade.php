@@ -7,15 +7,42 @@
                         {{ $title }}
                     </div>
                     <div class="card-body">
-                        <div class="contenedor">
-                            <div class="barraBusqueda">
+                        <div class="d-flex justify-content-between ">
+
+
+                            {{-- <div class="barraBusqueda">
                                 <input type="text" class="form-control" placeholder="Buscar..." wire:model="search">
-                            </div>
-                            <div>
-                                <button class="totales" disabled>
-                                    <span class="fw-semibold fs-14px">Total:</span>
-                                    <span class="fs-12px fw-semibold"style="margin-left: 5px">{{ $count }}</span>
-                                </button>
+                            </div> --}}
+
+                            <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center mr-2 w-30 ">
+                                    <x-label value="Buscar desde " class="mr-2"/>
+                                    <x-input type="date" class="w-100" wire:model="begin" />
+                                    <x-input-error for="begin" />
+                                </div>
+                                <div class="d-flex align-items-center mr-2 w-30">
+                                    <x-label value="Hasta " class="mr-2"/>
+                                    <x-input type="date" class="w-100" wire:model="end" />
+                                    <x-input-error for="end" />
+                                </div>
+                                <div class="d-flex align-items-center mr-2 w-30">
+                                    <x-label value="Ver " class="mr-2"/>
+                                   
+                                    <select wire:model="all" class="form-control">
+                                        <option value="0">Todos</option>
+                                        <option value="1">Cupos disponibles</option>
+                                        <option value="2">Sin cupo</option>
+                
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <button class="totales" disabled>
+                                        <span class="fw-semibold fs-14px">Total:</span>
+                                        <span class="fs-12px fw-semibold"style="margin-left: 5px">{{ $count }}</span>
+                                    </button>
+                                </div>
+
                             </div>
                             <div class="d-flex justify-self-end flex-gap-5 ms-auto mb-3">
                                 <span class="fs-12px d-flex align-items-center mx-2" id="registrosTotales">Registros por
@@ -105,7 +132,7 @@
                             </table>
                         </div>
                     </div>
-                    @if ($programmings->hasPages())
+                    @if ($programmings && $programmings->hasPages())
                         <div class="card-footer d-flex justify-content-end ">
                             {{ $programmings->links() }}
 
@@ -122,11 +149,11 @@
         </x-slot>
 
         <x-slot name="content">
-            <div class="mb-3">
+           {{--  <div class="mb-3">
                 <x-label value="Nombre del evento" />
                 <x-input type="text" class="w-full" wire:model.defer="name" disabled />
                 <x-input-error for="name" />
-            </div>
+            </div> --}}
 
            {{--  <div class="mb-3">
                 <x-label value="Detalle evento" />
@@ -140,24 +167,28 @@
                 <x-input-error for="description" />
             </div> --}}
 
-
             <div class="d-flex justify-content-between ">
-                <div class="mr-2 w-25">
+                <div class="mr-2 w-50">
                     <x-label value="Fecha evento" />
                     <x-input type="date" class="w-100" wire:model.defer="date" />
                     <x-input-error for="date" />
                 </div>
-                <div class="mr-2 w-25">
+                <div class="mr-2 w-50">
                     <x-label value="Horario" />
                     <x-input type="time" class="w-100" wire:model.defer="time" />
                     <x-input-error for="time" />
                 </div>
-                <div class="mr-2 w-25">
+                
+            </div>
+
+            <div class="d-flex justify-content-between ">
+               
+                <div class="mr-2 w-50">
                     <x-label value="Cupos totales" />
                     <x-input type="text" class="w-100" wire:model.defer="quota" />
                     <x-input-error for="quota" />
                 </div>
-                <div class="mr-2 w-25">
+                <div class="mr-2 w-50">
                     <x-label value="Estado" />
                     <div class="mt-2">
                         Publicado <input wire:model.defer="state" name="state" type="radio" value="1"

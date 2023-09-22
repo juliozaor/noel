@@ -5,7 +5,7 @@
   </div>
   
     <div class="d-flex flex-column">
-      <hr>      
+     {{--  <hr>      
         <a href="{{ route('profile.show') }}" class="link_side">
         <span class="me-2">
           <img draggable="false" src="{{ asset('/assets/icons/adminUsers.svg') }}"[alt]="module._nombreMostrar">
@@ -13,7 +13,7 @@
         <span class="fs-12px fw-semibold">
         Administrar usuarios
       </span>
-    </a>
+    </a> --}}
 
     <hr>      
         <a href="{{ route('admin.events.register') }}" class="link_side {{request()->routeIs('admin.events.register') ? 'active':''}}">
@@ -35,7 +35,7 @@
       </span>
     </a>
 
-    <hr>      
+    {{-- <hr>      
         <a href="#" class="link_side">
         <span class="me-2">
           <img draggable="false" src="{{ asset('/assets/icons/reports.svg') }}"[alt]="module._nombreMostrar">
@@ -43,7 +43,7 @@
         <span class="fs-12px fw-semibold">
         Reportes
       </span>
-    </a>
+    </a> --}}
     
     </div>
 

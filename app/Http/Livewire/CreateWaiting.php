@@ -8,18 +8,16 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
-class CreateUser extends Component
+class CreateWaiting extends Component
 {
     public $openNewRegister = false;
     public $document, $name, $cell, $address, $neighborhood, $birth, $eps, $reference, $email;
     public $profile;
     public $experience2022;
     public $epsState = 0;
-    public $userId;
-    public $reservationId;
-    public $programmationId;
-    public $editReservation = false;
-    protected $listeners = ['open', 'resetDates', 'openEdit'];
+    public $wait = 1;
+
+    protected $listeners = ['open','resetDates'];
 
     public function updatedEpsState()
     {
@@ -73,15 +71,13 @@ class CreateUser extends Component
             $this->experience2022 = $profile->experience2022;
             if ($this->eps != '') {
                 $this->epsState = 1;
-            }else{
-                $this->epsState = 0;
             }
         }
     }
 
     public function render()
     {
-        return view('livewire.create-user');
+        return view('livewire.create-waiting');
     }
 
     public function saveUpdateContinue()
@@ -94,7 +90,7 @@ class CreateUser extends Component
         $profile = Profile::where('document', $this->document)->with('user')->first();
         if ($profile) {
             $user = User::find($profile->user_id);
-            $this->userId = $user->id;
+
             $apiUrl = $appUrl . '/update/' . $user->id;
 
             $token = $user->createToken('Authorization')->plainTextToken;
@@ -138,14 +134,14 @@ class CreateUser extends Component
 
             // Verificar la respuesta de la API
             if ($response->successful()) {
-
-                $data = $response->json();
-                $this->userId = $data['data']['id'];
+                //$data = $response->json(); 
+                
             }
         }
 
         //Siguiente paso
         $this->openModalreservation();
+
     }
 
     public function resetDatesIn()
@@ -155,17 +151,15 @@ class CreateUser extends Component
 
     public function resetDates()
     {
-        $this->reset(['document', 'name', 'cell', 'address', 'neighborhood', 'birth', 'email',
-        'programmationId','editReservation']);
+        $this->reset(['document','name', 'cell', 'address', 'neighborhood', 'birth', 'email']);
     }
 
     public function openModalreservation()
     {
         $params = [
-            'userId' => $this->userId,
+            'userId' => $this->profile->user_id,
             'email' => strtolower($this->email),
-            'editReservation' => $this->editReservation,
-            'programmationId' => $this->programmationId
+            'wait' => $this->wait,
         ];
 
         $this->openNewRegister = false;
@@ -176,21 +170,9 @@ class CreateUser extends Component
     {
         $this->openNewRegister = true;
     }
-    public function close()
-    {
+
+    public function close(){
         $this->openNewRegister = false;
         $this->emit('resetDates');
-    }
-
-    // edicion
-    public function openEdit($params)
-    {
-        $this->document = $params['document'] ?? null;
-        $this->reservationId = $params['reservationId'] ?? null;
-        $this->programmationId = $params['programmationId'] ?? null;
-        $this->editReservation = true;
-        $this->searchProfile();
-
-        $this->openNewRegister = true;
     }
 }
