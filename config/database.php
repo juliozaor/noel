@@ -1,4 +1,9 @@
 <?php
+define('RDS_HOSTNAME', $_SERVER['RDS_HOSTNAME']);
+define('RDS_USERNAME', $_SERVER['RDS_USERNAME']);
+define('RDS_PASSWORD', $_SERVER['RDS_PASSWORD']);
+define('RDS_DB_NAME', $_SERVER['RDS_DB_NAME']);
+define('RDS_PORT', $_SERVER['RDS_PORT']);
 
 use Illuminate\Support\Str;
 
@@ -46,11 +51,11 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
+            'host' => isset($_SERVER['RDS_HOSTNAME']) ? $_SERVER['RDS_HOSTNAME'] : env('DB_HOST', '127.0.0.1'),
+            'port' => isset($_SERVER['RDS_PORT']) ? $_SERVER['RDS_PORT'] : env('DB_PORT', '3306'),
+            'database' => isset($_SERVER['RDS_DB_NAME']) ? $_SERVER['RDS_DB_NAME'] : env('DB_DATABASE', 'forge'),
+            'username' => isset($_SERVER['RDS_USERNAME']) ? $_SERVER['RDS_USERNAME'] : env('DB_USERNAME', 'forge'),
+            'password' => isset($_SERVER['RDS_PASSWORD']) ? $_SERVER['RDS_PASSWORD'] : env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',
@@ -125,7 +130,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [
