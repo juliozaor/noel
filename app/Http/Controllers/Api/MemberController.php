@@ -62,9 +62,9 @@ class MemberController extends Controller
 
         if($reservation->programming_id !=1){
 
-        $correo = new ReservationVerification($request->reservation_id);
+      //  $correo = new ReservationVerification($request->reservation_id);
         //Correo del usuario
-        $respose = Mail::to($user->email)->send($correo);
+     //   $respose = Mail::to($user->email)->send($correo);
 
         }
 

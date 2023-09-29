@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Event;
 use App\Models\Programming;
+use App\Models\User;
 
 class EventController extends Controller
 {
@@ -25,6 +26,13 @@ class EventController extends Controller
         $programmings = Programming::all();
         return view('admin.events.registro', compact('programmings'));
     }
+
+    public function users()
+    {
+        $users = User::where('id', '<>', 1);
+        return view('admin.events.users', compact('users'));
+    }
+
 
 
     public function create()

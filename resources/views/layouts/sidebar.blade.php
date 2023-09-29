@@ -5,15 +5,15 @@
   </div>
   
     <div class="d-flex flex-column">
-     {{--  <hr>      
-        <a href="{{ route('profile.show') }}" class="link_side">
+      <hr>      
+        <a href="{{ route('admin.events.users') }}" class="link_side {{request()->routeIs('admin.events.users') ? 'active':''}}">
         <span class="me-2">
           <img draggable="false" src="{{ asset('/assets/icons/adminUsers.svg') }}"[alt]="module._nombreMostrar">
         </span>
         <span class="fs-12px fw-semibold">
         Administrar usuarios
       </span>
-    </a> --}}
+    </a>
 
     <hr>      
         <a href="{{ route('admin.events.register') }}" class="link_side {{request()->routeIs('admin.events.register') ? 'active':''}}">

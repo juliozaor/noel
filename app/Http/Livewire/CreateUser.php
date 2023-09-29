@@ -188,7 +188,7 @@ class CreateUser extends Component
         $this->document = $params['document'] ?? null;
         $this->reservationId = $params['reservationId'] ?? null;
         $this->programmationId = $params['programmationId'] ?? null;
-        $this->editReservation = true;
+        $this->editReservation = $params['editReservation']??true;
         $this->searchProfile();
 
         $this->openNewRegister = true;

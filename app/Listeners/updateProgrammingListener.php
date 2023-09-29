@@ -22,6 +22,7 @@ class updateProgrammingListener
      */
     public function handle(updateProgrammingEvent $event): void
     {
+        if($event->programmingId <> 1){
         $programming = Programming::findOrFail($event->programmingId);
         $totalReservationsQuota = $programming->reservation()->sum('quota');
 
@@ -31,4 +32,5 @@ class updateProgrammingListener
             'quota_available' => $newQuotaAvailable
         ]);
     }
+}
 }

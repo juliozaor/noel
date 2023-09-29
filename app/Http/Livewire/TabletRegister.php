@@ -4,9 +4,6 @@ namespace App\Http\Livewire;
 
 use App\Events\updateProgrammingEvent;
 use App\Models\Programming;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\Paginator;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -57,9 +54,9 @@ class TabletRegister extends Component
         $programmingsQuery = Programming::where('programmings.waiting', '<>', 1);
 
         if ($this->all == 1) {
-            $programmingsQuery->where('quota', '>', 0);
+            $programmingsQuery->where('programmings.quota_available', '>', 0);
         } elseif ($this->all == 2) {
-            $programmingsQuery->where('quota', '<=', 0);
+            $programmingsQuery->where('programmings.quota_available', '<=', 0);
         }
 
         $programmingsQuery->where('state', 1);
@@ -69,7 +66,7 @@ class TabletRegister extends Component
         $programmings = $programmingsQuery->where(function ($query) use ($dateInitial, $dateEnd) {
             $query->whereBetween('initial_date', [$dateInitial, $dateEnd]);
         })->orderBy($this->sort, $this->direction)
-            ->paginate($this->cant, ['*'], 'commentsPage');
+            ->paginate($this->cant, ['*'], 'registersPage');
 
         $this->count = $programmings->count();
 
@@ -94,11 +91,11 @@ class TabletRegister extends Component
     }
 
    
-    public function registerUserInEvent(Programming $programming)
+    public function registerUserInEvent(Programming $programming, $tab)
     {
-
         $params = [
-            'programmigId' => $programming->id
+            'programmig' => $programming,
+            'tab' => $tab
         ];
 
         $this->emitTo('register-user-in-event', 'open',  $params);

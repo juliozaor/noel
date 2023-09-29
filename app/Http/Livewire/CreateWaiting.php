@@ -13,11 +13,13 @@ class CreateWaiting extends Component
     public $openNewRegister = false;
     public $document, $name, $cell, $address, $neighborhood, $birth, $eps, $reference, $email;
     public $profile;
+    public $userId;
     public $experience2022;
     public $epsState = 0;
     public $wait = 1;
+    public $editReservation = false;
 
-    protected $listeners = ['open','resetDates'];
+    protected $listeners = ['open','resetDates','openEdit'];
 
     public function updatedEpsState()
     {
@@ -71,6 +73,8 @@ class CreateWaiting extends Component
             $this->experience2022 = $profile->experience2022;
             if ($this->eps != '') {
                 $this->epsState = 1;
+            }else{
+                $this->epsState = 0;
             }
         }
     }
@@ -89,6 +93,7 @@ class CreateWaiting extends Component
 
         $profile = Profile::where('document', $this->document)->with('user')->first();
         if ($profile) {
+            $this->userId = $profile->user_id;
             $user = User::find($profile->user_id);
 
             $apiUrl = $appUrl . '/update/' . $user->id;
@@ -134,32 +139,36 @@ class CreateWaiting extends Component
 
             // Verificar la respuesta de la API
             if ($response->successful()) {
-                //$data = $response->json(); 
-                
+                $data = $response->json();
+               // dd($data['data']['id']);
+                $this->userId = $data['data']['id'];
             }
         }
 
         //Siguiente paso
+
         $this->openModalreservation();
 
     }
-
+   
     public function resetDatesIn()
     {
-        $this->reset(['name', 'cell', 'address', 'neighborhood', 'birth', 'email']);
+        $this->reset(['name', 'cell', 'address', 'neighborhood', 'birth', 'email', 'eps']);
     }
 
     public function resetDates()
     {
-        $this->reset(['document','name', 'cell', 'address', 'neighborhood', 'birth', 'email']);
+        $this->reset(['document','name', 'cell', 'address', 'neighborhood', 'birth', 'email', 'eps']);
     }
 
     public function openModalreservation()
     {
         $params = [
-            'userId' => $this->profile->user_id,
+            'userId' => $this->userId,
             'email' => strtolower($this->email),
             'wait' => $this->wait,
+            'editReservation' => $this->editReservation,
+            'programmationId' => 1
         ];
 
         $this->openNewRegister = false;
@@ -168,6 +177,15 @@ class CreateWaiting extends Component
 
     public function open()
     {
+        $this->openNewRegister = true;
+    }
+
+    // edicion
+    public function openEdit($document)
+    {
+        $this->document = $document ?? null;
+        $this->editReservation = true;
+        $this->searchProfile();
         $this->openNewRegister = true;
     }
 

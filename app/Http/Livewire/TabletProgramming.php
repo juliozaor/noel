@@ -54,9 +54,9 @@ class TabletProgramming extends Component
         $programmingsQuery = Programming::where('programmings.waiting','<>',1);
         
         if ($this->all == 1) {
-            $programmingsQuery->where('quota', '>', 0);
+            $programmingsQuery->where('programmings.quota_available', '>', 0);
         } elseif ($this->all == 2) {
-            $programmingsQuery->where('quota', '<=', 0);
+            $programmingsQuery->where('programmings.quota_available', '<=', 0);
         }
         $dateInitial= $this->begin;
         $dateEnd= $this->end;
