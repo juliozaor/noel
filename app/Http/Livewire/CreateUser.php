@@ -125,7 +125,7 @@ class CreateUser extends Component
             $response = Http::post($apiUrl, [
                 "name" => $this->name,
                 "email" => strtolower($this->email),
-                "password" => Hash::make('No3l2023*'),
+                "password" => Hash::make($this->document),
                 'document' => $this->document,
                 'cell' => $this->cell,
                 'address' => $this->address,

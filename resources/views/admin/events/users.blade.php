@@ -9,7 +9,7 @@
                   <h6> Historial de Registros </h6>
               </div>
               <div class="col-2 offset-md-5">
-                  <button class="btn btn-primary">Carga masiva</button>
+                  @livewire('bulk-load', ['title' => 'Carga masiva de usuarios', 'view' => 'users'])
               </div>
           </div>
       </div>

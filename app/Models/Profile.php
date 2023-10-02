@@ -17,7 +17,8 @@ class Profile extends Model
         'birth',
         'eps',
         'reference',
-        'experience2022'
+        'experience2022',
+        'user_id'
     ];
 
 
