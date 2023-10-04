@@ -8,9 +8,6 @@
                 <div class="col-2 offset-md-3">
                     @livewire('create-waiting')
                 </div>
-                <div class="col-2 ">
-                    <button class="btn btn-primary">Carga masiva</button>
-                </div>
                 <div class="col-2">
                     @livewire('create-user')
                 </div>
