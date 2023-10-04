@@ -8,24 +8,7 @@
         </x-slot>
 
         <x-slot name="content">
-          {{--     <div class="mb-3">
-                <x-label value="Nombre del evento 22" />
-                <x-input type="text" class="w-full" wire:model.defer="name" disabled />
-                <x-input-error for="name"/>
-            </div>
-
-          <div class="mb-3">
-                <x-label value="Detalle evento" />
-                <x-input type="text" class="w-full" wire:model.defer="detail" disabled />
-                <x-input-error for="detail"/>
-            </div>
-
-            <div class="mb-3">
-                <x-label value="Descripción" />
-                <x-input type="text" class="w-full" wire:model.defer="description" disabled />
-                <x-input-error for="description"/>
-            </div> --}}
-
+        
 
             <div class="d-flex justify-content-between ">
                 <div class="mr-2 w-25">

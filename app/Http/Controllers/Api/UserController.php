@@ -42,6 +42,7 @@ class UserController extends Controller
             "password" => Hash::make($request->password)
         ]);
         $user->save();
+        $user->assignRole('User');
 
         $profile = new Profile([
             'document' =>$request->document,

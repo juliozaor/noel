@@ -1,8 +1,8 @@
 <div>
-    <div class="d-flex flex-column flex-gap-30">
+    <div class="d-flex flex-column flex-gap-30 bodyPage">
         <div class="row">
             <div class="col-12">
-                <div class="card w-100">
+                <div class="card w-100 ">
                     <div class="card-header fw-bold fs-14px mt-2">
                         {{ $title }}
                     </div>
@@ -60,7 +60,7 @@
                                                 <td>{{ $user->cell }}</td>
                                                 <td>
 
-                                                    <button wire:click="editRegisterUser({{ $user->document }})"><img
+                                                    <button wire:click="editUser({{ $user->document }})"><img
                                                             src="{{ asset('/assets/icons/edit.svg') }}" alt="editar"
                                                             style="max-width: 15px" /></button>
                                                 </td>
@@ -136,6 +136,130 @@
             </div>
         </div>
     </div>
+
+{{-- Modal edicion --}}
+<x-dialog-modal-j wire:model="openEditRegister">
+    <x-slot name="title">
+        <div class="d-flex justify-content-between">
+            <div>
+                Nuevo registro <span class="font-small text-red-600">- Todos los campos son obligatorios</span>
+            </div>
+           
+           
+            <button wire:click=close class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </x-slot>
+    <x-slot name="content">
+
+        <div class="d-flex pt-4 px-6 ps-4 pe-4 ">
+            <div class="mr-2 w-25">
+                <x-label value="Documento de identidad" />
+                <x-input type="text" class="w-100" wire:model.defer="document" wire:blur="searchProfile" disabled/>
+                <x-input-error for="document" />
+
+            </div>
+            <div class="mr-2 w-25">
+                <x-label value="Nombre Completo" />
+                <x-input type="text" class="w-100" wire:model.defer="name" />
+                <x-input-error for="name" />
+            </div>
+            <div class="mr-2 w-25">
+                <x-label value="Celular" />
+                <x-input type="text" class="w-100" wire:model.defer="cell" />
+                <x-input-error for="cell" />
+            </div>
+            <div class="mr-2 w-25">
+                <x-label value="Dirección" />
+                <x-input type="text" class="w-100" wire:model.defer="address" />
+                <x-input-error for="address" />
+            </div>
+        </div>
+
+        <div class="d-flex pt-4 px-6 ps-4 pe-4 ">
+            <div class="mr-2 w-25">
+                <x-label value="Barrio" />
+                <x-input type="text" class="w-100" wire:model.defer="neighborhood" />
+                <x-input-error for="neighborhood" />
+            </div>
+            <div class="mr-2 w-25">
+                <x-label value="Fecha de nacimiento" />
+                <x-input type="date" class="w-100" wire:model.defer="birth" />
+                <x-input-error for="birth" />
+            </div>
+            <div class="mr-2 w-25">
+                <x-label value="Correo electrónico empresarial" />
+                <x-input type="text" class="w-100" wire:model.defer="email" disabled/>
+                <x-input-error for="email" />
+            </div>
+            <div class="mr-2 w-25">
+                <x-label value="EPS" />
+                <div class="mt-2 ">
+                    Si <input wire:model="epsState" name="epsState" type="radio" value="1" class="mr-2" />
+                    No <input wire:model="epsState" name="epsState" type="radio" value="0" />
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex pt-4 px-6 ps-4 pe-4 ">
+            <div class="mr-2 w-25">
+                <x-label value="¿Cuál?" />
+                <input type="text"
+                    class="w-100 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                    wire:model.defer="eps" @if ($epsState !== '1') disabled @endif />
+                <x-input-error for="eps" />
+            </div>
+            <div class="mr-2 w-25">
+                <x-label value="¿Estuviste en nuestra Experiencia 2022?" />
+                <div class="mt-2">
+                    Si <input wire:model.defer="experience2022" name="experience2022" type="radio" value="1"
+                        class="mr-2" />
+                    No <input wire:model.defer="experience2022" name="experience2022" type="radio"
+                        value="0" />
+                </div>
+            </div>
+            <div class="mr-2 w-25">
+                <x-label value="¿Como te enteraste de este evento?" />
+                {{-- <x-input type="date" class="w-100" wire:model.defer="reference" /> --}}
+                <select wire:model="reference" class="form-control">
+                    <option value="1">Administrador</option>
+                    <option value="2">Otro</option>
+
+                </select>
+                <x-input-error for="reference" />
+            </div>
+            <div class="mr-2 w-25">
+
+            </div>
+
+        </div>
+
+
+
+    </x-slot>
+
+
+
+    <x-slot name="footer" class="bg-success">
+        <x-secondary-button wire:click=close>
+            Cancelar
+        </x-secondary-button>
+        <x-danger-button wire:click=saveUpdateContinue>
+            Guardar cambios
+        </x-danger-button>
+
+    </x-slot>
+</x-dialog-modal-j>
+
+
+
+
+
     @push('js')
         <script src="sweetalert2.all.min.js"></script>
         <script>

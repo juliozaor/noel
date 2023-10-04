@@ -1,5 +1,6 @@
 <div>
-     <x-button wire:click="$set('openBulk', true)">
+     <x-button class="botonRojo" wire:click="$set('openBulk', true)">
+        <img class="me-2" src="{{ asset('/assets/icons/mas.svg') }}">
         Carga masiva
     </x-button>
 

@@ -103,7 +103,6 @@ class CreateUser extends Component
                 'Authorization' => 'Bearer ' . $token,
             ])->put($apiUrl, [
                 "name" => $this->name,
-                'document' => $this->document,
                 'cell' => $this->cell,
                 'address' => $this->address,
                 'neighborhood' => $this->neighborhood,
@@ -125,7 +124,7 @@ class CreateUser extends Component
             $response = Http::post($apiUrl, [
                 "name" => $this->name,
                 "email" => strtolower($this->email),
-                "password" => Hash::make($this->document),
+                "password" => $this->document,
                 'document' => $this->document,
                 'cell' => $this->cell,
                 'address' => $this->address,

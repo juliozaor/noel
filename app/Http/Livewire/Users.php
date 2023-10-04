@@ -2,7 +2,10 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Profile;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
 class Users extends Component
@@ -16,7 +19,32 @@ class Users extends Component
     public $cant = 5;
     public $page = 1;
 
+    public $openEditRegister = false;
+    public $document, $name, $cell, $address, $neighborhood, $birth, $eps, $reference, $email;
+    public $profile;
+    public $experience2022;
+    public $epsState = 0;
+
     protected $listeners = ['confirmDelete'];
+
+    protected function rules()
+    {
+        $rules = [
+            'document' => ['required', 'integer'],
+            'name' => ['required', 'string'],
+            'cell' => ['required', 'integer'],
+            'address' => ['required', 'string', 'max:80'],
+            'neighborhood' => ['required', 'string', 'max:60'],
+            'birth' => ['required', 'date'],
+            'email' => ['required', 'string', 'max:60'],
+        ];
+
+        if ($this->epsState == 1) {
+            $rules['eps'] = ['required', 'string']; // Agregar la regla de validación cuando $epsState es 1
+        }
+
+        return $rules;
+    }
 
     public function previousPage()
     {
@@ -104,5 +132,86 @@ class Users extends Component
         return view('livewire.users', [
             'users' => $this->users
         ]);
+    }
+
+    public function editUser($document)
+    {
+        $this->document = $document;
+        $this->searchProfile();
+        $this->openEditRegister = true;
+    }
+
+    public function searchProfile()
+    {
+        $profile = Profile::where('document', $this->document)->with('user')->first();
+
+        if ($profile) {
+            $this->profile = $profile;
+           // $this->document = $profile->document;
+            $this->name = $profile->user->name;
+            $this->cell = $profile->cell;
+            $this->address = $profile->address;
+            $this->neighborhood = $profile->neighborhood;
+            $this->birth = $profile->birth;
+            $this->eps = $profile->eps;
+            $this->reference = $profile->reference;
+            $this->email = $profile->user->email;
+            $this->experience2022 = $profile->experience2022;
+            if ($this->eps != '') {
+                $this->epsState = 1;
+            }else{
+                $this->epsState = 0;
+            }
+        }
+    }
+
+    public function saveUpdateContinue()
+    {
+
+        $this->validate();
+
+        $appUrl = env('APP_URL') . '/api/auth';
+
+        $profile = Profile::where('document', $this->document)->with('user')->first();
+        if ($profile) {
+            $user = User::find($profile->user_id);
+            $apiUrl = $appUrl . '/update/' . $user->id;
+
+            $token = $user->createToken('Authorization')->plainTextToken;
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+            ])->put($apiUrl, [
+                "name" => $this->name,
+                'cell' => $this->cell,
+                'address' => $this->address,
+                'neighborhood' => $this->neighborhood,
+                'birth' => $this->birth,
+                'eps' => $this->eps ?? '',
+                'reference' => $this->reference ?? '',
+                'experience2022' => $this->experience2022 ?? false
+            ]);
+
+            // Verificar la respuesta de la API
+            if ($response->successful()) {
+                // La solicitud fue exitosa, puedes manejar la respuesta aquí
+                $data = $response->json(); // Convierte la respuesta JSON en un array
+                //return $data;
+            }
+        } 
+
+        $this->openEditRegister = false;
+        $this->resetDatesIn();
+        $this->emit('alert', 'Usuario actualizado');
+    }
+
+    public function resetDatesIn()
+    {
+        $this->reset(['document','name', 'cell', 'address', 'neighborhood', 'birth', 'email', 'profile']);
+    }
+
+    public function close(){
+        $this->openEditRegister = false;
+        $this->resetDatesIn();
     }
 }

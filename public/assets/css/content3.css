@@ -178,3 +178,31 @@ input:checked+.slider:before {
   background: transparent linear-gradient(90deg, #8A1F1F 0%, #EE2825 31%, #E52727 63%, #FF4848 100%) 0% 0% no-repeat padding-box;
 box-shadow: 0px 3px 6px #00000029;
 }
+.subtitulo{
+  text-align: left;
+    font: normal normal 600 14px/18px Montserrat;
+    letter-spacing: 0px;
+    color: var(--rojo-dos);
+}
+.botonRojo{
+  background: #EE2825 0% 0% no-repeat padding-box;
+box-shadow: 0px 3px 10px #0000005C;
+border-radius: 20px;
+opacity: 1;
+text-transform: none;
+border: none!important;
+}
+
+.botonRojo:hover{
+  background: #258724 0% 0% no-repeat padding-box;
+}
+
+.botonRojo img{
+  width: 15px;
+  height: 15px;
+}
+.bodyPage{
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+box-shadow: 0px 3px 20px #00000029;
+border-radius: 10px;
+}

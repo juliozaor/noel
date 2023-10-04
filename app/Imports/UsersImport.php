@@ -31,7 +31,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChun
         $user = User::create([
             'name' => $row['nombre'],
             'email' => $row['email'],
-            'password' => Hash::make($row['email'])
+            'password' => bcrypt($row['documento'])
         ]);
 
         Profile::create([

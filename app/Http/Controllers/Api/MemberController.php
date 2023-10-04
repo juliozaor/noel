@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\confirmReservationEvent;
 use App\Events\updateProgrammingEvent;
 use App\Events\updateReservationEvent;
 use App\Http\Controllers\Controller;
@@ -61,10 +62,11 @@ class MemberController extends Controller
         }
 
         if($reservation->programming_id !=1){
+            event(new confirmReservationEvent($request->reservation_id));
 
-      //  $correo = new ReservationVerification($request->reservation_id);
+        $correo = new ReservationVerification($request->reservation_id);
         //Correo del usuario
-     //   $respose = Mail::to($user->email)->send($correo);
+        $respose = Mail::to($user->email)->send($correo);
 
         }
 

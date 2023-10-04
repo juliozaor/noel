@@ -41,7 +41,6 @@ class CreateProgramming extends Component
         $programmingData = [
             'initial_date' => $this->date,
             'initial_time' => $this->time,
-           // 'final_date' => $this->date . ' ' . $this->hour,
             'quota' => $this->quota,
             'quota_available' => $this->quota,
             'state' => $this->state

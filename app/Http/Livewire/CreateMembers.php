@@ -112,6 +112,8 @@ class CreateMembers extends Component
             }
         }
         event(new confirmReservationEvent($this->reservationId));
+        $correo = new ReservationVerification($this->reservationId);
+        $respose = Mail::to($this->email)->send($correo);
         $this->emitTo('tablet-register', 'render');
         $this->emit('alert', 'reservacion creada con éxito');
         $this->openMembers = false;
@@ -166,6 +168,8 @@ class CreateMembers extends Component
         $respose = Mail::to($this->email)->send($correo);
  */
         event(new updateReservationEvent($this->reservationId));
+        $correo = new ReservationVerification($this->reservationId);
+        $respose = Mail::to($this->email)->send($correo);
         $this->emitTo('tablet-register', 'render');
         $this->emit('alert', 'reservacion creada con éxito');
         $this->resetDates();

@@ -1,7 +1,7 @@
 <x-app-layout>
   <x-slot name="header">
       <div class="container">
-          <div class="row">
+          <div class="row subtitulo">
               <div class="col-2">
                   <h6> Lista de usuarios</h6>
               </div>

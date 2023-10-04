@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Imports\ProgrammingsImport;
 use App\Imports\UsersImport;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -13,6 +14,7 @@ class BulkLoad extends Component
     public $openBulk = false;
     public $title = '';
     public $file;
+    public $view;
 
     public function close()
     {
@@ -21,6 +23,8 @@ class BulkLoad extends Component
 
     public function uploadFile()
     {
+
+
         if (!$this->file) {
             //session()->flash('error', 'No se ha cargado ningún archivo.');
             dd('error', 'No se ha cargado ningún archivo.');
@@ -28,18 +32,24 @@ class BulkLoad extends Component
         }
         $extension = $this->file->getClientOriginalExtension();
         if (!in_array($extension, ['xlsx', 'xls', 'csv', 'txt'])) {
-          //  session()->flash('error', 'Solo se permiten archivos PDF, DOC y DOCX.');
+            //  session()->flash('error', 'Solo se permiten archivos PDF, DOC y DOCX.');
             dd('error', 'Solo se permiten archivos xlsx, xls y csv.');
             return;
         }
         $tempPath = $this->file->getRealPath();
-       /*  $dates = Excel::load($tempPath, function($reader){})->get(); */
-       try {
-           Excel::import(new UsersImport, $this->file);
-           dd("importados");
+        try {
+
+
+            if ($this->view == 'programmings') {
+                Excel::import(new ProgrammingsImport, $this->file);
+            }
+            if ($this->view == 'users') {
+                Excel::import(new UsersImport, $this->file);
+            }
+            dd("importados");
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
-            
+
             foreach ($failures as $failure) {
                 $failure->row(); // row that went wrong
                 $failure->attribute(); // either heading key (if using heading row concern) or column index
@@ -47,9 +57,7 @@ class BulkLoad extends Component
                 $failure->values(); // The values of the row that has failed.
 
             }
-       }
-
-
+        }
     }
     public function render()
     {

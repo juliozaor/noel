@@ -87,5 +87,49 @@ class TabletProgramming extends Component
         }
     }
 
+    public function editProgramming(Programming $programming)
+    {
+        $this->programming = $programming;
+        $this->openEditProgramming = true;
+        $this->date = date('Y-m-d', strtotime($programming->initial_date));
+        $this->time = date('H:i', strtotime($programming->initial_date));
+        $this->name = $programming->event->name;
+     /*    $this->detail = $programming->event->detail;
+        $this->description = $programming->event->description; */
+        $this->eventId = $programming->event->id;
+        $this->quota = $programming->quota;
+        $this->state = $programming->state;
+    }
+
+    public function update()
+    {
+
+        $this->validate();
+
+        $programming = Programming::find($this->programming->id);
+        $this->hour = date('H:i', strtotime($this->time) + 7200); // 7200 segundos = 2 horas
+
+        $programming->update([
+            'initial_date' => $this->date . ' ' . $this->time,
+            'initial_time' => $this->time,
+           // 'final_date' => $this->date . ' ' . $this->hour,
+            'quota' => $this->quota,
+            'quota_available' => $this->quota,
+            'state' => $this->state
+        ]);
+
+        $programming->save();
+
+        $this->reset(['openEditProgramming']);
+        $this->emitTo('tablet-programming', 'render');
+        $this->emit('alert', 'Actualizado con éxito');
+        event(new updateProgrammingEvent($this->programming->id));
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
    
 }

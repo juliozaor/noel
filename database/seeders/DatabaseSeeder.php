@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
     {
 
         Storage::makeDirectory('events');
-
+        
+        $this->call(RoleSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(EventSeeder::class);
         $this->call(ProgrammingSeeder::class);

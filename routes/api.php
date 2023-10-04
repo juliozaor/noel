@@ -31,7 +31,7 @@ Route::post('auth/login', [UserController::class, 'login'])->name('auth.login');
 Route::post('auth/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('auth.forgot');
 Route::post('auth/reset-password', [NewPasswordController::class, 'reset'])->name('auth.reset');
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'can:api'])->group(function () {
     Route::post('auth/logout', [UserController::class, 'logout'])->name('auth.logout');
     // Members
     Route::resource('members', MemberController::class)->names('api.members')->only([
@@ -65,6 +65,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('auth/update/{userId}', [UserController::class, 'update'])->name('auth.update');
 });
 
+Route::middleware('can:api')->group(function () {
+
 Route::get(
     'reservations/confirmet/{reservation}',
     [ReservationController::class, 'confirmet']
@@ -81,10 +83,12 @@ Route::resource('events', EventController::class)->names('api.events')->only([
     'index'
 ]);
 
+});
 
-//Correo de prueba
+/* //Correo de prueba
 Route::get('confirmar', function () {
     $correo = new ReservationVerification('155');
     Mail::to('juliojimmeza@gmail.com')->send($correo);
     return "Mensaje enviado";
 });
+ */
