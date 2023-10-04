@@ -65,8 +65,6 @@ Route::middleware(['auth:sanctum', 'can:api'])->group(function () {
     Route::put('auth/update/{userId}', [UserController::class, 'update'])->name('auth.update');
 });
 
-Route::middleware('can:api')->group(function () {
-
 Route::get(
     'reservations/confirmet/{reservation}',
     [ReservationController::class, 'confirmet']
@@ -83,7 +81,6 @@ Route::resource('events', EventController::class)->names('api.events')->only([
     'index'
 ]);
 
-});
 
 /* //Correo de prueba
 Route::get('confirmar', function () {
