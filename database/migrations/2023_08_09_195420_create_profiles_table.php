@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
 
-            $table->string('document');
+            $table->integer('document')->unique();
             $table->string('cell');
             $table->string('address');
             $table->string('neighborhood');
             $table->date('birth');
             $table->string('eps');
             $table->string('reference');
+            $table->boolean('is_collaborator')->default(false);
             $table->boolean('experience2022')->default(false);
             $table->boolean('state')->default(true);
 

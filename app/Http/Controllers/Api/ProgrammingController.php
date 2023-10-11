@@ -14,12 +14,19 @@ class ProgrammingController extends Controller
     {
         $event = $request->eventId;
         $date = $request->date;
-        return Programming::where('event_id', $event)
+        $programmingEvent =  Programming::where('event_id', $event)
             ->select('id', 'quota_available', 'initial_date', 'initial_time')
             ->where('waiting','<>',1)
             ->where('initial_date',$date)
             ->get();
-        //return $programmingEvent;
+
+            if(count($programmingEvent) <= 0){
+                return response()->json([
+                    'status' => false,
+                    'errors' => ['event not found']
+                ], 400);
+            }
+        return $programmingEvent;
     }
    
 

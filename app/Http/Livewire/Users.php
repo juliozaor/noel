@@ -61,7 +61,7 @@ class Users extends Component
         if ($this->page < $this->users->lastPage()) {
             $this->page++;
         }
-       // $this->emit('consoleLog', ['pagina' => $this->page]);
+        // $this->emit('consoleLog', ['pagina' => $this->page]);
     }
 
     public function gotoPage($page,)
@@ -87,10 +87,18 @@ class Users extends Component
 
     private function searchUsers()
     {
-       
+
+
+        /*   $usersQuery = User::leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
+            ->where('users.id', '<>', 1)
+            ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell')
+            ->orderBy($this->sort, $this->direction); */
+        $roleID = 2;
 
         $usersQuery = User::leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
-            ->where('users.id', '<>', 1)
+            ->whereHas('roles', function ($query) use ($roleID) {
+                $query->where('role_id', $roleID);
+            })
             ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell')
             ->orderBy($this->sort, $this->direction);
 
@@ -115,15 +123,15 @@ class Users extends Component
     {
         $user = User::find($userId);
 
-    // Si se encontró al usuario, elimínalo
-    if ($user) {
-        $user->delete();
+        // Si se encontró al usuario, elimínalo
+        if ($user) {
+            $user->delete();
+        }
     }
-    }
-   
+
     public function updatingSearch()
     {
-        $this->page =1;
+        $this->page = 1;
     }
 
     public function render()
@@ -147,7 +155,7 @@ class Users extends Component
 
         if ($profile) {
             $this->profile = $profile;
-           // $this->document = $profile->document;
+            // $this->document = $profile->document;
             $this->name = $profile->user->name;
             $this->cell = $profile->cell;
             $this->address = $profile->address;
@@ -159,7 +167,7 @@ class Users extends Component
             $this->experience2022 = $profile->experience2022;
             if ($this->eps != '') {
                 $this->epsState = 1;
-            }else{
+            } else {
                 $this->epsState = 0;
             }
         }
@@ -198,7 +206,7 @@ class Users extends Component
                 $data = $response->json(); // Convierte la respuesta JSON en un array
                 //return $data;
             }
-        } 
+        }
 
         $this->openEditRegister = false;
         $this->resetDatesIn();
@@ -207,10 +215,11 @@ class Users extends Component
 
     public function resetDatesIn()
     {
-        $this->reset(['document','name', 'cell', 'address', 'neighborhood', 'birth', 'email', 'profile']);
+        $this->reset(['document', 'name', 'cell', 'address', 'neighborhood', 'birth', 'email', 'profile']);
     }
 
-    public function close(){
+    public function close()
+    {
         $this->openEditRegister = false;
         $this->resetDatesIn();
     }

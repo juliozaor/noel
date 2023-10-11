@@ -18,7 +18,8 @@ class Profile extends Model
         'eps',
         'reference',
         'experience2022',
-        'user_id'
+        'user_id',
+        'is_collaborator'
     ];
 
 

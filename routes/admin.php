@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\EventController;
 
-//Route::middleware('can:administrador')->group(function () {
+Route::middleware('can:administrador')->group(function () {
   
   Route::get('', [HomeController::class, 'index']);
   Route::get('events/register', [EventController::class, 'indexRegister'])
@@ -14,7 +14,7 @@ use App\Http\Controllers\Admin\EventController;
   Route::resource('events', EventController::class)->names('admin.events')->only([
     'index','create','show','edit'
   ]);
-//});
+});
 
 
 

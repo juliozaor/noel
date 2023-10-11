@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Collaborators;
 use App\Models\Profile;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -36,11 +37,22 @@ class UserController extends Controller
             ], 400);
         }
 
+        $profileUser = Profile::where('document', $request->document)->first();
+        if($profileUser){
+            return response()->json([
+                'status' => false,
+                'errors' => ['There is already a user registered with this document']
+            ], 400);
+        }
+
+        $collaborator = Collaborators::where('document', $request->document)->first();
+      
         $user = new User([
             "name" => $request->name,
             "email" => strtolower($request->email),
             "password" => Hash::make($request->password)
         ]);
+
         $user->save();
         $user->assignRole('User');
 
@@ -52,7 +64,8 @@ class UserController extends Controller
             'birth' => $request->birth,
             'eps' => $request->eps??'',
             'reference' => $request->reference??'',
-            'experience2022' => $request->experience2022??false
+            'experience2022' => $request->experience2022??false,
+            'is_collaborator'=>$collaborator ? true:false,
         ]);
         $user->profile()->save($profile);
 
@@ -87,7 +100,6 @@ class UserController extends Controller
             ], 401);
         }
         
-       // $user = User::where('email', $request->email)->first();
         $user = User::where('email', $request->email)
     ->with('profile')
     ->first();

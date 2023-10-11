@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Imports\CollaboratorsImport;
 use App\Imports\ProgrammingsImport;
 use App\Imports\UsersImport;
 use Livewire\Component;
@@ -15,6 +16,7 @@ class BulkLoad extends Component
     public $title = '';
     public $file;
     public $view;
+    public $label;
 
     public function close()
     {
@@ -42,11 +44,16 @@ class BulkLoad extends Component
 
             if ($this->view == 'programmings') {
                 Excel::import(new ProgrammingsImport, $this->file);
+                $this->emitTo('tablet-programming', 'render');
             }
             if ($this->view == 'users') {
                 Excel::import(new UsersImport, $this->file);
+                $this->emitTo('users', 'render');
             }
-            dd("importados");
+
+            if ($this->view == 'collaborators') {
+                Excel::import(new CollaboratorsImport, $this->file);
+            }
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
 

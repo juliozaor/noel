@@ -65,6 +65,8 @@ Route::middleware(['auth:sanctum', 'can:api'])->group(function () {
     Route::put('auth/update/{userId}', [UserController::class, 'update'])->name('auth.update');
 });
 
+
+
 Route::get(
     'reservations/confirmet/{reservation}',
     [ReservationController::class, 'confirmet']
