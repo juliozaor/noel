@@ -22,9 +22,8 @@ class ReservationController extends Controller
         try {
             $programming = Programming::findOrfail($request->programming_id);
 
-          //  $now = date("Y-m-d H:i:s");
            
-            $date = date('Y-m-d');  // Puedes personalizar el formato según tu necesidad
+            $date = date('Y-m-d');
             $time = date('H:i:s');
             if ($date > $programming->initial_date || 
             ($date == $programming->initial_date && $time > $programming->initial_time)) {

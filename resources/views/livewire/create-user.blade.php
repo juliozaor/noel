@@ -1,5 +1,5 @@
 <div>
-    <x-button wire:click="$set('openNewRegister', true)">
+    <x-button class="botonRojo" wire:click="$set('openNewRegister', true)">
         Nuevo Registro
     </x-button>
   

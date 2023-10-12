@@ -1,5 +1,5 @@
 <div>
-    <x-button wire:click="$set('open', true)">
+    <x-button class="botonRojo" wire:click="$set('open', true)">
         Crear evento
     </x-button>
 

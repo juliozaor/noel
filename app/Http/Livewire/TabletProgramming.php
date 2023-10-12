@@ -24,7 +24,7 @@ class TabletProgramming extends Component
     public $end = '2024-03-20';
     public $all = 0;
 
-    public $cant = '10';
+    public $cant = '5';
     protected $queryString = [
         'cant' => ['except' => '10'],
         'sort' => ['except' => 'id'],

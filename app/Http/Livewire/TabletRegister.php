@@ -25,7 +25,7 @@ class TabletRegister extends Component
     public $users;
     public $links;
 
-    public $cant = '10';
+    public $cant = '5';
     protected $queryString = [
         'cant' => ['except' => '10'],
         'sort' => ['except' => 'id'],

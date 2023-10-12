@@ -35,7 +35,11 @@
                 <x-input type="number" class="w-full" wire:model.defer="quota" />
                 <x-input-error for="quota" />
             </div>
-
+            @if(session()->has('message'))
+            <div class="alert alert-success">
+                {{ session('message') }}
+            </div>
+        @endif
         </x-slot>
 
 
