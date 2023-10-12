@@ -32,9 +32,7 @@ Route::post('auth/forgot-password', [NewPasswordController::class, 'forgotPasswo
 Route::post('auth/reset-password', [NewPasswordController::class, 'reset'])->name('auth.reset');
 
 Route::middleware(['auth:sanctum', 'can:api'])->group(function () {
-    Route::get('user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('user/me', [UserController::class, 'me'])->name('api.me');
     Route::post('auth/logout', [UserController::class, 'logout'])->name('auth.logout');
     // Members
     Route::resource('members', MemberController::class)->names('api.members')->only([
