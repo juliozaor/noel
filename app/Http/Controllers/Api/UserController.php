@@ -79,7 +79,7 @@ class UserController extends Controller
 
    public function me(){
     $auth = auth()->user();
-    $user =User::find($auth->id)->with('profile')->first();
+    $user =User::where('id',$auth->id)->with('profile')->first();
     return response()->json([
         'status' => true,
         'message' => 'Retriving User Informations',
