@@ -92,7 +92,7 @@ class TabletProgramming extends Component
         $this->programming = $programming;
         $this->openEditProgramming = true;
         $this->date = date('Y-m-d', strtotime($programming->initial_date));
-        $this->time = date('H:i', strtotime($programming->initial_date));
+        $this->time = date('H:i', strtotime($programming->initial_time));
         $this->name = $programming->event->name;
      /*    $this->detail = $programming->event->detail;
         $this->description = $programming->event->description; */

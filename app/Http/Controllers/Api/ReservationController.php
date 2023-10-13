@@ -25,6 +25,7 @@ class ReservationController extends Controller
            
             $date = date('Y-m-d');
             $time = date('H:i:s');
+
             if ($date > $programming->initial_date || 
             ($date == $programming->initial_date && $time > $programming->initial_time)) {
                 return response()->json([
@@ -171,6 +172,50 @@ class ReservationController extends Controller
     public function waitingList(Request $request)
     {
         $user = auth()->user(); // Accede al usuario autenticado
+
+        $reservations = Reservation::with('programming')->where('user_id', $user->id)->get();
+        $date = date('Y-m-d');
+        $time = date('H:i:s');
+        if (count($reservations) >= 1) {
+            if ($user->profile->is_collaborator == 1) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'El usuario es un colaborador y ya tiene una reserva en el sistema',
+                ], 400);
+            }
+
+            $programmingId = 1;
+            $hasProgramming = $reservations->contains(function ($reservation) use ($programmingId) {
+                return $reservation->programming && $reservation->programming->id === $programmingId;
+            });
+
+            if ($hasProgramming) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Ya el usuario se encuentra en lista de espera',
+                ], 400);
+            }
+
+            foreach ($reservations as $reservation) {
+                if ($date < $reservation->programming->initial_date ||
+                    ($date == $reservation->programming->initial_date &&
+                $time < $reservation->programming->initial_time)) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'El usuario tiene una reserva activa',
+                    ], 400);
+                }
+            }
+
+
+        }
+
+        if ($user->profile->is_collaborator == 1 && $request->quota > 5) {
+            return response()->json([
+                'status' => false,
+                'message' => 'El usuario no puede tener mas de 5 cupos',
+            ], 400);
+        }
 
         $reservation = new Reservation();
         $reservation->quota = $request->quota;
