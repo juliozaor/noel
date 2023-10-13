@@ -77,7 +77,15 @@ class UserController extends Controller
         ], 200);
     }
 
-   
+   public function me(){
+    $auth = auth()->user();
+    $user =User::where('id',$auth->id)->with('profile')->first();
+    return response()->json([
+        'status' => true,
+        'message' => 'Retriving User Informations',
+        'data' => $user
+    ], 200);
+   }
 
     public function login(Request $request)
     {

@@ -138,19 +138,27 @@ class ReservationController extends Controller
 
     public function perUser(int $userId)
     {
-        $reservations = Reservation::where('user_id', $userId)->get();
+        $reservations = Reservation::where('user_id', $userId)->with('member')->get();
 
         $reservationData = [];
 
         foreach ($reservations as $reservation) {
-
             $programming = $reservation->programming;
-
             if ($programming) {
+                $membersData = $reservation->member->map(function ($member) {
+                    return [
+                        'nombre' => $member->name,
+                        'documento'=>$member->document,
+                        'es_menor'=>$member->is_minor,
+                        'fecha_creacion' => $member->created_at->format('Y-m-d H:i:s'),
+                    ];
+                });
                 $reservationData[] = [
                     'id' => $reservation->id,
                     'fecha' => $programming->initial_date,
                     'hora' => $programming->initial_time,
+                    'cupos'=>$reservation->quota,
+                    'miembros'=>$membersData
                 ];
             }
         }
