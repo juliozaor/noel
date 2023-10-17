@@ -121,7 +121,7 @@ class TabletRegister extends Component
 
         // $this->reset(['openEditProgramming']);
         $this->emitTo('tablet-programming', 'render');
-        $this->emit('alert', 'Actualizado con éxito');
+        $this->emit('alert', 'Actualizado con éxito','success');
         event(new updateProgrammingEvent($this->programming->id));
     }
 

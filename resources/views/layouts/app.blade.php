@@ -74,12 +74,14 @@
     </script>
     @stack('js')
     <script>
-        Livewire.on('alert', (message) => {
-            Swal.fire(
-                'Good job!',
-                message,
-                'success'
-            )
+        Livewire.on('alert', (message, icon) => {
+            Swal.fire({
+                position: 'center',
+                icon: icon,
+                title: message,
+                showConfirmButton: false,
+                timer: 1500
+            })
         });
     </script>
 </body>

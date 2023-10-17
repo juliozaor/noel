@@ -26,7 +26,7 @@ class confirmReservationListener
         $reservationUpdate = Reservation::findOrFail($event->reservationId);
 
         if ($reservationUpdate) {
-            $reservationUpdate->confirmed = true;
+            $reservationUpdate->confirmed = 1;
             $reservationUpdate->confirmation_date = now();
             $reservationUpdate->save();
         }

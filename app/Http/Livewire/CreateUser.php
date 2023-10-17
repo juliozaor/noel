@@ -178,7 +178,8 @@ class CreateUser extends Component
     public function close()
     {
         $this->openNewRegister = false;
-        $this->emit('resetDates');
+        $this->resetDates();
+       // $this->emit('resetDates');
     }
 
     // edicion

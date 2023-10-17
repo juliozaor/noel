@@ -18,8 +18,9 @@ class CreateWaiting extends Component
     public $epsState = 0;
     public $wait = 1;
     public $editReservation = false;
+    public $reservationId;
 
-    protected $listeners = ['open','resetDates','openEdit'];
+    protected $listeners = ['open','resetDates','openEdit','openResrv'];
 
     public function updatedEpsState()
     {
@@ -158,21 +159,24 @@ class CreateWaiting extends Component
 
     public function resetDates()
     {
-        $this->reset(['document','name', 'cell', 'address', 'neighborhood', 'birth', 'email', 'eps']);
+        $this->reset(['document','name', 'cell', 'address', 'neighborhood', 'birth', 'email', 'eps', 'editReservation']);
     }
 
     public function openModalreservation()
     {
+       
         $params = [
             'userId' => $this->userId,
             'email' => strtolower($this->email),
             'wait' => $this->wait,
             'editReservation' => $this->editReservation,
-            'programmationId' => 1
+            'programmationId' => 1,
+            'reservationId' => $this->reservationId
         ];
 
         $this->openNewRegister = false;
         $this->emitTo('create-reservation', 'open',  $params);
+
     }
 
     public function open()
@@ -180,17 +184,26 @@ class CreateWaiting extends Component
         $this->openNewRegister = true;
     }
 
-    // edicion
-    public function openEdit($document)
+    public function openResrv($params)
     {
-        $this->document = $document ?? null;
-        $this->editReservation = true;
+        $this->reservationId = $params['reservationId'] ?? null;
+        $this->openNewRegister = true;
+    }
+
+    // edicion
+    public function openEdit($params)
+    {
+        $this->document = $params['document'] ?? null;
+        $this->reservationId = $params['reservationId'] ?? null;
+        $this->editReservation = $params['editReservation']??true;
         $this->searchProfile();
         $this->openNewRegister = true;
+
     }
 
     public function close(){
         $this->openNewRegister = false;
-        $this->emit('resetDates');
+        $this->resetDates();
+       // $this->emit('resetDates');
     }
 }

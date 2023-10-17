@@ -52,12 +52,14 @@ class ListUsersRegister extends Component
 
     private function searchUsers()
     {
-
+        $roleID = 2;
         $usersQuery = User::join('reservations', 'users.id', '=', 'reservations.user_id')
             ->join('programmings', 'reservations.programming_id', '=', 'programmings.id')
             ->leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
             ->where('programmings.id', $this->programmingId)
-            ->where('users.id', '<>', 1)
+            ->whereHas('roles', function ($query) use ($roleID) {
+                $query->where('role_id', $roleID);
+            })
             ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell')
             ->orderBy($this->sort, $this->direction);
 

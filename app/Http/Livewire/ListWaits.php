@@ -74,10 +74,13 @@ class ListWaits extends Component
 
     private function searchUsers()
     {
+        $roleID = 2;
         $usersQuery = User::join('reservations', 'users.id', '=', 'reservations.user_id')
             ->leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
             ->where('reservations.programming_id', 1)
-            ->where('users.id', '<>', 1)
+            ->whereHas('roles', function ($query) use ($roleID) {
+                $query->where('role_id', $roleID);
+            })
             ->select(
                 'reservations.reservation_date',
                 'profiles.document',
@@ -132,7 +135,7 @@ class ListWaits extends Component
                         }
                         
                         $this->emitTo('tablet-register', 'render');
-                        $this->emit('alert', 'Las reservas fueron asignadas con éxito');
+                        $this->emit('alert', 'Las reservas fueron asignadas con éxito','success');
 
                     }
                 }
@@ -144,9 +147,15 @@ class ListWaits extends Component
         }
     }
 
-    public function editRegisterWait($document)
+    public function editRegisterWait($document, $id)
     {
-        $this->emitTo('create-waiting', 'openEdit',  $document);
+        $params = [
+            'document' => $document,
+            'programmationId' => 1,
+            'reservationId' => $id
+        ];
+
+        $this->emitTo('create-waiting', 'openEdit',  $params);
         $this->emitTo('register-user-in-event', 'close');
     }
 

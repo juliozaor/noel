@@ -54,6 +54,10 @@ class BulkLoad extends Component
             if ($this->view == 'collaborators') {
                 Excel::import(new CollaboratorsImport, $this->file);
             }
+
+            $this->openBulk = false;
+            $this->emit('alert', 'Archivo cargado','success');
+            
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
 
@@ -62,6 +66,7 @@ class BulkLoad extends Component
                 $failure->attribute(); // either heading key (if using heading row concern) or column index
                 $failure->errors(); // Actual error messages from Laravel validator
                 $failure->values(); // The values of the row that has failed.
+
 
             }
         }

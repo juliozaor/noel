@@ -3,6 +3,7 @@
     <x-dialog-modal-j wire:model="openMembers">
         <x-slot name="title">Nuevo registro/ Registrar miembros asistentes <span class="font-medium text-red-600">- Todos
                 los campos son obligatorios
+<br>
 
             </span>
 
@@ -35,6 +36,8 @@
                 </div>
             </div>
             <div class="scroll-container">
+
+@if ($quota > 1)
 
                 @foreach (range(2, $quota) as $index)
                     <div class="mt-2">
@@ -77,6 +80,7 @@
                         </div>
                     </div>
                 @endforeach
+                @endif
             </div>
 
         </x-slot>
@@ -87,7 +91,7 @@
             <x-secondary-button wire:click=openModalCreateReservation>
                 Atrás
             </x-secondary-button>
-            <x-danger-button wire:click=resetDatesInAll>
+            <x-danger-button wire:click=delectRegister>
                 Cancelar registro
             </x-danger-button>
             <x-danger-button wire:click=validateMembers>
@@ -97,26 +101,30 @@
     </x-dialog-modal-j>
 
     @push('js')
-        {{--  <script src="sweetalert2.all.min.js"></script>
-
+        <script src="sweetalert2.all.min.js"></script>
         <script>
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire(
-                        'Deleted!',
-                        'Your file has been deleted.',
-                        'success'
-                    )
-                }
-            })
-        </script> --}}
+            Livewire.on('delReservation', reservationId => {
+                Swal.fire({
+                    title: 'Se eliminará la reserva',
+                    text: "¿Esta seguro de eliminar la reserva?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, eliminar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        Livewire.emitTo('create-members','confirmDeletereservation',reservationId)
+                        Swal.fire(
+                            'Eliminado!',
+                            'la reserva ha sido eliminada.',
+                            'success'
+                        )
+                    }
+                });
+
+            });
+        </script>
     @endpush
 </div>

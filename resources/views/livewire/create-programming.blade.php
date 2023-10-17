@@ -60,7 +60,11 @@
                     </div>
                 </div>
             </div>
-
+            @if(session()->has('message'))
+            <div class="alert alert-success">
+                {{ session('message') }}
+            </div>
+        @endif
         </x-slot>
 
         <x-slot name="footer" class="bg-success">

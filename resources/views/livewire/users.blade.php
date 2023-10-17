@@ -286,10 +286,5 @@
 
             });
         </script>
-        {{-- <script>
-            Livewire.on('consoleLog', ({ pagina }) => {
-                console.log(pagina);
-            });
-        </script> --}}
     @endpush
 </div>

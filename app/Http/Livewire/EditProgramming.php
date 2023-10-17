@@ -58,7 +58,7 @@ class EditProgramming extends Component
 
         $this->reset(['openEdit']);
         $this->emitTo('tablet-programming','render');
-        $this->emit('alert', 'Actualizado con éxito');
+        $this->emit('alert', 'Actualizado con éxito','success');
         event(new updateProgrammingEvent($this->programming->id));
     } 
 

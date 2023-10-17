@@ -63,6 +63,12 @@ Route::middleware(['auth:sanctum', 'can:api'])->group(function () {
     )
         ->name('api.reservations.perReservation');
 
+        Route::delete(
+            'reservations/{id}',
+            [ReservationController::class, 'destroy']
+        )
+            ->name('api.reservations.delete');
+
     Route::put('auth/update/{userId}', [UserController::class, 'update'])->name('auth.update');
 });
 

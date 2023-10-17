@@ -210,7 +210,7 @@ class Users extends Component
 
         $this->openEditRegister = false;
         $this->resetDatesIn();
-        $this->emit('alert', 'Usuario actualizado');
+        $this->emit('alert', 'Usuario actualizado','success');
     }
 
     public function resetDatesIn()

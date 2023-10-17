@@ -52,8 +52,11 @@ class ListUsers extends Component
     private function searchUsers()
     {
 
+        $roleID = 2;
         $usersQuery = User::leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
-            ->where('users.id', '<>', 1)
+        ->whereHas('roles', function ($query) use ($roleID) {
+            $query->where('role_id', $roleID);
+        })
             ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell')
             ->orderBy($this->sort, $this->direction);
 

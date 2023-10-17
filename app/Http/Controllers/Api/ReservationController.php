@@ -242,7 +242,9 @@ class ReservationController extends Controller
     public function destroy($id)
     {
         $reservation = Reservation::findOrFail($id);
+        $idProgramming = $reservation->programming_id;
         $reservation->delete();
+        event(new updateProgrammingEvent($idProgramming));
         return response()->json([
             'status' => true,
             'message' => 'Reservation delete successfully'

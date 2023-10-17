@@ -17,7 +17,7 @@ class CreateProgramming extends Component
 
     protected $rules = [
         'name' => ['required', 'string'],
-       /*  'detail' => ['required', 'string', 'max:30'],
+        /*  'detail' => ['required', 'string', 'max:30'],
         'description' => ['required', 'string', 'max:60'], */
         'date' => ['required', 'date'],
         'time' => ['required', 'date_format:H:i'],
@@ -38,6 +38,13 @@ class CreateProgramming extends Component
         $event = Event::findOrFail($this->eventId);
         $this->hour = date('H:i', strtotime($this->time) + 7200); // 7200 segundos = 2 horas
 
+        $isProgramming = Programming::where('initial_date', $this->date)
+            ->where('initial_time', $this->time)->get();
+        if ($isProgramming->count()) {
+            session()->flash('message', 'Ya existe una programacion para esta fecha y hora');
+            return;
+        }
+
         $programmingData = [
             'initial_date' => $this->date,
             'initial_time' => $this->time,
@@ -50,16 +57,16 @@ class CreateProgramming extends Component
 
         // Guardar la programación asociada al evento
         $event->programming()->save($programming);
-        $this->reset(['open', 'time', 'date']);
+        $this->reset(['open', 'time', 'date', 'quota']);
         $this->emitTo('tablet-programming', 'render');
-        $this->emit('alert', 'Guardado con éxito');
+        $this->emit('alert', 'Guardado con éxito', 'success');
     }
 
     public function render()
     {
         $event = Event::findOrFail(1);
         $this->name = $event->name;
-      /*   $this->detail = $event->detail;
+        /*   $this->detail = $event->detail;
         $this->description = $event->description; */
         $this->eventId = $event->id;
         return view('livewire.create-programming');

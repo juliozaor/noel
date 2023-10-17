@@ -25,9 +25,9 @@ class updateProgrammingListener
         if($event->programmingId <> 1){
         $programming = Programming::findOrFail($event->programmingId);
         $totalReservationsQuota = $programming->reservation()->sum('quota');
-
         $newQuotaAvailable = $programming->quota - $totalReservationsQuota;
 
+        
         $programming->update([
             'quota_available' => $newQuotaAvailable
         ]);

@@ -67,7 +67,7 @@
                             </td>
                             <td>
 
-                                <button wire:click="editRegisterWait({{ $user->document }})"><img
+                                <button wire:click="editRegisterWait({{ $user->document }},{{ $user->id }} )"><img
                                         src="{{ asset('/assets/icons/edit.svg') }}" alt="editar"
                                         style="max-width: 15px" /></button>
                             </td>
