@@ -15,8 +15,8 @@ class ProgrammingSeeder extends Seeder
     {
         Programming::create([
             'id'=>1,
-            'quota' => 0,
-            'quota_available' => 0,
+            'quota' => 999999999,
+            'quota_available' => 999999999,
             'event_id' => 1,
             'waiting' => true
         ]);
