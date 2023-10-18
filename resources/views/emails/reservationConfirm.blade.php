@@ -9,6 +9,7 @@
 </head>
 
 <body>
+
     @foreach ($codes as $code)
         @if ($code['isUser'] == 1)
             <h1>Hola, {{ $code['name'] }}</h1>

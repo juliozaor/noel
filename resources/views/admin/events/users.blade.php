@@ -1,27 +1,24 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="container">
-            <div class="subtitulo d-flex justify-content-between">
-                <div class="d-flex">
-                   
-                        <h6 class="me-4"> Lista de usuarios</h6>
-                    
-                    
-                        <h6> Historial de Registros</h6>
-                    
+            <div class="row">
+                <div class="col-md-1 mt-2">
+                    <h6>Lista de usuarios</h6>
                 </div>
-                <div class="row">
+                <div class="col-md-2 mt-2">
+                    <h6> Historial de Registros </h6>
+                </div>
+                <div class="col-md-2 mt-2 offset-md-5">
                     @can('superAministrador')
-                        <div class="col">
-                            @livewire('bulk-load', ['title' => 'Carga masiva de colaboradores', 
-                            'view' => 'collaborators', 'label'=> 'Colaboradores'])
-                        </div>
-                    @endcan
-                    <div class="col">
-                        @livewire('bulk-load', ['title' => 'Carga masiva de usuarios', 
-                        'view' => 'users','label'=> 'Carga masiva'])
-                    </div>
+                        @livewire('bulk-load', ['title' => 'Carga masiva de colaboradores', 
+                        'view' => 'collaborators', 'label'=> 'Colaboradores'])
+                @endcan
                 </div>
+                <div class="col-md-2 mt-2">
+                    @livewire('bulk-load', ['title' => 'Carga masiva de usuarios', 
+                        'view' => 'users','label'=> 'Carga masiva'])
+                </div>
+
             </div>
         </div>
     </x-slot>

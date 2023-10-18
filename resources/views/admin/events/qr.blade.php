@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="container">
             <div class="row">
-                <div class="col-1">
+                <div class="col-md-1 mt-2">
                     <h6> Leer QR</h6>
                 </div>
-                <div class="col-2">
+                <div class="col-md-2 mt-2">
                     <h6> Leer codigo QR </h6>
                 </div>
 

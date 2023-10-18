@@ -21,6 +21,13 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $reservation = Reservation::find($request->reservation_id);
+
+        if (!$reservation) {
+            return response()->json([
+                'status' => false,
+                'message' =>  'La reservación no existe'
+            ], 400);
+        }
         
         $user = auth()->user(); // Accede al usuario autenticado
 
@@ -104,9 +111,8 @@ class MemberController extends Controller
 
         if($reservation->programming_id !=1){
             event(new confirmReservationEvent($request->reservation_id));
-      //  $correo = new ReservationVerification($request->reservation_id);
-      $correo = new ReservationVerification($codes);
-        //Correo del usuario
+
+        $correo = new ReservationVerification($codes);
         $respose = Mail::to($user->email)->send($correo);
 
         }

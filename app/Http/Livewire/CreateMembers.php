@@ -123,7 +123,13 @@ class CreateMembers extends Component
                     ]);
                     $qrCode->save();
 
-                    $this->codes[] = $qr;
+                    $dateUser = [
+                        'name' => $this->nameMember[$key],
+                        'qr' => $qr,
+                        'isUser' => 0
+                    ];
+    
+                    $this->codes[] = $dateUser;
                 }
             }
         }
@@ -140,7 +146,14 @@ class CreateMembers extends Component
             'reservation_id'=> $this->reservationId
         ]);
         $qrCode->save();
-        $this->codes[] = $qrU;
+        
+        $dateUserU = [
+            'name' => $user->name,
+            'qr' => $qrU,
+            'isUser' => 1
+        ];
+
+        $this->codes[] = $dateUserU;
 
         event(new confirmReservationEvent($this->reservationId));
         $correo = new ReservationVerification($this->codes);
@@ -202,7 +215,13 @@ class CreateMembers extends Component
                     ]);
                     $qrCode->save();
 
-                    $this->codes[] = $qr;
+                    $dateUser = [
+                        'name' => $this->nameMember[$key],
+                        'qr' => $qr,
+                        'isUser' => 0
+                    ];
+    
+                    $this->codes[] = $dateUser;
                 }
             }
         }
@@ -219,7 +238,14 @@ class CreateMembers extends Component
             'reservation_id'=> $this->reservationId
         ]);
         $qrCode->save();
-        $this->codes[] = $qrU;
+        
+        $dateUserU = [
+            'name' => $user->name,
+            'qr' => $qrU,
+            'isUser' => 1
+        ];
+
+        $this->codes[] = $dateUserU;
 
         event(new updateReservationEvent($reservation->id));
         $correo = new ReservationVerification($this->codes);

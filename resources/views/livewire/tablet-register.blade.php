@@ -7,45 +7,41 @@
                         {{ $title }}
                     </div>
                     <div class="card-body">
-                        <div class="d-flex justify-content-between ">
 
-
-                            {{-- <div class="barraBusqueda">
-                                <input type="text" class="form-control" placeholder="Buscar..." wire:model="search">
-                            </div> --}}
-
-                            <div class="d-flex align-items-center">
-                                <div class="d-flex align-items-center mr-2 w-30 ">
-                                    <x-label value="Buscar desde " class="mr-2" />
+                        <div class="row">
+                            <div class="col-md-9 mt-2">
+                                 <div class="row">
+                                     <div class="col-md-4 mt-2 d-flex align-items-center">
+                                        <x-label value="Buscar desde " class="mr-2" />
                                     <x-input type="date" class="w-100" wire:model="begin" />
                                     <x-input-error for="begin" />
-                                </div>
-                                <div class="d-flex align-items-center mr-2 w-30">
-                                    <x-label value="Hasta " class="mr-2" />
-                                    <x-input type="date" class="w-100" wire:model="end" />
-                                    <x-input-error for="end" />
-                                </div>
-                                <div class="d-flex align-items-center mr-2 w-30">
-                                    <x-label value="Ver " class="mr-2" />
-
-                                    <select wire:model="all" class="form-control">
-                                        <option value="0">Todos</option>
-                                        <option value="1">Cupos disponibles</option>
-                                        <option value="2">Sin cupo</option>
-
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <button class="totales" disabled>
-                                        <span class="fw-semibold fs-14px">Total:</span>
-                                        <span
-                                            class="fs-12px fw-semibold"style="margin-left: 5px">{{ $count }}</span>
-                                    </button>
-                                </div>
-
+                                     </div>
+                                     <div class="col-md-3 mt-2 d-flex align-items-center">
+                                        <x-label value="Hasta " class="mr-2" />
+                                        <x-input type="date" class="w-100" wire:model="end" />
+                                        <x-input-error for="end" />
+                                     </div>
+                                     <div class="col-md-3 mt-2 d-flex align-items-center">
+                                         <x-label value="Ver " class="mr-2"/>
+                                        
+                                         <select wire:model="all" class="form-control">
+                                            <option value="0">Todos</option>
+                                            <option value="1">Cupos disponibles</option>
+                                            <option value="2">Sin cupo</option>
+    
+                                        </select>
+                                     </div>
+     
+                                     <div class="col-md-2 mt-2 d-flex align-items-center">
+                                        <button class="totales" disabled>
+                                            <span class="fw-semibold fs-14px">Total:</span>
+                                            <span
+                                                class="fs-12px fw-semibold"style="margin-left: 5px">{{ $count }}</span>
+                                        </button>
+                                     </div>
+                                 </div>
                             </div>
-                            <div class="d-flex justify-self-end flex-gap-5 ms-auto mb-3">
+                            <div class="col-md-3 mt-2 d-flex align-items-center">
                                 <span class="fs-12px d-flex align-items-center mx-2" id="registrosTotales">Registros por
                                     página</span>
                                 <span class="texto-gris fs-12px fw-bold align-items-center">
@@ -57,7 +53,13 @@
                                     </select>
                                 </span>
                             </div>
-                        </div>
+                         </div>
+
+
+
+
+
+
                         <div class="container-table d-flex table-responsive">
                             <table class="table table-striped fs-12px">
                                 <thead>

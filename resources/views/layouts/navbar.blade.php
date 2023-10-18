@@ -156,16 +156,39 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
+    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden burguer">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+         
+            <a href="{{ route('admin.events.users') }}" class="link_side {{request()->routeIs('admin.events.users') ? 'active':''}}">
+           
+            <span class="fs-12px fw-semibold">
+            Administrar usuarios
+          </span>
+        </a>
+       
+            <a href="{{ route('admin.events.register') }}" class="link_side {{request()->routeIs('admin.events.register') ? 'active':''}}">
+           
+            <span class="fs-12px fw-semibold">
+            Registro a eventos
+          </span>
+        </a>
+       
+            <a href="{{ route('admin.events.index') }}" class="link_side {{request()->routeIs('admin.events.index') ? 'active':''}}">
+            
+            <span class="fs-12px fw-semibold">
+            Administrar eventos
+          </span>
+        </a>
         </div>
+
+
+
+
+        
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="flex items-center px-4">
+            <div class="flex items-center">
                 @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                     <div class="shrink-0 mr-3">
                         <img class="h-10 w-10 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}"
@@ -174,19 +197,19 @@
                 @endif
 
                 <div>
-                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                    <div class="font-medium text-base">{{ Auth::user()->name }}</div>
+                   {{--  <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div> --}}
                 </div>
             </div>
 
             <div class="mt-3 space-y-1">
                 <!-- Account Management -->
-                <x-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
+                <x-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')" class="burguer">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
                 @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                    <x-responsive-nav-link href="{{ route('api-tokens.index') }}" :active="request()->routeIs('api-tokens.index')">
+                    <x-responsive-nav-link href="{{ route('api-tokens.index') }}" :active="request()->routeIs('api-tokens.index')" class="burguer">
                         {{ __('API Tokens') }}
                     </x-responsive-nav-link>
                 @endif
@@ -195,7 +218,7 @@
                 <form method="POST" action="{{ route('logout') }}" x-data>
                     @csrf
 
-                    <x-responsive-nav-link href="{{ route('logout') }}" @click.prevent="$root.submit();">
+                    <x-responsive-nav-link href="{{ route('logout') }}" @click.prevent="$root.submit();"  class="burguer">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
@@ -204,7 +227,7 @@
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
                     <div class="border-t border-gray-200"></div>
 
-                    <div class="block px-4 py-2 text-xs text-gray-400">
+                    <div class="block py-2 text-xs">
                         {{ __('Manage Team') }}
                     </div>
 
@@ -224,7 +247,7 @@
                     @if (Auth::user()->allTeams()->count() > 1)
                         <div class="border-t border-gray-200"></div>
 
-                        <div class="block px-4 py-2 text-xs text-gray-400">
+                        <div class="block py-2 text-xs">
                             {{ __('Switch Teams') }}
                         </div>
 
