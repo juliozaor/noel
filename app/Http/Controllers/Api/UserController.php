@@ -43,7 +43,7 @@ class UserController extends Controller
             return response()->json([
                 'status' => false,
                 'errors' => ['Ya hay un usuario registrado con este documento']
-            ], 400);
+            ], 409);
         }
         $collaborator = Collaborators::where('document', $request->document)->first();
        
@@ -54,7 +54,7 @@ class UserController extends Controller
                 return response()->json([
                     'status' => false,
                     'errors' =>'En el momento no está habilitado el registro'
-                ], 400);
+                ], 401);
             }
         }
         
