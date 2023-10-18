@@ -160,8 +160,8 @@ class CreateMembers extends Component
         $respose = Mail::to($this->email)->send($correo);
         $this->emitTo('tablet-register', 'render');
         $this->emit('alert', 'reservacion creada con éxito', 'success');
+        $this->emit('reiniciar');
         $this->openMembers = false;
-        //  $this->resetDates();
         $this->resetDatesInAll();
     }
 
@@ -253,6 +253,7 @@ class CreateMembers extends Component
         $this->emitTo('tablet-register', 'render');
         $this->emit('alert', 'reservacion actualizada con éxito', 'success');
         //$this->resetDates();
+        $this->emit('reiniciar');
         $this->openMembers = false;
         $this->resetDatesInAll();
     }
@@ -311,5 +312,6 @@ class CreateMembers extends Component
             $this->openMembers = false;
             // $this->resetDatesInAll();
         }
+        $this->emit('reiniciar');
     }
 }

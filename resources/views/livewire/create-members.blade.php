@@ -126,5 +126,10 @@
 
             });
         </script>
+        <script>
+                Livewire.on('reiniciar', function () {
+                    location.reload();
+                });
+        </script>
     @endpush
 </div>
