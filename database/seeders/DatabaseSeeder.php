@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(EventSeeder::class);
         $this->call(ProgrammingSeeder::class);
+        $this->call(ValidationsSeeder::class);
 
       //  Profile::factory(4)->create();
        // Event::factory(4)->create();

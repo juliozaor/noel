@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Validations;
 
 class UserController extends Controller
 {
@@ -24,7 +25,7 @@ class UserController extends Controller
             'cell' => ['integer'],
             'address' => ['string'],
             'neighborhood' => ['string'],
-            'birth' => ['date'],
+            'birth' => ['required', 'date', 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')],
         ];
 
 
@@ -41,12 +42,22 @@ class UserController extends Controller
         if($profileUser){
             return response()->json([
                 'status' => false,
-                'errors' => ['There is already a user registered with this document']
+                'errors' => ['Ya hay un usuario registrado con este documento']
             ], 400);
         }
-
         $collaborator = Collaborators::where('document', $request->document)->first();
-      
+       
+        $validation = Validations::findOrFail(1);
+
+        if($validation && $validation->status == 0){
+            if (!$collaborator) {
+                return response()->json([
+                    'status' => false,
+                    'errors' =>'En el momento no está habilitado el registro'
+                ], 400);
+            }
+        }
+        
         $user = new User([
             "name" => $request->name,
             "email" => strtolower($request->email),

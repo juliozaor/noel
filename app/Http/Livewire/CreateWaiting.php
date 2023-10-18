@@ -2,8 +2,10 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Collaborators;
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\Validations;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
@@ -89,6 +91,17 @@ class CreateWaiting extends Component
     {
 
         $this->validate();
+
+        $collaborator = Collaborators::where('document', $this->document)->first();
+
+        $validation = Validations::findOrFail(1);
+
+        if ($validation && $validation->status == 0) {
+            if (!$collaborator) {
+                session()->flash('message', 'En el momento no está habilitado el registro para este usuario');
+                return;
+            }
+        }
 
         $appUrl = env('APP_URL') . '/api/auth';
 

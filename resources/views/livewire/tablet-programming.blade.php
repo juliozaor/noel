@@ -241,7 +241,7 @@
 
 </div>
 
-
+@push('js')
 <script>
     $('.togger_checkbox').change(function() {
         var state = $(this).prop('checked') == true ? 1 : 0;
@@ -266,3 +266,5 @@
 
     });
 </script>
+@endpush
+

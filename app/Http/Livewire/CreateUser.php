@@ -2,8 +2,10 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Collaborators;
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\Validations;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
@@ -73,7 +75,7 @@ class CreateUser extends Component
             $this->experience2022 = $profile->experience2022;
             if ($this->eps != '') {
                 $this->epsState = 1;
-            }else{
+            } else {
                 $this->epsState = 0;
             }
         }
@@ -90,6 +92,18 @@ class CreateUser extends Component
         $this->validate();
 
         $appUrl = env('APP_URL') . '/api/auth';
+
+        $collaborator = Collaborators::where('document', $this->document)->first();
+
+        $validation = Validations::findOrFail(1);
+
+        if ($validation && $validation->status == 0) {
+            if (!$collaborator) {
+                session()->flash('message', 'En el momento no está habilitado el registro para este usuario');
+                return;
+            }
+        }
+
 
         $profile = Profile::where('document', $this->document)->with('user')->first();
         if ($profile) {
@@ -154,8 +168,10 @@ class CreateUser extends Component
 
     public function resetDates()
     {
-        $this->reset(['document', 'name', 'cell', 'address', 'neighborhood', 'birth', 'email',
-        'programmationId','editReservation']);
+        $this->reset([
+            'document', 'name', 'cell', 'address', 'neighborhood', 'birth', 'email',
+            'programmationId', 'editReservation'
+        ]);
     }
 
     public function openModalreservation()
@@ -179,7 +195,7 @@ class CreateUser extends Component
     {
         $this->openNewRegister = false;
         $this->resetDates();
-       // $this->emit('resetDates');
+        // $this->emit('resetDates');
     }
 
     // edicion
@@ -188,7 +204,7 @@ class CreateUser extends Component
         $this->document = $params['document'] ?? null;
         $this->reservationId = $params['reservationId'] ?? null;
         $this->programmationId = $params['programmationId'] ?? null;
-        $this->editReservation = $params['editReservation']??true;
+        $this->editReservation = $params['editReservation'] ?? true;
         $this->searchProfile();
 
         $this->openNewRegister = true;
