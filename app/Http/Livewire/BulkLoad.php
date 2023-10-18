@@ -29,13 +29,13 @@ class BulkLoad extends Component
 
         if (!$this->file) {
             //session()->flash('error', 'No se ha cargado ningún archivo.');
-            dd('error', 'No se ha cargado ningún archivo.');
+            $this->emit('alert', 'No se ha cargado ningún archivo','warning');
             return;
         }
         $extension = $this->file->getClientOriginalExtension();
         if (!in_array($extension, ['xlsx', 'xls', 'csv', 'txt'])) {
             //  session()->flash('error', 'Solo se permiten archivos PDF, DOC y DOCX.');
-            dd('error', 'Solo se permiten archivos xlsx, xls y csv.');
+            $this->emit('alert', 'Solo se permiten archivos xlsx, xls y csv.','warning');
             return;
         }
         $tempPath = $this->file->getRealPath();

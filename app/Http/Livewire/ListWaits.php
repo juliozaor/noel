@@ -140,10 +140,10 @@ class ListWaits extends Component
                     }
                 }
             } else {
-                dd("no hay disponible");
+                $this->emit('alert', 'no hay disponible','warning');
             }
         } else {
-            dd("no ha seleccionado");
+            $this->emit('alert', 'nno ha seleccionado usuarios','warning');
         }
     }
 
