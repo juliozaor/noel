@@ -1,4 +1,4 @@
-<x-guest-layout>
+{{-- <x-guest-layout>
     <x-authentication-card>
         <x-slot name="logo">
             <x-authentication-card-logo />
@@ -15,7 +15,19 @@
         @endif
 
         <x-validation-errors class="mb-4" />
+ --}}
 
+ <x-guest-layout>
+     <div class="container-login">
+         <div class="login-container">
+             <div class="login-image"></div>
+             <div class="login-form ">
+                 <span class="titulo">Olvido su contraseña?</span>
+                 <span class="sub-titulo">Ingresa tu correo para actualizar tu contraseña</span>
+                 
+               
+                        <x-slot name="logo">
+                        </x-slot>
         <form method="POST" action="{{ route('password.email') }}">
             @csrf
 
@@ -25,10 +37,20 @@
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Email Password Reset Link') }}
+                <x-button class="botonRojo">
+                    {{ __('Enviar correo con el link') }}
                 </x-button>
             </div>
         </form>
-    </x-authentication-card>
-</x-guest-layout>
+        @if (session('status'))
+        <div class="mb-4 font-medium text-sm text-green-600">
+            {{ session('status') }}
+           </div>
+           @endif
+    </div>
+</div>
+</div>
+
+</x-guest-layout> 
+{{--     </x-authentication-card>
+</x-guest-layout> --}}

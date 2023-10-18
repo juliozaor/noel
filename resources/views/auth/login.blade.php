@@ -46,17 +46,17 @@
         </form>
     </x-authentication-card>
 </x-guest-layout> --}}
-<x-guest-layout>
 {{-- <div class="d-flex bd-highlight"">
-
+    
     <div class="imagen bd-highlight">
         <img src="{{ asset('/assets/img/imglogin.png') }}" alt="">
     </div>
     <div class="frmlogin p-2 w-25 bd-highlight">
-       
+        
     </div>
 </div>
- --}}
+--}}
+<x-guest-layout>
 <div class="container-login">
     <div class="login-container">
       <div class="login-image"></div>
@@ -64,6 +64,7 @@
         <span class="titulo">Bienvenido</span>
         <span class="sub-titulo">Ingresa tus datos para iniciar sesión</span>
 
+    
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
@@ -99,7 +100,13 @@
                 @endif
             </div>
         </form>
-      </div>
+        
+    </div>
+    @if (session('status'))
+    <div class="mb-4 font-medium text-sm text-green-600">
+        {{ session('status') }}
+    </div>
+@endif
     </div>
   </div>
 

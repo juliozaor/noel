@@ -32,8 +32,8 @@
 
                     
                     
-                    <div class="flex items-center justify-end mt-4">
-                        <x-button>
+                    <div class="flex items-center justify-end mt-4 ">
+                        <x-button class="botonRojo">
                             {{ __('Actualizar contraseña') }}
                         </x-button>
                     </div>
