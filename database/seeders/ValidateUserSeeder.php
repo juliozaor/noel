@@ -2,19 +2,21 @@
 
 namespace Database\Seeders;
 
+use App\Models\ValidateUsers;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Validations;
-class ValidationsSeeder extends Seeder
+
+class ValidateUserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Validations::create([
-            'name' => 'Registro todos',
-            'status' => 0,
+        ValidateUsers::create([
+            'id'=>1,
+            'name' => 'Registrar todos los usuarios',
+            'status' =>false
         ]);
     }
 }

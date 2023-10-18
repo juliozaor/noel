@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Collaborators;
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\ValidateUsers;
 use App\Models\Validations;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -37,7 +38,7 @@ class CreateWaiting extends Component
             'cell' => ['required', 'integer'],
             'address' => ['required', 'string', 'max:80'],
             'neighborhood' => ['required', 'string', 'max:60'],
-            'birth' => ['required', 'date'],
+            'birth' => ['required', 'date', 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')],
             'email' => ['required', 'string', 'max:60'],
         ];
 
@@ -94,7 +95,7 @@ class CreateWaiting extends Component
 
         $collaborator = Collaborators::where('document', $this->document)->first();
 
-        $validation = Validations::findOrFail(1);
+        $validation = ValidateUsers::findOrFail(1);
 
         if ($validation && $validation->status == 0) {
             if (!$collaborator) {

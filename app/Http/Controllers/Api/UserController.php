@@ -7,10 +7,10 @@ use App\Models\Collaborators;
 use App\Models\Profile;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\ValidateUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Validations;
 
 class UserController extends Controller
 {
@@ -47,7 +47,7 @@ class UserController extends Controller
         }
         $collaborator = Collaborators::where('document', $request->document)->first();
        
-        $validation = Validations::findOrFail(1);
+        $validation = ValidateUsers::findOrFail(1);
 
         if($validation && $validation->status == 0){
             if (!$collaborator) {
