@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\NewPasswordController;
 use Illuminate\Support\Facades\Route;
 use App\Mail\ContactanosMailable;
 use Illuminate\Support\Facades\Mail;
@@ -28,6 +29,10 @@ Route::middleware([
         return view('admin.events.index');
     })->name('dashboard');
 });
+
+/* Route::post('auth/update', [NewPasswordController::class, 'update'])->name('auth.update.pass'); */
+Route::post('auth/update', [NewPasswordController::class, 'update'])->name('auth.update.pass');
+
 
 /* Route::get('contactanos', function(){
 $correo = new ContactanosMailable;

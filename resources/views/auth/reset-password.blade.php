@@ -1,36 +1,81 @@
+
 <x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+    <div class="container-login">
+        <div class="login-container">
+            <div class="login-image"></div>
+            <div class="login-form ">
+                <span class="titulo">Actualice su contraseña</span>
+                <span class="sub-titulo">Ingresa tus datos para actualizar</span>
+                <form id="updatePass" method="POST" action="{{ route('auth.update.pass') }}">
+                    @csrf
 
-        <x-validation-errors class="mb-4" />
+                    <input type="hidden" name="token" value="{{ $token }}">
 
-        <form method="POST" action="{{ route('password.update') }}">
-            @csrf
+                    <div class="block">
+                        {{--  <x-input id="email" class="block mt-1 w-full" type="hidden" name="email"
+                            :value="$request->query('email')" required autofocus autocomplete="username" /> --}}
+                        <x-input id="email" class="block mt-1 w-full" type="hidden" name="email"
+                            :value="request()->query('email')" required autofocus autocomplete="username" />
+                    </div>
 
-            <input type="hidden" name="token" value="{{ $request->route('token') }}">
+                    <div class="mt-4">
+                        <x-label for="password" value="{{ __('Contraseña') }}" />
+                        <x-input id="password" class="block mt-1 w-full" type="password" name="password" required
+                            autocomplete="new-password" />
+                    </div>
 
-            <div class="block">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
+                    <div class="mt-4">
+                        <x-label for="password_confirmation" value="{{ __('Confirmar contraseña') }}" />
+                        <x-input id="password_confirmation" class="block mt-1 w-full" type="password"
+                            name="password_confirmation" required autocomplete="new-password" />
+                    </div>
+
+                    
+                    
+                    <div class="flex items-center justify-end mt-4">
+                        <x-button>
+                            {{ __('Actualizar contraseña') }}
+                        </x-button>
+                    </div>
+                </form>
+                
+                <span id="errores-container" class="sub-titulo mt-4"></span>
+
             </div>
+        </div>
+    </div>
 
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            </div>
+    <script>
 
-            <div class="mt-4">
-                <x-label for="password_confirmation" value="{{ __('Confirm Password') }}" />
-                <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
-            </div>
+document.getElementById('updatePass').addEventListener('submit', function(event) {
+    event.preventDefault(); // Evita la recarga de la página
 
-            <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Reset Password') }}
-                </x-button>
-            </div>
-        </form>
-    </x-authentication-card>
+const formData = new FormData(event.target);
+fetch('/auth/update', {
+    method: 'POST',
+    body: formData
+})
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+            console.log(data.message);
+            window.location.href = '{{ route('login') }}';
+        } else {
+            
+            const errorsContainer = document.getElementById('errores-container');
+            errorsContainer.innerHTML = ''; // Limpia los errores anteriores
+
+            for (const fieldName in data.errors) {
+                const errorMessage = data.errors[fieldName].join('<br>');
+                /* const errorElement = document.createElement('div');
+                errorElement.innerHTML = `<strong>Error en ${fieldName}:</strong><br>${errorMessage}`;
+                console.log(errorElement);
+                errorsContainer.appendChild(errorElement); */
+                errorsContainer.innerHTML = errorMessage;
+            }
+        }
+});
+});
+    </script>
+
 </x-guest-layout>

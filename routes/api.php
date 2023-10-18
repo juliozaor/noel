@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Mail\ReservationVerification;
 use Illuminate\Support\Facades\Mail;
+use Mockery\Undefined;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,10 +27,24 @@ use Illuminate\Support\Facades\Mail;
     return $request->user();
 }); */
 
-Route::post('auth/register', [UserController::class, 'store'])->name('auth.register');
-Route::post('auth/login', [UserController::class, 'login'])->name('auth.login');
-Route::post('auth/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('auth.forgot');
-Route::post('auth/reset-password', [NewPasswordController::class, 'reset'])->name('auth.reset');
+Route::post('auth/register', [UserController::class, 'store'])->name('api.auth.register');
+Route::post('auth/login', [UserController::class, 'login'])->name('api.auth.login');
+Route::post('auth/forgot-password', [NewPasswordController::class, 'forgotPassword'])->name('api.auth.forgot');
+Route::post('auth/reset-password', [NewPasswordController::class, 'reset'])->name('api.auth.reset');
+//Route::post('auth/update', [NewPasswordController::class, 'update'])->name('api.auth.update');
+
+/* Route::post('auth/update', function () {
+    return view('welcome');
+})->name('api.auth.update'); */
+
+/* Route::get('auth/reset-pass/{token}', function (string $token, Illuminate\Http\Request $request) {
+    return view('auth.reset-password', ['token' => $token, 'request' => $request]);
+})->name('api.auth.password.reset'); */
+Route::get('auth/reset-pass/{token}', function (string $token) {
+    return view('auth.reset-password', ['token' => $token]);
+})->name('api.auth.password.reset');
+
+
 
 Route::middleware(['auth:sanctum', 'can:api'])->group(function () {
     Route::get('user/me', [UserController::class, 'me'])->name('api.me');

@@ -9,11 +9,13 @@ use App\Mail\ReservationVerification;
 use App\Models\Members;
 use App\Models\MembersReservation;
 use App\Models\Profile;
+use App\Models\QrCodes;
 use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
+use Illuminate\Support\Str;
 
 class CreateMembers extends Component
 {
@@ -33,7 +35,8 @@ class CreateMembers extends Component
     public $members;
     protected $listeners = ['open', 'confirmDeletereservation'];
     public $wait = 0;
-
+    public $codes = [];
+    
 
     public function render()
     {
@@ -42,16 +45,16 @@ class CreateMembers extends Component
 
     public function open($params)
     {
-        // $this->resetDates();
+         $this->resetDates();
         $this->reservationId = $params['reservationId'];
         $this->email = $params['email'];
         $this->wait = $params['wait'] ?? 0;
         $this->editReservation = $params['editReservation'] ?? false;
         $this->programmationId = $params['programmationId'] ?? null;
-
+        
         //consultar la reservacion
         $this->reservation = Reservation::with('member')->where('id', $this->reservationId)->first();
-
+        
         $this->members = $this->reservation->member;
         if (count($this->members) >= 1) {
             foreach ($this->members as $key => $value) {
@@ -62,7 +65,7 @@ class CreateMembers extends Component
             }
         }
         $this->quota = $this->reservation->quota;
-
+        
         foreach (range(count($this->minor), $this->quota) as $index) {
             $this->minor[$index] = 1;
             $this->notAttend[$index] = false;
@@ -71,7 +74,7 @@ class CreateMembers extends Component
         //   dd($this->members);
         $this->userId = $this->reservation->user_id;
         $this->dataUser($this->reservation->user_id);
-
+        
         $this->openMembers = true;
     }
     public function validateMembers()
@@ -84,12 +87,6 @@ class CreateMembers extends Component
     }
     public function save()
     {
-        // TODO: notificar que no hay miembros
-
-
-
-
-
         foreach ($this->documentMember as $key => $value) {
 
             if (isset($this->documentMember[$key]) && isset($this->nameMember[$key])) {
@@ -110,16 +107,43 @@ class CreateMembers extends Component
                     ->exists();
 
                 if (!$exists) {
+                    $cod = Str::uuid();
+                    $qr = env('APP_URL') . '/admin/events/qr/' . $cod;
                     $memberReservation = new MembersReservation([
                         'members_id' => $member->id,
                         'reservation_id' => $this->reservationId
                     ]);
                     $memberReservation->save();
+
+                    $qrCode = new QrCodes([
+                        'document' => $this->documentMember[$key],
+                        'code_qr' => $qr,
+                        'code' => $cod,
+                        'reservation_id'=> $this->reservationId
+                    ]);
+                    $qrCode->save();
+
+                    $this->codes[] = $qr;
                 }
             }
         }
+
+        $user = User::findOrFail($this->userId);
+
+        $cod = Str::uuid();
+        $qrU = env('APP_URL') . '/admin/events/qr/'.$cod;
+        $qrCode = new QrCodes([
+            'document' => $user->profile->document,
+            'is_user' => 1,
+            'code_qr' => $qrU,
+            'code' => $cod,
+            'reservation_id'=> $this->reservationId
+        ]);
+        $qrCode->save();
+        $this->codes[] = $qrU;
+
         event(new confirmReservationEvent($this->reservationId));
-        $correo = new ReservationVerification($this->reservationId);
+        $correo = new ReservationVerification($this->codes);
         $respose = Mail::to($this->email)->send($correo);
         $this->emitTo('tablet-register', 'render');
         $this->emit('alert', 'reservacion creada con éxito', 'success');
@@ -162,17 +186,43 @@ class CreateMembers extends Component
 
 
                 if (!$this->notAttend[$key]) {
+                    $cod = Str::uuid();
+                    $qr = env('APP_URL') . '/admin/events/qr/' . $cod;
                     $memberReservation = new MembersReservation([
                         'members_id' => $member->id,
                         'reservation_id' => $this->reservationId
                     ]);
                     $memberReservation->save();
+
+                    $qrCode = new QrCodes([
+                        'document' => $this->documentMember[$key],
+                        'code_qr' => $qr,
+                        'code' => $cod,
+                        'reservation_id'=> $this->reservationId
+                    ]);
+                    $qrCode->save();
+
+                    $this->codes[] = $qr;
                 }
             }
         }
 
+        $user = User::findOrFail($this->userId);
+
+        $cod = Str::uuid();
+        $qrU = env('APP_URL') . '/admin/events/qr/'.$cod;
+        $qrCode = new QrCodes([
+            'document' => $user->profile->document,
+            'is_user' => 1,
+            'code_qr' => $qrU,
+            'code' => $cod,
+            'reservation_id'=> $this->reservationId
+        ]);
+        $qrCode->save();
+        $this->codes[] = $qrU;
+
         event(new updateReservationEvent($reservation->id));
-        $correo = new ReservationVerification($this->reservationId);
+        $correo = new ReservationVerification($this->codes);
         $respose = Mail::to($this->email)->send($correo);
         $this->emitTo('tablet-register', 'render');
         $this->emit('alert', 'reservacion actualizada con éxito', 'success');
@@ -207,13 +257,13 @@ class CreateMembers extends Component
     {
         $this->reset([
             'reservationId', 'reservation', 'quota', 'minor', 'nameMember',
-            'documentMember', 'name', 'document', 'email'
+            'documentMember', 'name', 'document', 'email', 'codes'
         ]);
     }
 
     public function resetDatesInAll()
     {
-      //  $this->emit('resetDates');
+        //  $this->emit('resetDates');
         $this->openMembers = false;
     }
 
@@ -233,7 +283,7 @@ class CreateMembers extends Component
             event(new updateProgrammingEvent($idProgramming));
             $this->emitTo('tablet-register', 'render');
             $this->openMembers = false;
-           // $this->resetDatesInAll();
+            // $this->resetDatesInAll();
         }
     }
 }

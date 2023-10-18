@@ -9,9 +9,11 @@ use App\Http\Controllers\Controller;
 use App\Mail\ReservationVerification;
 use App\Models\Members;
 use App\Models\MembersReservation;
+use App\Models\QrCodes;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class MemberController extends Controller
 {
@@ -21,6 +23,9 @@ class MemberController extends Controller
         $reservation = Reservation::find($request->reservation_id);
         
         $user = auth()->user(); // Accede al usuario autenticado
+
+        $codes = [];
+        $url = env('APP_URL').'/admin/events/qr/';
 
         if($user->id != $reservation->user_id){
             return response()->json([
@@ -53,18 +58,54 @@ class MemberController extends Controller
                 ->exists();
 
             if (!$exists) {
+                $cod = Str::uuid();
+                $qr =$url.$cod;
                 $memberReservation = new MembersReservation([
                     'members_id' => $member->id,
                     'reservation_id' => $request->reservation_id
                 ]);
                 $memberReservation->save();
+
+                $qrCode = new QrCodes([
+                    'document'=>$memberRequest['document'],
+                    'code_qr'=>$qr,
+                    'code' => $cod,
+                    'reservation_id'=> $request->reservation_id
+                ]);
+                $qrCode->save();
+
+                $dateUser = [
+                    'name' => $memberRequest['name'],
+                    'qr' => $qr,
+                    'isUser' => 0
+                ];
+
+                $codes[] = $dateUser;
             }
         }
+        $cod = Str::uuid();
+        $qrU = $url.$cod;
+        $qrCode = new QrCodes([
+            'document'=>$user->profile->document,
+            'is_user'=>1,
+            'code_qr'=> $qrU,
+            'code' => $cod,
+            'reservation_id'=> $request->reservation_id
+        ]);
+        $qrCode->save();
+
+        $dateUserU = [
+            'name' => $user->name,
+            'qr' => $qrU,
+            'isUser' => 1
+        ];
+
+        $codes[] = $dateUserU;
 
         if($reservation->programming_id !=1){
             event(new confirmReservationEvent($request->reservation_id));
-
-        $correo = new ReservationVerification($request->reservation_id);
+      //  $correo = new ReservationVerification($request->reservation_id);
+      $correo = new ReservationVerification($codes);
         //Correo del usuario
         $respose = Mail::to($user->email)->send($correo);
 
@@ -79,8 +120,9 @@ class MemberController extends Controller
 
     public function updateMemberReservation(Request $request)
     {
-
-
+        $user = auth()->user();
+        $codes = [];
+        $url = env('APP_URL').'/admin/events/qr/';
         $reservation = Reservation::find($request->reservation_id);
         if (!$reservation) {
             return response()->json([
@@ -105,15 +147,60 @@ class MemberController extends Controller
             }
 
             if (!$memberRequest['notAttend']) {
+                $cod = Str::uuid();
+                $qr =$url.$cod;
                 $memberReservation = new MembersReservation([
                     'members_id' => $member->id,
                     'reservation_id' => $request->reservation_id
                 ]);
                 $memberReservation->save();
+
+                $qrCode = new QrCodes([
+                    'document'=>$memberRequest['document'],
+                    'code_qr'=>$qr,
+                    'code' => $cod,
+                    'reservation_id'=> $request->reservation_id
+                ]);
+                $qrCode->save();
+
+                $dateUser = [
+                    'name' => $memberRequest['name'],
+                    'qr' => $qr,
+                    'isUser' => 0
+                ];
+
+                $codes[] = $dateUser;
             }
         }
 
-        event(new updateReservationEvent($request->reservation_id));
+        $cod = Str::uuid();
+        $qrU = $url.$cod;
+        $qrCode = new QrCodes([
+            'document'=>$user->profile->document,
+            'is_user'=>1,
+            'code_qr'=> $qrU,
+            'code' => $cod,
+            'reservation_id'=> $request->reservation_id
+        ]);
+        $qrCode->save();
+        $dateUserU = [
+            'name' => $user->name,
+            'qr' => $qrU,
+            'isUser' => 1
+        ];
+
+        $codes[] = $dateUserU;
+
+        if($reservation->programming_id !=1){
+            event(new confirmReservationEvent($request->reservation_id));
+      //  $correo = new ReservationVerification($request->reservation_id);
+      $correo = new ReservationVerification($codes);
+        //Correo del usuario
+        $respose = Mail::to($user->email)->send($correo);
+
+        }
+
+       // event(new updateReservationEvent($request->reservation_id));
 
         return response()->json([
             'status' => true,

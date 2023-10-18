@@ -44,6 +44,16 @@
         Reportes
       </span>
     </a> --}}
+
+   {{--  <hr>      
+    <a href="{{ route('admin.events.qr') }}" class="link_side {{request()->routeIs('admin.events.qr') ? 'active':''}}">
+    <span class="me-2">
+      <img draggable="false" src="{{ asset('/assets/icons/adminEvents.svg') }}"[alt]="module._nombreMostrar">
+    </span>
+    <span class="fs-12px fw-semibold">
+    Lector QR
+  </span>
+</a> --}}
     
     </div>
 

@@ -16,7 +16,7 @@ class ReservationVerification extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public $reservationId)
+    public function __construct(public $codes)
     {
     }
 
@@ -26,7 +26,7 @@ class ReservationVerification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Confirma tu reserva',
+            subject: 'Tu reserva',
         );
     }
 
