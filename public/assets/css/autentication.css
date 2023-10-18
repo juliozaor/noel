@@ -53,3 +53,12 @@ width: 100%!important;
 .botonRojo:hover{
   background: #258724 0% 0% no-repeat padding-box!important;
 }
+
+@media only screen and (max-width: 600px) {
+  .login-container {
+    flex-direction: column;
+  }
+  .login-image {
+    flex: 0 0 40%;
+}
+}
