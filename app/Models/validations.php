@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Validations extends Model
 {
     use HasFactory;
-
     protected $fillable = [
         'name',
         'status',
