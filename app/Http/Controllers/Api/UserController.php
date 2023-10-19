@@ -8,13 +8,15 @@ use App\Models\Profile;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\ValidateUsers;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-   
+
     public function store(Request $request)
     {
         $rules = [
@@ -39,25 +41,25 @@ class UserController extends Controller
         }
 
         $profileUser = Profile::where('document', $request->document)->first();
-        if($profileUser){
+        if ($profileUser) {
             return response()->json([
                 'status' => false,
                 'errors' => ['Ya hay un usuario registrado con este documento']
             ], 409);
         }
         $collaborator = Collaborators::where('document', $request->document)->first();
-       
+
         $validation = ValidateUsers::findOrFail(1);
 
-        if($validation && $validation->status == 0){
+        if ($validation && $validation->status == 0) {
             if (!$collaborator) {
                 return response()->json([
                     'status' => false,
-                    'errors' =>'En el momento no está habilitado el registro'
+                    'errors' => 'En el momento no está habilitado el registro'
                 ], 401);
             }
         }
-        
+
         $user = new User([
             "name" => $request->name,
             "email" => strtolower($request->email),
@@ -68,35 +70,36 @@ class UserController extends Controller
         $user->assignRole('User');
 
         $profile = new Profile([
-            'document' =>$request->document,
-            'cell' =>$request->cell,
+            'document' => $request->document,
+            'cell' => $request->cell,
             'address' => $request->address,
             'neighborhood' => $request->neighborhood,
             'birth' => $request->birth,
-            'eps' => $request->eps??'',
-            'reference' => $request->reference??'',
-            'experience2022' => $request->experience2022??false,
-            'is_collaborator'=>$collaborator ? true:false,
+            'eps' => $request->eps ?? '',
+            'reference' => $request->reference ?? '',
+            'experience2022' => $request->experience2022 ?? false,
+            'is_collaborator' => $collaborator ? true : false,
         ]);
         $user->profile()->save($profile);
 
         return response()->json([
             'status' => true,
             'message' => 'User created successfully',
-            'data' =>$user,
+            'data' => $user,
             'token' => $user->createToken('Authorization')->plainTextToken
         ], 200);
     }
 
-   public function me(){
-    $auth = auth()->user();
-    $user =User::where('id',$auth->id)->with('profile')->first();
-    return response()->json([
-        'status' => true,
-        'message' => 'Retriving User Informations',
-        'data' => $user
-    ], 200);
-   }
+    public function me()
+    {
+        $auth = auth()->user();
+        $user = User::where('id', $auth->id)->with('profile')->first();
+        return response()->json([
+            'status' => true,
+            'message' => 'Retriving User Informations',
+            'data' => $user
+        ], 200);
+    }
 
     public function login(Request $request)
     {
@@ -118,10 +121,10 @@ class UserController extends Controller
                 'errors' => ['Unauthorized']
             ], 401);
         }
-        
+
         $user = User::where('email', $request->email)
-    ->with('profile')
-    ->first();
+            ->with('profile')
+            ->first();
 
 
         return response()->json([
@@ -162,39 +165,48 @@ class UserController extends Controller
             ], 400);
         }
 
+        try {
+            $user = User::find($request->userId);
 
-        $user = User::find($request->userId);
+            // Actualiza los campos del usuario
+            $user->name = $request->name;
+            /*  $user->email = strtolower($request->email);
+            $user->password = Hash::make($request->document); // Asegúrate de que esta sea la lógica adecuada */
 
-        // Actualiza los campos del usuario
-        $user->name = $request->name;
-       /*  $user->email = strtolower($request->email);
-        $user->password = Hash::make($request->document); // Asegúrate de que esta sea la lógica adecuada */
-        
-        // Guarda los cambios en el usuario
-        $user->save();
-        
-        // Supongamos que también tienes el perfil asociado al usuario
-        $profile = $user->profile;
-        
-        // Actualiza los campos del perfil
-        $profile->cell = $request->cell;
-        $profile->address = $request->address;
-        $profile->neighborhood = $request->neighborhood;
-        $profile->birth = $request->birth;
-        $profile->eps = $request->eps ?? '';
-        $profile->reference = $request->reference ?? '';
-        $profile->experience2022 = $request->experience2022 ?? false;
-        
-        // Guarda los cambios en el perfil
-        $profile->save();
+            // Guarda los cambios en el usuario
+            $user->save();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'User update successfully',
-            'data' =>$user,
-            'token' => $user->createToken('Authorization')->plainTextToken
-        ], 200);
+            // Supongamos que también tienes el perfil asociado al usuario
+            $profile = $user->profile;
+
+            // Actualiza los campos del perfil
+            $profile->cell = $request->cell;
+            $profile->address = $request->address;
+            $profile->neighborhood = $request->neighborhood;
+            $profile->birth = $request->birth;
+            $profile->eps = $request->eps ?? '';
+            $profile->reference = $request->reference ?? '';
+            $profile->experience2022 = $request->experience2022 ?? false;
+
+            // Guarda los cambios en el perfil
+            $profile->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User update successfully',
+                'data' => $user,
+                'token' => $user->createToken('Authorization')->plainTextToken
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'status' => false,
+                'error' => 'User not found'
+            ], 404);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'error' => 'An error occurred'
+            ], 500);
+        }
     }
-
-    
 }
