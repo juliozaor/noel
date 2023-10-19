@@ -216,6 +216,11 @@
                     <x-label value="Cupos totales" />
                     <x-input type="text" class="w-100" wire:model.defer="quota" />
                     <x-input-error for="quota" />
+                    @if(session()->has('error'))
+            <div class="alert alert-success">
+                {{ session('error') }}
+            </div>
+        @endif
                 </div>
                 <div class="mr-2 w-50">
                     <x-label value="Estado" />
@@ -226,6 +231,8 @@
                     </div>
                 </div>
             </div>
+
+
 
         </x-slot>
 

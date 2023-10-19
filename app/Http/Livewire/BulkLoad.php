@@ -29,13 +29,14 @@ class BulkLoad extends Component
 
         if (!$this->file) {
             //session()->flash('error', 'No se ha cargado ningún archivo.');
-            $this->emit('alert', 'No se ha cargado ningún archivo','warning');
+            $this->emit('alert', 'No se ha cargado ningún archivo', 'warning');
             return;
         }
         $extension = $this->file->getClientOriginalExtension();
-        if (!in_array($extension, ['xlsx', 'xls', 'csv', 'txt'])) {
+        if (!in_array($extension, ['csv','txt'])) {
             //  session()->flash('error', 'Solo se permiten archivos PDF, DOC y DOCX.');
-            $this->emit('alert', 'Solo se permiten archivos xlsx, xls y csv.','warning');
+            $this->emit('alert', 'Solo se permiten archivos csv', 'warning');
+            
             return;
         }
         $tempPath = $this->file->getRealPath();
@@ -56,8 +57,7 @@ class BulkLoad extends Component
             }
 
             $this->openBulk = false;
-            $this->emit('alert', 'Archivo cargado','success');
-            
+            $this->emit('alert', 'Archivo cargado', 'success');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
 
@@ -74,5 +74,12 @@ class BulkLoad extends Component
     public function render()
     {
         return view('livewire.bulk-load');
+    }
+
+    public function resetDates()
+    {
+        $this->reset([
+            'file'
+        ]);
     }
 }

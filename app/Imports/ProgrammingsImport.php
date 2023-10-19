@@ -20,14 +20,18 @@ class ProgrammingsImport implements ToModel, WithHeadingRow, WithBatchInserts, W
     public function model(array $row)
     {
         $date = Carbon::createFromFormat('d/m/Y', $row['fecha'])->format('Y-m-d');
-        return new Programming([
-                'initial_date' => $date,
-                'initial_time' => $row['hora'],
-                'quota' => $row['cupos'],
-                'quota_available' => $row['cupos'],
-                'event_id' => 1,
-           
-        ]);
+        $programming = Programming::where('initial_date', $date)
+        ->where('initial_time', $row['hora'])->first();
+        if (!$programming) {
+            return new Programming([
+                    'initial_date' => $date,
+                    'initial_time' => $row['hora'],
+                    'quota' => $row['cupos'],
+                    'quota_available' => $row['cupos'],
+                    'event_id' => 1,
+               
+            ]);
+        }
     }
 
     public function batchSize(): int

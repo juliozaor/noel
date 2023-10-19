@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\confirmReservationEvent;
-use App\Events\updateProgrammingEvent;
-use App\Events\updateReservationEvent;
+
 use App\Http\Controllers\Controller;
 use App\Mail\ReservationVerification;
 use App\Models\Members;
 use App\Models\MembersReservation;
+use App\Models\Profile;
+use App\Models\Programming;
 use App\Models\QrCodes;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
@@ -48,7 +48,33 @@ class MemberController extends Controller
             ], 400);
         }
 
+        $date = date('Y-m-d');
+        $time = date('H:i:s');
+
         foreach ($request->members as $memberRequest) {
+
+             //Verificar si el miembro es un usuario y tienen una reserva activa
+             $profileUser = Profile::where('document', $memberRequest['document'])->first();
+             if ($profileUser) {
+                 $reservations = Reservation::with('programming')->where('user_id', $profileUser->user_id)->get();
+                 foreach ($reservations as $reservation) {
+                     if (
+                         $date < $reservation->programming->initial_date ||
+                         ($date == $reservation->programming->initial_date &&
+                             $time < $reservation->programming->initial_time)
+                     ) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'El miembro ' . $memberRequest['name']
+                            . ' tiene una reserva activa'
+                        ], 400);
+                     }
+                 }
+             }
+
+
+
+
             $member = Members::where('document', $memberRequest['document'])->first();
             if (!$member) {
                 $member = new Members([
@@ -57,6 +83,29 @@ class MemberController extends Controller
                     "is_minor" => $memberRequest['is_minor']
                 ]);
                 $member->save();
+            }else {
+                //Validar si el usuario ya esta en una programacion activa
+                $programmings = Programming::select('programmings.*')
+                    ->join('reservations', 'programmings.id', '=', 'reservations.programming_id')
+                    ->join('members_reservation', 'reservations.id', '=', 'members_reservation.reservation_id')
+                    ->join('members', 'members_reservation.members_id', '=', 'members.id')
+                    ->where('members.id', $member->id)
+                    ->get();
+
+
+                foreach ($programmings as $programming) {
+                    if (
+                        $date < $programming->initial_date ||
+                        ($date == $programming->initial_date &&
+                            $time < $programming->initial_time)
+                    ) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'El miembro ' . $memberRequest['name']
+                            . ' tiene una reserva activa'
+                        ], 400);
+                    }
+                }
             }
 
             $exists = Members::find($member->id)
@@ -110,7 +159,8 @@ class MemberController extends Controller
         $codes[] = $dateUserU;
 
         if($reservation->programming_id !=1){
-            event(new confirmReservationEvent($request->reservation_id));
+        
+        $this->confirmReservation($request->reservation_id);
 
         $correo = new ReservationVerification($codes);
         $respose = Mail::to($user->email)->send($correo);
@@ -123,7 +173,6 @@ class MemberController extends Controller
         ], 200);
     }
  
-
     public function updateMemberReservation(Request $request)
     {
         $user = auth()->user();
@@ -138,8 +187,30 @@ class MemberController extends Controller
         }
         if ($reservation) {
             $reservation->member()->detach();
+            $reservation->qrCodes()->delete();
         }
+        $date = date('Y-m-d');
+        $time = date('H:i:s');
         foreach ($request->members as $memberRequest) {
+             //Verificar si el miembro es un usuario y tienen una reserva activa
+             $profileUser = Profile::where('document', $memberRequest['document'])->first();
+             if ($profileUser) {
+                 $reservations = Reservation::with('programming')->where('user_id', $profileUser->user_id)->get();
+                 foreach ($reservations as $reservation) {
+                     if (
+                         $date < $reservation->programming->initial_date ||
+                         ($date == $reservation->programming->initial_date &&
+                             $time < $reservation->programming->initial_time)
+                     ) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'El miembro ' . $memberRequest['name']
+                            . ' tiene una reserva activa'
+                        ], 400);
+                     }
+                 }
+             }
+
             $member = Members::where('document', $memberRequest['document'])->first();
             if (!$member) {
                 $member = new Members([
@@ -149,7 +220,30 @@ class MemberController extends Controller
                 ]);
                 $member->save();
             } else {
-                $member->update($memberRequest);
+                 //Validar si el usuario ya esta en una programacion activa
+                 $programmings = Programming::select('programmings.*')
+                 ->join('reservations', 'programmings.id', '=', 'reservations.programming_id')
+                 ->join('members_reservation', 'reservations.id', '=', 'members_reservation.reservation_id')
+                 ->join('members', 'members_reservation.members_id', '=', 'members.id')
+                 ->where('members.id', $member->id)
+                 ->get();
+
+
+             foreach ($programmings as $programming) {
+                 if (
+                     $date < $programming->initial_date ||
+                     ($date == $programming->initial_date &&
+                         $time < $programming->initial_time)
+                 ) {
+                     return response()->json([
+                         'status' => false,
+                         'message' => 'El miembro ' . $memberRequest['name']
+                         . ' tiene una reserva activa'
+                     ], 400);
+                 }
+             }
+               // $member->update($memberRequest);
+
             }
 
             if (!$memberRequest['notAttend']) {
@@ -198,19 +292,40 @@ class MemberController extends Controller
         $codes[] = $dateUserU;
 
         if($reservation->programming_id !=1){
-            event(new confirmReservationEvent($request->reservation_id));
-      //  $correo = new ReservationVerification($request->reservation_id);
+            $this->confirmReservation($request->reservation_id);
       $correo = new ReservationVerification($codes);
         //Correo del usuario
         $respose = Mail::to($user->email)->send($correo);
 
         }
 
-       // event(new updateReservationEvent($request->reservation_id));
 
         return response()->json([
             'status' => true,
             'message' => 'update reservation'
         ], 200);
+    }
+
+    public function confirmReservation($reservationId)
+    {
+        $reservationUpdate = Reservation::findOrFail($reservationId);
+        $membersCount = $reservationUpdate->member()->count();
+        
+        $reservationUpdate->quota = $membersCount+1;
+        $reservationUpdate->confirmed = 1;
+        $reservationUpdate->confirmation_date = now();
+        $reservationUpdate->save();
+
+
+        if($reservationUpdate->programming_id <> 1){
+            $programming = Programming::findOrFail($reservationUpdate->programming_id);
+            $totalReservationsQuota = $programming->reservation()->sum('quota');
+            $newQuotaAvailable = $programming->quota - $totalReservationsQuota;
+    
+            
+            $programming->update([
+                'quota_available' => $newQuotaAvailable
+            ]);
+        }
     }
 }

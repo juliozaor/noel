@@ -21,15 +21,15 @@ class confirmReservationListener
     /**
      * Handle the event.
      */
-    public function handle(confirmReservationEvent $event): void
+    public function handle(confirmReservationEvent $event): string
     {
         $reservationUpdate = Reservation::findOrFail($event->reservationId);
 
-        if ($reservationUpdate) {
             $reservationUpdate->confirmed = 1;
             $reservationUpdate->confirmation_date = now();
             $reservationUpdate->save();
-        }
+      
+            return "llego";
 
         event(new updateReservationEvent($event->reservationId));
 

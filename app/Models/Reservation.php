@@ -22,4 +22,9 @@ class Reservation extends Model
     public function member() {
         return $this->belongsToMany(Members::class);
     }
+
+    public function qrCodes()
+    {
+        return $this->hasMany(QrCodes::class, 'reservation_id');
+    }
 }

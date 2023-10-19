@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Events\updateReservationEvent;
+use App\Models\Programming;
 use App\Models\Reservation;
 use App\Models\User;
 use Livewire\Component;
@@ -131,19 +131,20 @@ class ListWaits extends Component
                         if ($reservation) {
                             $reservation->programming_id = $this->programmingId;
                             $reservation->save();
-                            event(new updateReservationEvent($reservation->id));
+                            $this->confirmReservation($reservation->id);
                         }
                         
                         $this->emitTo('tablet-register', 'render');
+                        $this->emitTo('list-users-register', 'render');
                         $this->emit('alert', 'Las reservas fueron asignadas con éxito','success');
 
                     }
                 }
             } else {
-                $this->emit('alert', 'no hay disponible','warning');
+                $this->emit('alert', 'no hay cupo disponible','warning');
             }
         } else {
-            $this->emit('alert', 'nno ha seleccionado usuarios','warning');
+            $this->emit('alert', 'no ha seleccionado usuarios','warning');
         }
     }
 
@@ -165,5 +166,28 @@ class ListWaits extends Component
         return view('livewire.list-waits', [
             'users' => $this->users
         ]);
+    }
+
+    public function confirmReservation($reservationId)
+    {
+        $reservationUpdate = Reservation::findOrFail($reservationId);
+        $membersCount = $reservationUpdate->member()->count();
+
+        $reservationUpdate->quota = $membersCount + 1;
+        $reservationUpdate->confirmed = 1;
+        $reservationUpdate->confirmation_date = now();
+        $reservationUpdate->save();
+
+
+        if ($reservationUpdate->programming_id <> 1) {
+            $programming = Programming::findOrFail($reservationUpdate->programming_id);
+            $totalReservationsQuota = $programming->reservation()->sum('quota');
+            $newQuotaAvailable = $programming->quota - $totalReservationsQuota;
+
+
+            $programming->update([
+                'quota_available' => $newQuotaAvailable
+            ]);
+        }
     }
 }

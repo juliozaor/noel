@@ -26,12 +26,11 @@ class updateReservationListener
         
         $reservationUpdate = Reservation::findOrFail($event->reservationId);
 
-        if ($reservationUpdate) {
             $membersCount = $reservationUpdate->member()->count();
             $reservationUpdate->quota = $membersCount+1;
             $reservationUpdate->save();
 
             event(new updateProgrammingEvent($reservationUpdate->programming_id));
-        }
+       
     }
 }

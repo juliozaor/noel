@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\updateProgrammingEvent;
-use App\Events\updateReservationEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Profile;
 use App\Models\Programming;
@@ -22,12 +20,14 @@ class ReservationController extends Controller
         try {
             $programming = Programming::findOrfail($request->programming_id);
 
-           
+
             $date = date('Y-m-d');
             $time = date('H:i:s');
 
-            if ($date > $programming->initial_date || 
-            ($date == $programming->initial_date && $time > $programming->initial_time)) {
+            if (
+                $date > $programming->initial_date ||
+                ($date == $programming->initial_date && $time > $programming->initial_time)
+            ) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Este evento ya paso',
@@ -64,17 +64,17 @@ class ReservationController extends Controller
             }
 
             foreach ($reservations as $reservation) {
-                if ($date < $reservation->programming->initial_date ||
+                if (
+                    $date < $reservation->programming->initial_date ||
                     ($date == $reservation->programming->initial_date &&
-                $time < $reservation->programming->initial_time)) {
+                        $time < $reservation->programming->initial_time)
+                ) {
                     return response()->json([
                         'status' => false,
                         'message' => 'El usuario tiene una reserva activa',
                     ], 400);
                 }
             }
-
-
         }
 
         if ($user->profile->is_collaborator == 1 && $request->quota > 5) {
@@ -124,8 +124,7 @@ class ReservationController extends Controller
             $reservationUpdate->save();
         }
 
-        event(new updateReservationEvent($reservation));
-        // event(new updateProgrammingEvent($reservationUpdate->programming_id));
+
         //redireccionar a la pagina del front y enviar correo de registro exitoso
         return response()->json([
             'status' => true,
@@ -148,8 +147,8 @@ class ReservationController extends Controller
                 $membersData = $reservation->member->map(function ($member) {
                     return [
                         'nombre' => $member->name,
-                        'documento'=>$member->document,
-                        'es_menor'=>$member->is_minor,
+                        'documento' => $member->document,
+                        'es_menor' => $member->is_minor,
                         'fecha_creacion' => $member->created_at->format('Y-m-d H:i:s'),
                     ];
                 });
@@ -157,8 +156,8 @@ class ReservationController extends Controller
                     'id' => $reservation->id,
                     'fecha' => $programming->initial_date,
                     'hora' => $programming->initial_time,
-                    'cupos'=>$reservation->quota,
-                    'miembros'=>$membersData
+                    'cupos' => $reservation->quota,
+                    'miembros' => $membersData
                 ];
             }
         }
@@ -205,17 +204,17 @@ class ReservationController extends Controller
             }
 
             foreach ($reservations as $reservation) {
-                if ($date < $reservation->programming->initial_date ||
+                if (
+                    $date < $reservation->programming->initial_date ||
                     ($date == $reservation->programming->initial_date &&
-                $time < $reservation->programming->initial_time)) {
+                        $time < $reservation->programming->initial_time)
+                ) {
                     return response()->json([
                         'status' => false,
                         'message' => 'El usuario tiene una reserva activa',
                     ], 400);
                 }
             }
-
-
         }
 
         if ($user->profile->is_collaborator == 1 && $request->quota > 5) {
@@ -244,10 +243,25 @@ class ReservationController extends Controller
         $reservation = Reservation::findOrFail($id);
         $idProgramming = $reservation->programming_id;
         $reservation->delete();
-        event(new updateProgrammingEvent($idProgramming));
+        $this->updateProgrammingQuota($idProgramming);
         return response()->json([
             'status' => true,
             'message' => 'Reservation delete successfully'
         ], 200);
+    }
+
+    public function updateProgrammingQuota($programmingId)
+    {
+
+        if ($programmingId <> 1) {
+            $programming = Programming::findOrFail($programmingId);
+            $totalReservationsQuota = $programming->reservation()->sum('quota');
+            $newQuotaAvailable = $programming->quota - $totalReservationsQuota;
+
+
+            $programming->update([
+                'quota_available' => $newQuotaAvailable
+            ]);
+        }
     }
 }

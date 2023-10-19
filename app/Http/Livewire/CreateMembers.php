@@ -2,13 +2,11 @@
 
 namespace App\Http\Livewire;
 
-use App\Events\confirmReservationEvent;
-use App\Events\updateProgrammingEvent;
-use App\Events\updateReservationEvent;
 use App\Mail\ReservationVerification;
 use App\Models\Members;
 use App\Models\MembersReservation;
 use App\Models\Profile;
+use App\Models\Programming;
 use App\Models\QrCodes;
 use App\Models\Reservation;
 use App\Models\User;
@@ -36,7 +34,7 @@ class CreateMembers extends Component
     protected $listeners = ['open', 'confirmDeletereservation'];
     public $wait = 0;
     public $codes = [];
-    
+
 
     public function render()
     {
@@ -45,16 +43,16 @@ class CreateMembers extends Component
 
     public function open($params)
     {
-         $this->resetDates();
+        $this->resetDates();
         $this->reservationId = $params['reservationId'];
         $this->email = $params['email'];
         $this->wait = $params['wait'] ?? 0;
         $this->editReservation = $params['editReservation'] ?? false;
         $this->programmationId = $params['programmationId'] ?? null;
-        
+
         //consultar la reservacion
         $this->reservation = Reservation::with('member')->where('id', $this->reservationId)->first();
-        
+
         $this->members = $this->reservation->member;
         if (count($this->members) >= 1) {
             foreach ($this->members as $key => $value) {
@@ -65,7 +63,7 @@ class CreateMembers extends Component
             }
         }
         $this->quota = $this->reservation->quota;
-        
+
         foreach (range(count($this->minor), $this->quota) as $index) {
             $this->minor[$index] = 1;
             $this->notAttend[$index] = false;
@@ -74,7 +72,7 @@ class CreateMembers extends Component
         //   dd($this->members);
         $this->userId = $this->reservation->user_id;
         $this->dataUser($this->reservation->user_id);
-        
+
         $this->openMembers = true;
     }
     public function validateMembers()
@@ -87,11 +85,32 @@ class CreateMembers extends Component
     }
     public function save()
     {
-        foreach ($this->documentMember as $key => $value) {
+        $reservation = Reservation::find($this->reservationId);
 
+        foreach ($this->documentMember as $key => $value) {
+            $date = date('Y-m-d');
+            $time = date('H:i:s');
             if (isset($this->documentMember[$key]) && isset($this->nameMember[$key])) {
 
+                //Verificar si el miembro es un usuario y tienen una reserva activa
+                $profileUser = Profile::where('document', $this->documentMember[$key])->first();
+                if ($profileUser) {
+                    $reservations = Reservation::with('programming')->where('user_id', $profileUser->user_id)->get();
+                    foreach ($reservations as $reservation) {
+                        if (
+                            $date < $reservation->programming->initial_date ||
+                            ($date == $reservation->programming->initial_date &&
+                                $time < $reservation->programming->initial_time)
+                        ) {
+                            session()->flash('message', 'El miembro ' . $this->nameMember[$key]
+                                . ' tiene una reserva activa');
+                            return;
+                        }
+                    }
+                }
+
                 $member = Members::where('document', $this->documentMember[$key])->first();
+
                 if (!$member) {
                     $member = new Members([
                         "name" => $this->nameMember[$key],
@@ -99,7 +118,30 @@ class CreateMembers extends Component
                         "is_minor" => $this->minor[$key]
                     ]);
                     $member->save();
+                } else {
+
+                    //Validar si el usuario ya esta en una programacion activa
+                    $programmings = Programming::select('programmings.*')
+                        ->join('reservations', 'programmings.id', '=', 'reservations.programming_id')
+                        ->join('members_reservation', 'reservations.id', '=', 'members_reservation.reservation_id')
+                        ->join('members', 'members_reservation.members_id', '=', 'members.id')
+                        ->where('members.id', $member->id)
+                        ->get();
+
+
+                    foreach ($programmings as $programming) {
+                        if (
+                            $date < $programming->initial_date ||
+                            ($date == $programming->initial_date &&
+                                $time < $programming->initial_time)
+                        ) {
+                            session()->flash('message', 'El miembro ' . $this->nameMember[$key]
+                                . ' tiene una reserva activa');
+                            return;
+                        }
+                    }
                 }
+
 
                 $exists = Members::find($member->id)
                     ->reservation()
@@ -119,7 +161,7 @@ class CreateMembers extends Component
                         'document' => $this->documentMember[$key],
                         'code_qr' => $qr,
                         'code' => $cod,
-                        'reservation_id'=> $this->reservationId
+                        'reservation_id' => $this->reservationId
                     ]);
                     $qrCode->save();
 
@@ -128,7 +170,7 @@ class CreateMembers extends Component
                         'qr' => $qr,
                         'isUser' => 0
                     ];
-    
+
                     $this->codes[] = $dateUser;
                 }
             }
@@ -137,16 +179,16 @@ class CreateMembers extends Component
         $user = User::findOrFail($this->userId);
 
         $cod = Str::uuid();
-        $qrU = env('APP_URL') . '/admin/events/qr/'.$cod;
+        $qrU = env('APP_URL') . '/admin/events/qr/' . $cod;
         $qrCode = new QrCodes([
             'document' => $user->profile->document,
             'is_user' => 1,
             'code_qr' => $qrU,
             'code' => $cod,
-            'reservation_id'=> $this->reservationId
+            'reservation_id' => $this->reservationId
         ]);
         $qrCode->save();
-        
+
         $dateUserU = [
             'name' => $user->name,
             'qr' => $qrU,
@@ -154,10 +196,12 @@ class CreateMembers extends Component
         ];
 
         $this->codes[] = $dateUserU;
+        if ($reservation->programming_id != 1) {
+            $this->confirmReservation($this->reservationId);
+            $correo = new ReservationVerification($this->codes);
+            $respose = Mail::to($this->email)->send($correo);
+        }
 
-        event(new confirmReservationEvent($this->reservationId));
-        $correo = new ReservationVerification($this->codes);
-        $respose = Mail::to($this->email)->send($correo);
         $this->emitTo('tablet-register', 'render');
         $this->emit('alert', 'reservacion creada con éxito', 'success');
         $this->emit('reiniciar');
@@ -167,19 +211,35 @@ class CreateMembers extends Component
 
     public function update()
     {
-        // TODO: notificar que no hay miembros
-
-
 
         $reservation = Reservation::find($this->reservationId);
         if ($reservation) {
             $reservation->member()->detach();
+            $reservation->qrCodes()->delete();
         }
 
+        $date = date('Y-m-d');
+        $time = date('H:i:s');
 
         foreach ($this->documentMember as $key => $value) {
 
             if (isset($this->documentMember[$key]) && isset($this->nameMember[$key])) {
+
+                $profileUser = Profile::where('document', $this->documentMember[$key])->first();
+                if ($profileUser) {
+                    $reservations = Reservation::with('programming')->where('user_id', $profileUser->user_id)->get();
+                    foreach ($reservations as $reservation) {
+                        if (
+                            $date < $reservation->programming->initial_date ||
+                            ($date == $reservation->programming->initial_date &&
+                                $time < $reservation->programming->initial_time)
+                        ) {
+                            session()->flash('message', 'El miembro ' . $this->nameMember[$key]
+                                . ' tiene una reserva activa');
+                            return;
+                        }
+                    }
+                }
 
                 $member = Members::where('document', $this->documentMember[$key])->first();
                 if (!$member) {
@@ -190,11 +250,33 @@ class CreateMembers extends Component
                     ]);
                     $member->save();
                 } else {
-                    $member->update([
+                   
+
+                        //Validar si el usuario ya esta en una programacion activa
+                        $programmings = Programming::select('programmings.*')
+                            ->join('reservations', 'programmings.id', '=', 'reservations.programming_id')
+                            ->join('members_reservation', 'reservations.id', '=', 'members_reservation.reservation_id')
+                            ->join('members', 'members_reservation.members_id', '=', 'members.id')
+                            ->where('members.id', $member->id)
+                            ->get();
+    
+    
+                        foreach ($programmings as $programming) {
+                            if (
+                                $date < $programming->initial_date ||
+                                ($date == $programming->initial_date &&
+                                    $time < $programming->initial_time)
+                            ) {
+                                session()->flash('message', 'El miembro ' . $this->nameMember[$key]
+                                    . ' tiene una reserva activa');
+                                return;
+                            }
+                        }
+                  /*   $member->update([
                         "name" => $this->nameMember[$key],
                         "document" => $this->documentMember[$key],
                         "is_minor" => $this->minor[$key]
-                    ]);
+                    ]); */
                 }
 
 
@@ -211,7 +293,7 @@ class CreateMembers extends Component
                         'document' => $this->documentMember[$key],
                         'code_qr' => $qr,
                         'code' => $cod,
-                        'reservation_id'=> $this->reservationId
+                        'reservation_id' => $this->reservationId
                     ]);
                     $qrCode->save();
 
@@ -220,7 +302,7 @@ class CreateMembers extends Component
                         'qr' => $qr,
                         'isUser' => 0
                     ];
-    
+
                     $this->codes[] = $dateUser;
                 }
             }
@@ -229,16 +311,16 @@ class CreateMembers extends Component
         $user = User::findOrFail($this->userId);
 
         $cod = Str::uuid();
-        $qrU = env('APP_URL') . '/admin/events/qr/'.$cod;
+        $qrU = env('APP_URL') . '/admin/events/qr/' . $cod;
         $qrCode = new QrCodes([
             'document' => $user->profile->document,
             'is_user' => 1,
             'code_qr' => $qrU,
             'code' => $cod,
-            'reservation_id'=> $this->reservationId
+            'reservation_id' => $this->reservationId
         ]);
         $qrCode->save();
-        
+
         $dateUserU = [
             'name' => $user->name,
             'qr' => $qrU,
@@ -247,9 +329,11 @@ class CreateMembers extends Component
 
         $this->codes[] = $dateUserU;
 
-        event(new updateReservationEvent($reservation->id));
-        $correo = new ReservationVerification($this->codes);
-        $respose = Mail::to($this->email)->send($correo);
+        if ($reservation->programming_id != 1) {
+            $this->confirmReservation($this->reservationId);
+            $correo = new ReservationVerification($this->codes);
+            $respose = Mail::to($this->email)->send($correo);
+        }
         $this->emitTo('tablet-register', 'render');
         $this->emit('alert', 'reservacion actualizada con éxito', 'success');
         //$this->resetDates();
@@ -307,11 +391,48 @@ class CreateMembers extends Component
         if ($reservation) {
             $idProgramming = $reservation->programming_id;
             $reservation->delete();
-            event(new updateProgrammingEvent($idProgramming));
+            $this->updateProgrammingQuota($idProgramming);
             $this->emitTo('tablet-register', 'render');
             $this->openMembers = false;
             // $this->resetDatesInAll();
         }
         $this->emit('reiniciar');
+    }
+
+    public function confirmReservation($reservationId)
+    {
+        $reservationUpdate = Reservation::findOrFail($reservationId);
+        $membersCount = $reservationUpdate->member()->count();
+
+        $reservationUpdate->quota = $membersCount + 1;
+        $reservationUpdate->confirmed = 1;
+        $reservationUpdate->confirmation_date = now();
+        $reservationUpdate->save();
+
+
+        if ($reservationUpdate->programming_id <> 1) {
+            $programming = Programming::findOrFail($reservationUpdate->programming_id);
+            $totalReservationsQuota = $programming->reservation()->sum('quota');
+            $newQuotaAvailable = $programming->quota - $totalReservationsQuota;
+
+
+            $programming->update([
+                'quota_available' => $newQuotaAvailable
+            ]);
+        }
+    }
+    public function updateProgrammingQuota($programmingId)
+    {
+
+        if ($programmingId <> 1) {
+            $programming = Programming::findOrFail($programmingId);
+            $totalReservationsQuota = $programming->reservation()->sum('quota');
+            $newQuotaAvailable = $programming->quota - $totalReservationsQuota;
+
+
+            $programming->update([
+                'quota_available' => $newQuotaAvailable
+            ]);
+        }
     }
 }

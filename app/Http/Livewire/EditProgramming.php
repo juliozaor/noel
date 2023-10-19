@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Events\updateProgrammingEvent;
 use App\Models\Programming;
 use Livewire\Component;
 
@@ -59,11 +58,26 @@ class EditProgramming extends Component
         $this->reset(['openEdit']);
         $this->emitTo('tablet-programming','render');
         $this->emit('alert', 'Actualizado con éxito','success');
-        event(new updateProgrammingEvent($this->programming->id));
+        $this->updateProgrammingQuota($this->programming->id);
     } 
 
     public function render()
     {
         return view('livewire.edit-programming');
+    }
+
+    public function updateProgrammingQuota($programmingId)
+    {
+
+        if ($programmingId <> 1) {
+            $programming = Programming::findOrFail($programmingId);
+            $totalReservationsQuota = $programming->reservation()->sum('quota');
+            $newQuotaAvailable = $programming->quota - $totalReservationsQuota;
+
+
+            $programming->update([
+                'quota_available' => $newQuotaAvailable
+            ]);
+        }
     }
 }

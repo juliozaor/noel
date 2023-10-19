@@ -16,7 +16,7 @@ class ListUsersRegister extends Component
     public $page = 1;
     
     public $programmingId;
-    protected $listeners = ['programation'];
+    protected $listeners = ['programation', 'render'];
     
     public function previousPage()
     {

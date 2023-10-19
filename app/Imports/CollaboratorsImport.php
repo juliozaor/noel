@@ -18,12 +18,16 @@ class CollaboratorsImport implements ToModel, WithHeadingRow, WithBatchInserts, 
     */
     public function model(array $row)
     {
-        return new Collaborators([
-            'register' => $row['registro'],
-            'document' => $row['cedula'],
-            'name' => $row['nombre'].' '.$row['apellido1'].' '.$row['apellido2'],
-            'position' => $row['descripcion_cargo']
-        ]);
+        $collaborator = Collaborators::where('document', $row['cedula'])->first();
+        if (!$collaborator) {
+            return new Collaborators([
+                'register' => $row['registro'],
+                'document' => $row['cedula'],
+                'name' => $row['nombre'].' '.$row['apellido1'].' '.$row['apellido2'],
+                'position' => $row['descripcion_cargo']
+            ]);
+        }
+
     }
 
     public function batchSize(): int

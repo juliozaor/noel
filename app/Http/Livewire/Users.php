@@ -25,7 +25,7 @@ class Users extends Component
     public $experience2022;
     public $epsState = 0;
 
-    protected $listeners = ['confirmDelete'];
+    protected $listeners = ['confirmDelete','render'];
 
     protected function rules()
     {

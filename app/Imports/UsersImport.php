@@ -25,28 +25,32 @@ class UsersImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChun
     
     public function model(array $row)
     {
-        $date = Carbon::createFromFormat('d/m/Y', $row['fecha_nacimiento'])->format('Y-m-d');
-        $experiencia = strtolower($row['experiencia_2022']);
-   
-        $user = User::create([
-            'name' => $row['nombre'],
-            'email' => $row['email'],
-            'password' => bcrypt($row['documento'])
-        ]);
+        $profile = Profile::where('document', $row['documento'])->first();
 
-        $user->assignRole('User');
-
-        Profile::create([
-            'user_id' => $user->id,
-            'document' => $row['documento'],
-            'cell' => $row['celular'],
-            'address' => $row['direccion'],
-            'neighborhood' => $row['barrio'],
-            'birth' => $date,
-            'eps' => $row['eps'],
-            'reference' => $row['como_se_entero'],
-            'experience2022' => ( $experiencia == 'si' || $experiencia == 'sí')?1:0
-        ]);
+        if (!$profile) {
+            $date = Carbon::createFromFormat('d/m/Y', $row['fecha_nacimiento'])->format('Y-m-d');
+            $experiencia = strtolower($row['experiencia_2022']);
+       
+            $user = User::create([
+                'name' => $row['nombre'],
+                'email' => $row['email'],
+                'password' => bcrypt($row['documento'])
+            ]);
+    
+            $user->assignRole('User');
+    
+            Profile::create([
+                'user_id' => $user->id,
+                'document' => $row['documento'],
+                'cell' => $row['celular'],
+                'address' => $row['direccion'],
+                'neighborhood' => $row['barrio'],
+                'birth' => $date,
+                'eps' => $row['eps'],
+                'reference' => $row['como_se_entero'],
+                'experience2022' => ( $experiencia == 'si' || $experiencia == 'sí')?1:0
+            ]);
+        }
 
     }
 
