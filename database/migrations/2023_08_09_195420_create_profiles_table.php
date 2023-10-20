@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
 
-            $table->integer('document')->unique();
+            $table->bigInteger('document')->unique();
             $table->string('cell');
             $table->string('address');
             $table->string('neighborhood');

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->integer('register');
-            $table->integer('document')->unique();
+            $table->bigInteger('document')->unique();
             $table->string('name');
             $table->string('position');
 

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('qr_codes', function (Blueprint $table) {
             $table->id();
-            $table->integer('document');
+            $table->bigInteger('document');
             $table->boolean('is_user')->default(false);
             $table->text('code_qr');
             $table->string('code');
