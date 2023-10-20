@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\EventController;
-
 Route::middleware('can:administrador')->group(function () {
   
   Route::get('', [HomeController::class, 'index']);
@@ -15,7 +14,10 @@ Route::middleware('can:administrador')->group(function () {
   Route::resource('events', EventController::class)->names('admin.events')->only([
     'index','create','show','edit'
   ]);
+
+  
 });
+
 
 
 

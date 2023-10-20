@@ -132,6 +132,7 @@ class ListWaits extends Component
                             $reservation->programming_id = $this->programmingId;
                             $reservation->save();
                             $this->confirmReservation($reservation->id);
+                            //Enviar correo los qr (funcion)
                         }
                         
                         $this->emitTo('tablet-register', 'render');

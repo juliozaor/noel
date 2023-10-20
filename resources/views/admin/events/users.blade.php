@@ -8,15 +8,18 @@
                 <div class="col-md-2 mt-2">
                     <h6> Historial de Registros </h6>
                 </div>
-                <div class="col-md-2 mt-2 offset-md-5">
+                <div class="col-md-4 mt-2 offset-md-1">
                     @can('superAministrador')
-                        @livewire('bulk-load', ['title' => 'Carga masiva de colaboradores', 
-                        'view' => 'collaborators', 'label'=> 'Colaboradores'])
-                @endcan
+                        <a href="{{ route('admin.export') }}" class="btn botonRojo">Exportar</a>
+                    @endcan
                 </div>
                 <div class="col-md-2 mt-2">
-                    @livewire('bulk-load', ['title' => 'Carga masiva de usuarios', 
-                        'view' => 'users','label'=> 'Carga masiva'])
+                    @can('superAministrador')
+                        @livewire('bulk-load', ['title' => 'Carga masiva de colaboradores', 'view' => 'collaborators', 'label' => 'Colaboradores'])
+                    @endcan
+                </div>
+                <div class="col-md-2 mt-2">
+                    @livewire('bulk-load', ['title' => 'Carga masiva de usuarios', 'view' => 'users', 'label' => 'Carga masiva'])
                 </div>
 
             </div>

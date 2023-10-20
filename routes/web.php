@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Api\NewPasswordController;
 use Illuminate\Support\Facades\Route;
 use App\Mail\ContactanosMailable;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Mail;
 /* Route::get('/bienvenido', function () {
     return view('welcome');
 }); */
+Route::get('/admin/export', [ExportController::class, 'export'])->name('admin.export');
 
 Route::middleware([
     'auth:sanctum',

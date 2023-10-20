@@ -55,7 +55,10 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
         ],
-
+        'tmp' => [
+            'driver' => 'local',
+            'root' => storage_path('app/tmp'),
+        ],
     ],
 
     /*
@@ -73,4 +76,5 @@ return [
         public_path('storage') => storage_path('app/public'),
     ],
 
+    
 ];
