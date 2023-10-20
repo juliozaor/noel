@@ -15,14 +15,14 @@ class ExportController extends Controller
 {
     public function export()
     {
-         $date = date('Y-m-d');
-         $fecha = new DateTime($date);
-$fecha->modify('+1 day'); // Sumar un día
+        $date = date('Y-m-d');
+        $fecha = new DateTime($date);
+        $fecha->modify('+1 day'); // Sumar un día
 
-$nuevaFecha = $fecha->format('Y-m-d');
+        $nuevaFecha = $fecha->format('Y-m-d');
         Excel::store(new ProgrammingExport($nuevaFecha), 'reservas.csv');
         $file = Storage::disk('local')->get('reservas.csv');
         Mail::to('zaor.julio@gmail.com')->send(new ExcelExportMail($file));
-        return 'Correo enviado con archivo adjunto '.$nuevaFecha .' | '.date('H:i:s');
+        return 'Correo enviado con archivo adjunto ' . $nuevaFecha . ' | ' . date('H:i:s');
     }
 }

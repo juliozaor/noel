@@ -20,7 +20,8 @@ class MemberController extends Controller
     
     public function store(Request $request)
     {
-        $reservation = Reservation::find($request->reservation_id);
+        $reservation = Reservation::where('id',$request->reservation_id)
+        ->with('programming')->first();
 
         if (!$reservation) {
             return response()->json([
@@ -153,7 +154,11 @@ class MemberController extends Controller
         $dateUserU = [
             'name' => $user->name,
             'qr' => $qrU,
-            'isUser' => 1
+            'isUser' => 1,
+            'quota' => $reservation->quota,
+            'date' => $reservation->programming->initial_date,
+            'time' => $reservation->programming->initial_time
+
         ];
 
         $codes[] = $dateUserU;
@@ -178,7 +183,10 @@ class MemberController extends Controller
         $user = auth()->user();
         $codes = [];
         $url = env('APP_URL').'/admin/events/qr/';
-        $reservation = Reservation::find($request->reservation_id);
+        $reservation = Reservation::where('id',$request->reservation_id)
+        ->with('programming')->first();
+        
+        
         if (!$reservation) {
             return response()->json([
                 'status' => false,
@@ -286,7 +294,10 @@ class MemberController extends Controller
         $dateUserU = [
             'name' => $user->name,
             'qr' => $qrU,
-            'isUser' => 1
+            'isUser' => 1,
+            'quota' => $reservation->quota,
+            'date' => $reservation->programming->initial_date,
+            'time' => $reservation->programming->initial_time
         ];
 
         $codes[] = $dateUserU;
