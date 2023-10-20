@@ -191,6 +191,7 @@ border-radius: 20px;
 opacity: 1;
 text-transform: none;
 border: none!important;
+color:#fff !important;
 }
 
 .botonRojo:hover{

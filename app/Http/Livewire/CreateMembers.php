@@ -85,7 +85,8 @@ class CreateMembers extends Component
     }
     public function save()
     {
-        $reservation = Reservation::find($this->reservationId);
+        $reservation = Reservation::where('id',$this->reservationId)
+        ->with('programming')->first();
 
         foreach ($this->documentMember as $key => $value) {
             $date = date('Y-m-d');
@@ -192,7 +193,10 @@ class CreateMembers extends Component
         $dateUserU = [
             'name' => $user->name,
             'qr' => $qrU,
-            'isUser' => 1
+            'isUser' => 1,
+            'quota' => $reservation->quota,
+            'date' => $reservation->programming->initial_date,
+            'time' => $reservation->programming->initial_time
         ];
 
         $this->codes[] = $dateUserU;
@@ -212,7 +216,8 @@ class CreateMembers extends Component
     public function update()
     {
 
-        $reservation = Reservation::find($this->reservationId);
+        $reservation = Reservation::where('id',$this->reservationId)
+        ->with('programming')->first();
         if ($reservation) {
             $reservation->member()->detach();
             $reservation->qrCodes()->delete();
@@ -324,7 +329,10 @@ class CreateMembers extends Component
         $dateUserU = [
             'name' => $user->name,
             'qr' => $qrU,
-            'isUser' => 1
+            'isUser' => 1,
+            'quota' => $reservation->quota,
+            'date' => $reservation->programming->initial_date,
+            'time' => $reservation->programming->initial_time
         ];
 
         $this->codes[] = $dateUserU;

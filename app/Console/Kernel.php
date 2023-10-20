@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
 
           //  $currentDate = date('Y-m-d');
-            \Illuminate\Support\Facades\Http::get('http://noel.test/admin/export');
+            \Illuminate\Support\Facades\Http::get('/admin/export');
         })->dailyAt('00:01');
     }
 
