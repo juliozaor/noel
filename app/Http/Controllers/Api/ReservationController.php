@@ -157,6 +157,7 @@ class ReservationController extends Controller
                     'fecha' => $programming->initial_date,
                     'hora' => $programming->initial_time,
                     'cupos' => $reservation->quota,
+                    'listaEspera' => $programming->id>1?false:true,
                     'miembros' => $membersData
                 ];
             }
