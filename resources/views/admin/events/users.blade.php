@@ -8,9 +8,14 @@
                 <div class="col-md-2 mt-2">
                     <h6> Historial de Registros </h6>
                 </div>
-                <div class="col-md-4 mt-2 offset-md-1">
+                <div class="col-md-1 mt-2 offset-md-2">
                     @can('superAministrador')
                         <a href="{{ route('admin.export') }}" class="btn botonRojo">Exportar</a>
+                    @endcan
+                </div>
+                <div class="col-md-2 mt-2">
+                    @can('superAministrador')
+                        <a href="{{ route('admin.download') }}" class="btn botonRojo">Descargar</a>
                     @endcan
                 </div>
                 <div class="col-md-2 mt-2">

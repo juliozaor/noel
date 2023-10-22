@@ -70,9 +70,15 @@
     .footer {
         margin: 20px 25px
     }
+    .imagen img{
+    width: 100%;
+  }
 </style>
 
 <body>
+    <div class="imagen">
+        <img src="https://tysa.co/noel/header.png" alt="">
+      </div>
     <div class="encabeado">
         @foreach ($codes as $code)
             @if ($code['isUser'] == 1)
