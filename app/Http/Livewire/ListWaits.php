@@ -2,10 +2,14 @@
 
 namespace App\Http\Livewire;
 
+use App\Mail\ReservationVerification;
 use App\Models\Programming;
+use App\Models\QrCodes;
 use App\Models\Reservation;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
+use Illuminate\Support\Str;
 
 class ListWaits extends Component
 {
@@ -132,7 +136,9 @@ class ListWaits extends Component
                             $reservation->programming_id = $this->programmingId;
                             $reservation->save();
                             $this->confirmReservation($reservation->id);
+                            $this->sendEmail($reservation->id);
                             //Enviar correo los qr (funcion)
+
                         }
                         
                         $this->emitTo('tablet-register', 'render');
@@ -190,5 +196,69 @@ class ListWaits extends Component
                 'quota_available' => $newQuotaAvailable
             ]);
         }
+    }
+
+    public function sendEmail($reservationId)
+    {
+        $codes = [];
+        $reservationUpdate = Reservation::where('id',$reservationId)
+        ->with('member')
+        ->with('programming')
+        ->with(['user' => function ($query) {
+            $query->with('profile');
+        }])
+        ->first();
+
+        if ($reservationUpdate) {
+            $reservationUpdate->qrCodes()->delete();
+
+       foreach ($reservationUpdate->member as $member) {
+        $cod = Str::uuid();
+        $qr = env('APP_URL') . '/admin/events/qr/' . $cod;
+        $qrCode = new QrCodes([
+            'document' => $member->document,
+            'code_qr' => $qr,
+            'code' => $cod,
+            'reservation_id' => $reservationId
+        ]);
+        $qrCode->save();
+
+        $dateUser = [
+            'name' => $member->name,
+            'qr' => $qr,
+            'isUser' => 0
+        ];
+
+        $codes[] = $dateUser;
+       }
+        
+        $codU = Str::uuid();
+        $qrU = env('APP_URL') . '/admin/events/qr/' . $codU;
+        $qrCode = new QrCodes([
+            'document' => $reservationUpdate->user->profile->document,
+            'is_user' => 1,
+            'code_qr' => $qrU,
+            'code' => $codU,
+            'reservation_id' => $reservationId
+        ]);
+        $qrCode->save();
+
+        $dateUserU = [
+            'name' => $reservationUpdate->user->name,
+            'qr' => $qrU,
+            'isUser' => 1,
+            'quota' => $reservationUpdate->quota,
+            'date' => $reservationUpdate->programming->initial_date,
+            'time' => $reservationUpdate->programming->initial_time
+        ];
+
+        $codes[] = $dateUserU;
+        if ($reservationUpdate->programming_id != 1) {
+            $this->confirmReservation($reservationId);
+            $correo = new ReservationVerification($codes);
+            $respose = Mail::to($reservationUpdate->user->email)->send($correo);
+        }
+
+    }
     }
 }

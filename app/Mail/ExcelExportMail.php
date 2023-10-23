@@ -18,7 +18,7 @@ class ExcelExportMail extends Mailable
      * Create a new message instance.
      */
     
-    public function __construct(public $filePath)
+    public function __construct(public $filePath, public $date)
     {
         //
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\ProgrammingExport;
 use App\Http\Controllers\Controller;
 use App\Mail\ExcelExportMail;
+use App\Models\EmailsAdmins;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -15,14 +16,34 @@ class ExportController extends Controller
 {
     public function export()
     {
+        try {
+            $emails = EmailsAdmins::where('status', 1)->select('email')->get();
+            if ($emails) {
+                $date = date('Y-m-d');
+                $fecha = new DateTime($date);
+                $fecha->modify('+1 day');
+                $nuevaFecha = $fecha->format('Y-m-d');
+                Excel::store(new ProgrammingExport($nuevaFecha), 'reservas.csv');
+                $file = Storage::disk('local')->get('reservas.csv');
+
+                foreach ($emails as $element) {
+                    Mail::to($element->email)->send(new ExcelExportMail($file, $nuevaFecha));
+                }
+                return 'Correo enviado con archivo adjunto ' . $nuevaFecha . ' | ' . date('H:i:s');
+            }
+        } catch (\Throwable $th) {
+            return $th;
+            //throw $th;
+        }
+    }
+
+    public function download()
+    {
         $date = date('Y-m-d');
         $fecha = new DateTime($date);
         $fecha->modify('+1 day'); // Sumar un día
 
         $nuevaFecha = $fecha->format('Y-m-d');
-        Excel::store(new ProgrammingExport($nuevaFecha), 'reservas.csv');
-        $file = Storage::disk('local')->get('reservas.csv');
-        Mail::to('zaor.julio@gmail.com')->send(new ExcelExportMail($file));
-        return 'Correo enviado con archivo adjunto ' . $nuevaFecha . ' | ' . date('H:i:s');
+        return Excel::download(new ProgrammingExport($nuevaFecha), 'reservas.csv');
     }
 }
