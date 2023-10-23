@@ -85,6 +85,7 @@ class ListWaits extends Component
             ->whereHas('roles', function ($query) use ($roleID) {
                 $query->where('role_id', $roleID);
             })
+            ->where('profiles.document','<>', '')
             ->select(
                 'reservations.reservation_date',
                 'profiles.document',

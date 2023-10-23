@@ -58,6 +58,7 @@ class ListUsers extends Component
         ->whereHas('roles', function ($query) use ($roleID) {
             $query->where('role_id', $roleID);
         })
+        ->where('profiles.document','<>', '')
         ->where('reservations.programming_id','<>',$this->programmingId)
             ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell')
             ->orderBy($this->sort, $this->direction);

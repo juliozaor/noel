@@ -85,178 +85,43 @@ class CreateMembers extends Component
     }
     public function save()
     {
-        $reservation = Reservation::where('id',$this->reservationId)
-        ->with('programming')->first();
-
-        foreach ($this->documentMember as $key => $value) {
-            $date = date('Y-m-d');
-            $time = date('H:i:s');
-            if (isset($this->documentMember[$key]) && isset($this->nameMember[$key])) {
-
-                //Verificar si el miembro es un usuario y tienen una reserva activa
-                $profileUser = Profile::where('document', $this->documentMember[$key])->first();
-                if ($profileUser) {
-                    $reservations = Reservation::with('programming')->where('user_id', $profileUser->user_id)->get();
-                    foreach ($reservations as $reservation) {
-                        if (
-                            $date < $reservation->programming->initial_date ||
-                            ($date == $reservation->programming->initial_date &&
-                                $time < $reservation->programming->initial_time)
-                        ) {
-                            session()->flash('message', 'El miembro ' . $this->nameMember[$key]
-                                . ' tiene una reserva activa');
-                            return;
+        try {
+            $reservation = Reservation::where('id',$this->reservationId)
+            ->with('programming')->first();
+    
+            foreach ($this->documentMember as $key => $value) {
+                $date = date('Y-m-d');
+                $time = date('H:i:s');
+                if (isset($this->documentMember[$key]) && isset($this->nameMember[$key])) {
+    
+                    //Verificar si el miembro es un usuario y tienen una reserva activa
+                    $profileUser = Profile::where('document', $this->documentMember[$key])->first();
+                    if ($profileUser) {
+                        $reservations = Reservation::with('programming')->where('user_id', $profileUser->user_id)->get();
+                        foreach ($reservations as $reservation) {
+                            if (
+                                $date < $reservation->programming->initial_date ||
+                                ($date == $reservation->programming->initial_date &&
+                                    $time < $reservation->programming->initial_time)
+                            ) {
+                                session()->flash('message', 'El miembro ' . $this->nameMember[$key]
+                                    . ' tiene una reserva activa');
+                                return;
+                            }
                         }
                     }
-                }
-
-                $member = Members::where('document', $this->documentMember[$key])->first();
-
-                if (!$member) {
-                    $member = new Members([
-                        "name" => $this->nameMember[$key],
-                        "document" => $this->documentMember[$key],
-                        "is_minor" => $this->minor[$key]
-                    ]);
-                    $member->save();
-                } else {
-
-                    //Validar si el usuario ya esta en una programacion activa
-                    $programmings = Programming::select('programmings.*')
-                        ->join('reservations', 'programmings.id', '=', 'reservations.programming_id')
-                        ->join('members_reservation', 'reservations.id', '=', 'members_reservation.reservation_id')
-                        ->join('members', 'members_reservation.members_id', '=', 'members.id')
-                        ->where('members.id', $member->id)
-                        ->get();
-
-
-                    foreach ($programmings as $programming) {
-                        if (
-                            $date < $programming->initial_date ||
-                            ($date == $programming->initial_date &&
-                                $time < $programming->initial_time)
-                        ) {
-                            session()->flash('message', 'El miembro ' . $this->nameMember[$key]
-                                . ' tiene una reserva activa');
-                            return;
-                        }
-                    }
-                }
-
-
-                $exists = Members::find($member->id)
-                    ->reservation()
-                    ->wherePivot('reservation_id', $this->reservationId)
-                    ->exists();
-
-                if (!$exists) {
-                    $cod = Str::uuid();
-                    $qr = config('app.url'). '/admin/events/qr/' . $cod;
-                    $memberReservation = new MembersReservation([
-                        'members_id' => $member->id,
-                        'reservation_id' => $this->reservationId
-                    ]);
-                    $memberReservation->save();
-
-                    $qrCode = new QrCodes([
-                        'document' => $this->documentMember[$key],
-                        'code_qr' => $qr,
-                        'code' => $cod,
-                        'reservation_id' => $this->reservationId
-                    ]);
-                    $qrCode->save();
-
-                    $dateUser = [
-                        'name' => $this->nameMember[$key],
-                        'qr' => $qr,
-                        'isUser' => 0
-                    ];
-
-                    $this->codes[] = $dateUser;
-                }
-            }
-        }
-
-        $user = User::findOrFail($this->userId);
-
-        $cod = Str::uuid();
-        $qrU = config('app.url'). '/admin/events/qr/' . $cod;
-        $qrCode = new QrCodes([
-            'document' => $user->profile->document,
-            'is_user' => 1,
-            'code_qr' => $qrU,
-            'code' => $cod,
-            'reservation_id' => $this->reservationId
-        ]);
-        $qrCode->save();
-
-        $dateUserU = [
-            'name' => $user->name,
-            'qr' => $qrU,
-            'isUser' => 1,
-            'quota' => $reservation->quota,
-            'date' => $reservation->programming->initial_date,
-            'time' => $reservation->programming->initial_time
-        ];
-
-        $this->codes[] = $dateUserU;
-        if ($reservation->programming_id != 1) {
-            $this->confirmReservation($this->reservationId);
-            $correo = new ReservationVerification($this->codes);
-            $respose = Mail::to($this->email)->send($correo);
-        }
-
-        $this->emitTo('tablet-register', 'render');
-        $this->emit('alert', 'reservacion creada con éxito', 'success');
-        $this->emit('reiniciar');
-        $this->openMembers = false;
-        $this->resetDatesInAll();
-    }
-
-    public function update()
-    {
-
-        $reservation = Reservation::where('id',$this->reservationId)
-        ->with('programming')->first();
-        if ($reservation) {
-            $reservation->member()->detach();
-            $reservation->qrCodes()->delete();
-        }
-
-        $date = date('Y-m-d');
-        $time = date('H:i:s');
-
-        foreach ($this->documentMember as $key => $value) {
-
-            if (isset($this->documentMember[$key]) && isset($this->nameMember[$key])) {
-
-                $profileUser = Profile::where('document', $this->documentMember[$key])->first();
-                if ($profileUser) {
-                    $reservations = Reservation::with('programming')->where('user_id', $profileUser->user_id)->get();
-                    foreach ($reservations as $reservation) {
-                        if (
-                            $date < $reservation->programming->initial_date ||
-                            ($date == $reservation->programming->initial_date &&
-                                $time < $reservation->programming->initial_time)
-                        ) {
-                            session()->flash('message', 'El miembro ' . $this->nameMember[$key]
-                                . ' tiene una reserva activa');
-                            return;
-                        }
-                    }
-                }
-
-                $member = Members::where('document', $this->documentMember[$key])->first();
-                if (!$member) {
-                    $member = new Members([
-                        "name" => $this->nameMember[$key],
-                        "document" => $this->documentMember[$key],
-                        "is_minor" => $this->minor[$key]
-                    ]);
-                    $member->save();
-                } else {
-                   
-
+    
+                    $member = Members::where('document', $this->documentMember[$key])->first();
+    
+                    if (!$member) {
+                        $member = new Members([
+                            "name" => $this->nameMember[$key],
+                            "document" => $this->documentMember[$key],
+                            "is_minor" => $this->minor[$key]
+                        ]);
+                        $member->save();
+                    } else {
+    
                         //Validar si el usuario ya esta en una programacion activa
                         $programmings = Programming::select('programmings.*')
                             ->join('reservations', 'programmings.id', '=', 'reservations.programming_id')
@@ -277,77 +142,224 @@ class CreateMembers extends Component
                                 return;
                             }
                         }
-                  /*   $member->update([
-                        "name" => $this->nameMember[$key],
-                        "document" => $this->documentMember[$key],
-                        "is_minor" => $this->minor[$key]
-                    ]); */
-                }
-
-
-                if (!$this->notAttend[$key]) {
-                    $cod = Str::uuid();
-                    $qr = config('app.url'). '/admin/events/qr/' . $cod;
-                    $memberReservation = new MembersReservation([
-                        'members_id' => $member->id,
-                        'reservation_id' => $this->reservationId
-                    ]);
-                    $memberReservation->save();
-
-                    $qrCode = new QrCodes([
-                        'document' => $this->documentMember[$key],
-                        'code_qr' => $qr,
-                        'code' => $cod,
-                        'reservation_id' => $this->reservationId
-                    ]);
-                    $qrCode->save();
-
-                    $dateUser = [
-                        'name' => $this->nameMember[$key],
-                        'qr' => $qr,
-                        'isUser' => 0
-                    ];
-
-                    $this->codes[] = $dateUser;
+                    }
+    
+    
+                    $exists = Members::find($member->id)
+                        ->reservation()
+                        ->wherePivot('reservation_id', $this->reservationId)
+                        ->exists();
+    
+                    if (!$exists) {
+                        $cod = Str::uuid();
+                        $qr = config('app.url'). '/admin/events/qr/' . $cod;
+                        $memberReservation = new MembersReservation([
+                            'members_id' => $member->id,
+                            'reservation_id' => $this->reservationId
+                        ]);
+                        $memberReservation->save();
+    
+                        $qrCode = new QrCodes([
+                            'document' => $this->documentMember[$key],
+                            'code_qr' => $qr,
+                            'code' => $cod,
+                            'reservation_id' => $this->reservationId
+                        ]);
+                        $qrCode->save();
+    
+                        $dateUser = [
+                            'name' => $this->nameMember[$key],
+                            'qr' => $qr,
+                            'isUser' => 0
+                        ];
+    
+                        $this->codes[] = $dateUser;
+                    }
                 }
             }
+    
+            $user = User::findOrFail($this->userId);
+    
+            $cod = Str::uuid();
+            $qrU = config('app.url'). '/admin/events/qr/' . $cod;
+            $qrCode = new QrCodes([
+                'document' => $user->profile->document,
+                'is_user' => 1,
+                'code_qr' => $qrU,
+                'code' => $cod,
+                'reservation_id' => $this->reservationId
+            ]);
+            $qrCode->save();
+    
+            $dateUserU = [
+                'name' => $user->name,
+                'qr' => $qrU,
+                'isUser' => 1,
+                'quota' => $reservation->quota,
+                'date' => $reservation->programming->initial_date,
+                'time' => $reservation->programming->initial_time
+            ];
+    
+            $this->codes[] = $dateUserU;
+            if ($reservation->programming_id != 1) {
+                $this->confirmReservation($this->reservationId);
+                $correo = new ReservationVerification($this->codes);
+                $respose = Mail::to($this->email)->send($correo);
+            }
+    
+            $this->emitTo('tablet-register', 'render');
+            $this->emit('alert', 'reservacion creada con éxito', 'success');
+            $this->emit('reiniciar');
+            $this->openMembers = false;
+            $this->resetDatesInAll();
+    
+    
+        } catch (\Throwable $th) {
+            dd($th);
+        }
+        
+    }
+
+    public function update()
+    {
+        try {
+            $reservation = Reservation::where('id',$this->reservationId)
+            ->with('programming')->first();
+            if ($reservation) {
+                $reservation->member()->detach();
+                $reservation->qrCodes()->delete();
+            }
+    
+            $date = date('Y-m-d');
+            $time = date('H:i:s');
+    
+            foreach ($this->documentMember as $key => $value) {
+    
+                if (isset($this->documentMember[$key]) && isset($this->nameMember[$key])) {
+    
+                    $profileUser = Profile::where('document', $this->documentMember[$key])->first();
+                    if ($profileUser) {
+                        $reservations = Reservation::with('programming')->where('user_id', $profileUser->user_id)->get();
+                        foreach ($reservations as $reservation) {
+                            if (
+                                $date < $reservation->programming->initial_date ||
+                                ($date == $reservation->programming->initial_date &&
+                                    $time < $reservation->programming->initial_time)
+                            ) {
+                                session()->flash('message', 'El miembro ' . $this->nameMember[$key]
+                                    . ' tiene una reserva activa');
+                                return;
+                            }
+                        }
+                    }
+    
+                    $member = Members::where('document', $this->documentMember[$key])->first();
+                    if (!$member) {
+                        $member = new Members([
+                            "name" => $this->nameMember[$key],
+                            "document" => $this->documentMember[$key],
+                            "is_minor" => $this->minor[$key]
+                        ]);
+                        $member->save();
+                    } else {
+                       
+    
+                            //Validar si el usuario ya esta en una programacion activa
+                            $programmings = Programming::select('programmings.*')
+                                ->join('reservations', 'programmings.id', '=', 'reservations.programming_id')
+                                ->join('members_reservation', 'reservations.id', '=', 'members_reservation.reservation_id')
+                                ->join('members', 'members_reservation.members_id', '=', 'members.id')
+                                ->where('members.id', $member->id)
+                                ->get();
+        
+        
+                            foreach ($programmings as $programming) {
+                                if (
+                                    $date < $programming->initial_date ||
+                                    ($date == $programming->initial_date &&
+                                        $time < $programming->initial_time)
+                                ) {
+                                    session()->flash('message', 'El miembro ' . $this->nameMember[$key]
+                                        . ' tiene una reserva activa');
+                                    return;
+                                }
+                            }
+                      /*   $member->update([
+                            "name" => $this->nameMember[$key],
+                            "document" => $this->documentMember[$key],
+                            "is_minor" => $this->minor[$key]
+                        ]); */
+                    }
+    
+    
+                    if (!$this->notAttend[$key]) {
+                        $cod = Str::uuid();
+                        $qr = config('app.url'). '/admin/events/qr/' . $cod;
+                        $memberReservation = new MembersReservation([
+                            'members_id' => $member->id,
+                            'reservation_id' => $this->reservationId
+                        ]);
+                        $memberReservation->save();
+    
+                        $qrCode = new QrCodes([
+                            'document' => $this->documentMember[$key],
+                            'code_qr' => $qr,
+                            'code' => $cod,
+                            'reservation_id' => $this->reservationId
+                        ]);
+                        $qrCode->save();
+    
+                        $dateUser = [
+                            'name' => $this->nameMember[$key],
+                            'qr' => $qr,
+                            'isUser' => 0
+                        ];
+    
+                        $this->codes[] = $dateUser;
+                    }
+                }
+            }
+    
+            $user = User::findOrFail($this->userId);
+    
+            $cod = Str::uuid();
+            $qrU = config('app.url'). '/admin/events/qr/' . $cod;
+            $qrCode = new QrCodes([
+                'document' => $user->profile->document,
+                'is_user' => 1,
+                'code_qr' => $qrU,
+                'code' => $cod,
+                'reservation_id' => $this->reservationId
+            ]);
+            $qrCode->save();
+    
+            $dateUserU = [
+                'name' => $user->name,
+                'qr' => $qrU,
+                'isUser' => 1,
+                'quota' => $reservation->quota,
+                'date' => $reservation->programming->initial_date,
+                'time' => $reservation->programming->initial_time
+            ];
+    
+            $this->codes[] = $dateUserU;
+    
+            if ($reservation->programming_id != 1) {
+                $this->confirmReservation($this->reservationId);
+                $correo = new ReservationVerification($this->codes);
+                $respose = Mail::to($this->email)->send($correo);
+            }
+            $this->emitTo('tablet-register', 'render');
+            $this->emit('alert', 'reservacion actualizada con éxito', 'success');
+            //$this->resetDates();
+            $this->emit('reiniciar');
+            $this->openMembers = false;
+            $this->resetDatesInAll();
+        } catch (\Throwable $th) {
+            dd($th);
         }
 
-        $user = User::findOrFail($this->userId);
-
-        $cod = Str::uuid();
-        $qrU = config('app.url'). '/admin/events/qr/' . $cod;
-        $qrCode = new QrCodes([
-            'document' => $user->profile->document,
-            'is_user' => 1,
-            'code_qr' => $qrU,
-            'code' => $cod,
-            'reservation_id' => $this->reservationId
-        ]);
-        $qrCode->save();
-
-        $dateUserU = [
-            'name' => $user->name,
-            'qr' => $qrU,
-            'isUser' => 1,
-            'quota' => $reservation->quota,
-            'date' => $reservation->programming->initial_date,
-            'time' => $reservation->programming->initial_time
-        ];
-
-        $this->codes[] = $dateUserU;
-
-        if ($reservation->programming_id != 1) {
-            $this->confirmReservation($this->reservationId);
-            $correo = new ReservationVerification($this->codes);
-            $respose = Mail::to($this->email)->send($correo);
-        }
-        $this->emitTo('tablet-register', 'render');
-        $this->emit('alert', 'reservacion actualizada con éxito', 'success');
-        //$this->resetDates();
-        $this->emit('reiniciar');
-        $this->openMembers = false;
-        $this->resetDatesInAll();
+      
     }
 
     public function openModalCreateReservation()

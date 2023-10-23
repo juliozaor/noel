@@ -87,18 +87,15 @@ class Users extends Component
 
     private function searchUsers()
     {
-
-
-        /*   $usersQuery = User::leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
-            ->where('users.id', '<>', 1)
-            ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell')
-            ->orderBy($this->sort, $this->direction); */
-        $roleID = 2;
+try {
+    $roleID = 2;
 
         $usersQuery = User::leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
+        
             ->whereHas('roles', function ($query) use ($roleID) {
                 $query->where('role_id', $roleID);
             })
+            ->where('profiles.document','<>', '')
             ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell')
             ->orderBy($this->sort, $this->direction);
 
@@ -113,6 +110,10 @@ class Users extends Component
 
         $this->count = $usersQuery->count();
         $this->users = $usersQuery->paginate($this->cant, ['*'], 'listPage', $this->page);
+} catch (\Throwable $th) {
+    dd($th);
+}
+       
     }
 
     public function deleteUser($userId)
