@@ -29,7 +29,8 @@ class ExportController extends Controller
                 foreach ($emails as $element) {
                     Mail::to($element->email)->send(new ExcelExportMail($file, $nuevaFecha));
                 }
-                return 'Correo enviado con archivo adjunto ' . $nuevaFecha . ' | ' . date('H:i:s');
+                
+                return 'Correo enviado con archivo adjunto ';
             }
         } catch (\Throwable $th) {
             return $th;

@@ -214,7 +214,7 @@ class ListWaits extends Component
 
        foreach ($reservationUpdate->member as $member) {
         $cod = Str::uuid();
-        $qr = env('APP_URL') . '/admin/events/qr/' . $cod;
+        $qr = config('app.url'). '/admin/events/qr/' . $cod;
         $qrCode = new QrCodes([
             'document' => $member->document,
             'code_qr' => $qr,
@@ -233,7 +233,7 @@ class ListWaits extends Component
        }
         
         $codU = Str::uuid();
-        $qrU = env('APP_URL') . '/admin/events/qr/' . $codU;
+        $qrU = config('app.url'). '/admin/events/qr/' . $codU;
         $qrCode = new QrCodes([
             'document' => $reservationUpdate->user->profile->document,
             'is_user' => 1,

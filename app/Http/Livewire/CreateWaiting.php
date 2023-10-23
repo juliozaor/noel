@@ -104,7 +104,7 @@ class CreateWaiting extends Component
             }
         }
 
-        $appUrl = env('APP_URL') . '/api/auth';
+        $appUrl = config('app.url') . '/api/auth';
 
         $profile = Profile::where('document', $this->document)->with('user')->first();
         if ($profile) {

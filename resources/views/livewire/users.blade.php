@@ -227,8 +227,11 @@
                 <x-label value="¿Como te enteraste de este evento?" />
                 {{-- <x-input type="date" class="w-100" wire:model.defer="reference" /> --}}
                 <select wire:model="reference" class="form-control">
-                    <option value="1">Administrador</option>
-                    <option value="2">Otro</option>
+                    <option value="1">Redes Sociales de la Compañia</option>
+                    <option value="2">Amigo o Familia</option>
+                    <option value="3">Búsqueda en Internet</option>
+                    <option value="4">Medios de comunicación y Publicidad</option>
+                    <option value="5">Otro</option>
 
                 </select>
                 <x-input-error for="reference" />

@@ -92,7 +92,7 @@ class CreateUser extends Component
 
         $this->validate();
 
-        $appUrl = env('APP_URL') . '/api/auth';
+        $appUrl = config('app.url'). '/api/auth';
 
         $collaborator = Collaborators::where('document', $this->document)->first();
 

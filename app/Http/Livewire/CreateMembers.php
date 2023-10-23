@@ -151,7 +151,7 @@ class CreateMembers extends Component
 
                 if (!$exists) {
                     $cod = Str::uuid();
-                    $qr = env('APP_URL') . '/admin/events/qr/' . $cod;
+                    $qr = config('app.url'). '/admin/events/qr/' . $cod;
                     $memberReservation = new MembersReservation([
                         'members_id' => $member->id,
                         'reservation_id' => $this->reservationId
@@ -180,7 +180,7 @@ class CreateMembers extends Component
         $user = User::findOrFail($this->userId);
 
         $cod = Str::uuid();
-        $qrU = env('APP_URL') . '/admin/events/qr/' . $cod;
+        $qrU = config('app.url'). '/admin/events/qr/' . $cod;
         $qrCode = new QrCodes([
             'document' => $user->profile->document,
             'is_user' => 1,
@@ -287,7 +287,7 @@ class CreateMembers extends Component
 
                 if (!$this->notAttend[$key]) {
                     $cod = Str::uuid();
-                    $qr = env('APP_URL') . '/admin/events/qr/' . $cod;
+                    $qr = config('app.url'). '/admin/events/qr/' . $cod;
                     $memberReservation = new MembersReservation([
                         'members_id' => $member->id,
                         'reservation_id' => $this->reservationId
@@ -316,7 +316,7 @@ class CreateMembers extends Component
         $user = User::findOrFail($this->userId);
 
         $cod = Str::uuid();
-        $qrU = env('APP_URL') . '/admin/events/qr/' . $cod;
+        $qrU = config('app.url'). '/admin/events/qr/' . $cod;
         $qrCode = new QrCodes([
             'document' => $user->profile->document,
             'is_user' => 1,

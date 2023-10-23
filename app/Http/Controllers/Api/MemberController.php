@@ -33,7 +33,7 @@ class MemberController extends Controller
         $user = auth()->user(); // Accede al usuario autenticado
 
         $codes = [];
-        $url = env('APP_URL').'/admin/events/qr/';
+        $url = config('app.url').'/admin/events/qr/';
 
         if($user->id != $reservation->user_id){
             return response()->json([
@@ -182,7 +182,7 @@ class MemberController extends Controller
     {
         $user = auth()->user();
         $codes = [];
-        $url = env('APP_URL').'/admin/events/qr/';
+        $url = config('app.url').'/admin/events/qr/';
         $reservation = Reservation::where('id',$request->reservation_id)
         ->with('programming')->first();
         

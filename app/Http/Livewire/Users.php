@@ -177,36 +177,40 @@ class Users extends Component
     {
 
         $this->validate();
+try {
+    $appUrl = config('app.url').'/api/auth';
 
-        $appUrl = env('APP_URL') . '/api/auth';
+    $profile = Profile::where('document', $this->document)->with('user')->first();
+    if ($profile) {
+        $user = User::find($profile->user_id);
+        $apiUrl = $appUrl . '/update/' . $user->id;
 
-        $profile = Profile::where('document', $this->document)->with('user')->first();
-        if ($profile) {
-            $user = User::find($profile->user_id);
-            $apiUrl = $appUrl . '/update/' . $user->id;
+        $token = $user->createToken('Authorization')->plainTextToken;
 
-            $token = $user->createToken('Authorization')->plainTextToken;
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->put($apiUrl, [
+            "name" => $this->name,
+            'cell' => $this->cell,
+            'address' => $this->address,
+            'neighborhood' => $this->neighborhood,
+            'birth' => $this->birth,
+            'eps' => $this->eps ?? '',
+            'reference' => $this->reference ?? '',
+            'experience2022' => $this->experience2022 ?? false
+        ]);
 
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token,
-            ])->put($apiUrl, [
-                "name" => $this->name,
-                'cell' => $this->cell,
-                'address' => $this->address,
-                'neighborhood' => $this->neighborhood,
-                'birth' => $this->birth,
-                'eps' => $this->eps ?? '',
-                'reference' => $this->reference ?? '',
-                'experience2022' => $this->experience2022 ?? false
-            ]);
-
-            // Verificar la respuesta de la API
-            if ($response->successful()) {
-                // La solicitud fue exitosa, puedes manejar la respuesta aquí
-                $data = $response->json(); // Convierte la respuesta JSON en un array
-                //return $data;
-            }
+        // Verificar la respuesta de la API
+        if ($response->successful()) {
+            // La solicitud fue exitosa, puedes manejar la respuesta aquí
+            $data = $response->json(); // Convierte la respuesta JSON en un array
+            //return $data;
         }
+    }
+} catch (\Throwable $th) {
+    dd($th);
+}
+      
 
         $this->openEditRegister = false;
         $this->resetDatesIn();
