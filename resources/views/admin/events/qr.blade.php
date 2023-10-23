@@ -3,10 +3,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-1 mt-2">
-                    <h6> Leer QR</h6>
                 </div>
                 <div class="col-md-2 mt-2">
-                    <h6> Leer codigo QR </h6>
                 </div>
 
             </div>

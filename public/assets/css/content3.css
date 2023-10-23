@@ -211,3 +211,23 @@ border-radius: 10px;
 .burguer{
   color: #ffffff!important;
 }
+
+.btn-rojo{
+background: #f6211d00!important;
+border: none!important;
+color:#fff !important;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+  color: #8A1F1F!important;
+  background: #FFFFFF!important;
+}
+
+.footer-wait{
+  margin: 0 30px;
+}
+.seleccionados{
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+}

@@ -36,6 +36,10 @@
                         Usuario
                         <i class="fas fa-sort ml-1 mt-1"></i>
                     </th>
+                    <th scope="col" class="cursor-pointer" wire:click="order('reservations.quota')">
+                        Cupos registrados
+                        <i class="fas fa-sort ml-1 mt-1"></i>
+                    </th>
                     <th scope="col" class="cursor-pointer" wire:click="order('profiles.cell')">
                         Telefono
                         <i class="fas fa-sort ml-1 mt-1"></i>
@@ -50,6 +54,7 @@
                 <tr>
                     <td>{{ $user->document }}</td>
                     <td>{{ $user->name }}</td>
+                    <td>{{ $user->quota }}</td>
                     <td>{{ $user->cell }}</td>
                     <td>
                                 

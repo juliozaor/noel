@@ -133,7 +133,7 @@
             </ul>
         </div>
     @endif
-    <div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-between footer-wait">
         <div>
 
             <x-secondary-button>
@@ -141,7 +141,7 @@
             </x-secondary-button>
         </div>
         <div class="d-flex justify-content-between">
-            <span>
+            <span class="seleccionados">
 
                 Seleccionados {{ $totalQuota }} / {{ $quotaAvailable }}
             </span>

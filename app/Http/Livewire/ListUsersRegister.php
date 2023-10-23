@@ -60,7 +60,7 @@ class ListUsersRegister extends Component
             ->whereHas('roles', function ($query) use ($roleID) {
                 $query->where('role_id', $roleID);
             })
-            ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell')
+            ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell', 'reservations.quota')
             ->orderBy($this->sort, $this->direction);
 
         if (!empty($this->search)) {

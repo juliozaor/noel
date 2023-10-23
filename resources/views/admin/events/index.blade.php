@@ -3,10 +3,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-1 mt-2">
-                    <h6> Eventos</h6>
                 </div>
                 <div class="col-md-2 mt-2">
-                    <h6> Historial de Registros </h6>
                 </div>
                 <div class="col-md-2 mt-2 offset-md-5">
                     @livewire('bulk-load', ['title' => 'Carga masiva de eventos', 

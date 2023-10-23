@@ -53,10 +53,12 @@ class ListUsers extends Component
     {
 
         $roleID = 2;
-        $usersQuery = User::leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
+        $usersQuery = User::join('reservations', 'users.id', '=', 'reservations.user_id')
+        ->leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
         ->whereHas('roles', function ($query) use ($roleID) {
             $query->where('role_id', $roleID);
         })
+        ->where('reservations.programming_id','<>',$this->programmingId)
             ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell')
             ->orderBy($this->sort, $this->direction);
 

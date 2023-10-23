@@ -102,14 +102,14 @@
                                                 <td>{{ $programming->quota_available }}</td>
                                                 <td>
                                                     {{--  @livewire('edit-programming', ['programming' => $programming], key($programming->id)) --}}
-                                                    <button wire:click="registerUserInEvent({{ $programming }},'home')"><img
-                                                            src="{{ asset('/assets/icons/usermas.svg') }}"
+                                                    <button wire:click="registerUserInEvent({{ $programming }},'contact')"><img
+                                                            src="{{ asset('/assets/icons/wait.svg') }}"
                                                             alt="editar" style="max-width: 15px" /></button>
                                                 </td>
                                                 <td>
                                                     {{--  @livewire('edit-programming', ['programming' => $programming], key($programming->id)) --}}
                                                     <button wire:click="registerUserInEvent({{ $programming }},'profile')"><img
-                                                            src="{{ asset('/assets/icons/wait.svg') }}" alt="editar"
+                                                            src="{{ asset('/assets/icons/usermas.svg') }}" alt="editar"
                                                             style="max-width: 15px" /></button>
                                                 </td>
 

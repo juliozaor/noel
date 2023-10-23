@@ -3,7 +3,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-2 mt-2">
-                    <h6> Registro de eventos</h6>
+                 
                 </div>
                 <div class="col-md-3 mt-2 offset-md-5">
                     @livewire('create-waiting')
