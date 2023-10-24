@@ -62,7 +62,8 @@ class TabletProgramming extends Component
 
         $programmings = $programmingsQuery->where(function ($query) use ($dateInitial, $dateEnd) {
             $query->whereBetween('initial_date', [$dateInitial, $dateEnd]);
-        })->orderBy($this->sort, $this->direction)
+        })
+        ->orderBy($this->sort, $this->direction)
             ->paginate($this->cant);
 
         $this->count = $programmings->count();

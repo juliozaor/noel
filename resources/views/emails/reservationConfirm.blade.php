@@ -112,7 +112,7 @@
 
                     {{-- {!! QrCode::size(150)->generate($code['qr']) !!} --}}
                   {{-- <img src="{{ $message->embed(public_path($code['qr'])) }}" alt="Código QR"> --}}
-                  <img src="{{public_path($code['qr'])}}" alt="{{ $code['name'] }}">
+                  <img src="https://backoffice.navidadesnoel.com/{{$code['qr']}}" alt="{{ $code['name'] }}">
 
 
                 </div>

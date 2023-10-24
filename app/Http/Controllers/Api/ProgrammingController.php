@@ -17,6 +17,7 @@ class ProgrammingController extends Controller
         $programmingEvent =  Programming::where('event_id', $event)
             ->select('id', 'quota_available', 'initial_date', 'initial_time')
             ->where('waiting','<>',1)
+            ->where('state',1)
             ->where('initial_date',$date)
             ->get();
 

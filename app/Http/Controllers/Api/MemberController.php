@@ -122,6 +122,7 @@ class MemberController extends Controller
                     'reservation_id' => $request->reservation_id
                 ]);
                 $memberReservation->save();
+                $this->createImgQr($qr, $cod);
 
                 $qrCode = new QrCodes([
                     'document'=>$memberRequest['document'],
@@ -133,27 +134,30 @@ class MemberController extends Controller
 
                 $dateUser = [
                     'name' => $memberRequest['name'],
-                    'qr' => $qr,
+                    'qr' => 'temp/' . $cod . '.png',
                     'isUser' => 0
                 ];
 
                 $codes[] = $dateUser;
             }
         }
-        $cod = Str::uuid();
-        $qrU = $url.$cod;
+        $codU = Str::uuid();
+        $qrU = $url.$codU;
+
+        $this->createImgQr($qrU, $codU);
+
         $qrCode = new QrCodes([
             'document'=>$user->profile->document,
             'is_user'=>1,
             'code_qr'=> $qrU,
-            'code' => $cod,
+            'code' => $codU,
             'reservation_id'=> $request->reservation_id
         ]);
         $qrCode->save();
 
         $dateUserU = [
             'name' => $user->name,
-            'qr' => $qrU,
+            'qr' => 'temp/' . $codU . '.png',
             'isUser' => 1,
             'quota' => $reservation->quota,
             'date' => $reservation->programming->initial_date,
@@ -263,6 +267,8 @@ class MemberController extends Controller
                 ]);
                 $memberReservation->save();
 
+                $this->createImgQr($qr, $cod);
+
                 $qrCode = new QrCodes([
                     'document'=>$memberRequest['document'],
                     'code_qr'=>$qr,
@@ -273,7 +279,7 @@ class MemberController extends Controller
 
                 $dateUser = [
                     'name' => $memberRequest['name'],
-                    'qr' => $qr,
+                    'qr' => 'temp/' . $cod . '.png',
                     'isUser' => 0
                 ];
 
@@ -281,19 +287,21 @@ class MemberController extends Controller
             }
         }
 
-        $cod = Str::uuid();
-        $qrU = $url.$cod;
+        $codU = Str::uuid();
+        $qrU = $url.$codU;
+
+        $this->createImgQr($qrU, $codU);
         $qrCode = new QrCodes([
             'document'=>$user->profile->document,
             'is_user'=>1,
             'code_qr'=> $qrU,
-            'code' => $cod,
+            'code' => $codU,
             'reservation_id'=> $request->reservation_id
         ]);
         $qrCode->save();
         $dateUserU = [
             'name' => $user->name,
-            'qr' => $qrU,
+            'qr' => 'temp/' . $codU . '.png',
             'isUser' => 1,
             'quota' => $reservation->quota,
             'date' => $reservation->programming->initial_date,

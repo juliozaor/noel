@@ -160,6 +160,7 @@ class CreateMembers extends Component
                             'reservation_id' => $this->reservationId
                         ]);
                         $memberReservation->save();
+                        $this->createImgQr($qr, $cod);
 
                         $qrCode = new QrCodes([
                             'document' => $this->documentMember[$key],
@@ -171,7 +172,7 @@ class CreateMembers extends Component
 
                         $dateUser = [
                             'name' => $this->nameMember[$key],
-                            'qr' => $qr,
+                            'qr' => 'temp/' . $cod . '.png',
                             'isUser' => 0
                         ];
 
@@ -182,20 +183,23 @@ class CreateMembers extends Component
 
             $user = User::findOrFail($this->userId);
 
-            $cod = Str::uuid();
-            $qrU = config('app.url') . '/admin/events/qr/' . $cod;
+            $codU = Str::uuid();
+            $qrU = config('app.url') . '/admin/events/qr/' . $codU;
+
+            $this->createImgQr($qrU, $codU);
+            
             $qrCode = new QrCodes([
                 'document' => $user->profile->document,
                 'is_user' => 1,
                 'code_qr' => $qrU,
-                'code' => $cod,
+                'code' => $codU,
                 'reservation_id' => $this->reservationId
             ]);
             $qrCode->save();
 
             $dateUserU = [
                 'name' => $user->name,
-                'qr' => $qrU,
+                'qr' => 'temp/' . $codU . '.png',
                 'isUser' => 1,
                 'quota' => $reservation->quota,
                 'date' => $reservation->programming->initial_date,

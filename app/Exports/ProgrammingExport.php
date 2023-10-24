@@ -19,7 +19,7 @@ class ProgrammingExport implements FromView
     public function view(): View
     {
         $reservations = [];
-        $programmings = Programming::where('initial_date', $this->date)->get();
+        $programmings = Programming::where('initial_date', $this->date)->where('state',1)->get();
 
         if ($programmings) {
             foreach ($programmings as $programming) {
