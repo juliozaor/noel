@@ -14,6 +14,7 @@ use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MemberController extends Controller
 {
@@ -346,5 +347,13 @@ class MemberController extends Controller
                 'quota_available' => $newQuotaAvailable
             ]);
         }
+    }
+
+    public function createImgQr($qr, $cod)
+    {
+        // Genera el código QR en formato SVG
+        $qrCodeSvg = QrCode::format('png')->size(150)->generate($qr, 'temp/' . $cod . '.png');
+
+      
     }
 }

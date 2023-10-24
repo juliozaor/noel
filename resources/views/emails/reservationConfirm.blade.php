@@ -114,6 +114,8 @@
                   {{-- <img src="{{ $message->embed(public_path($code['qr'])) }}" alt="Código QR"> --}}
                   <img src="https://backoffice.navidadesnoel.com/{{$code['qr']}}" alt="{{ $code['name'] }}">
 
+                  <img src="/{{$code['qr']}}" alt="{{ $code['name'] }}">
+
 
                 </div>
 

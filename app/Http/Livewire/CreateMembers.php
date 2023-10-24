@@ -187,7 +187,7 @@ class CreateMembers extends Component
             $qrU = config('app.url') . '/admin/events/qr/' . $codU;
 
             $this->createImgQr($qrU, $codU);
-            
+
             $qrCode = new QrCodes([
                 'document' => $user->profile->document,
                 'is_user' => 1,
@@ -300,11 +300,7 @@ class CreateMembers extends Component
                         $memberReservation->save();
 
                         $this->createImgQr($qr, $cod);
-                      //  $qrCodePng = QrCode::format('png')->size(150)->generate($qr, 'temp/' . $cod . '.png');
-                       // file_put_contents(public_path('temp/' . $cod . '.png'), $qrCodePng);
-                       // dd($qrCodePng);
 
-                        /*  QrCode::format('png')->size(150)->generate($qr, public_path('temp/'.$cod.'png')); */
                         $this->img[] = $cod;
                         $qrCode = new QrCodes([
                             'document' => $this->documentMember[$key],
@@ -316,7 +312,7 @@ class CreateMembers extends Component
 
                         $dateUser = [
                             'name' => $this->nameMember[$key],
-                            'qr' => 'temp/' . $cod . '.svg',
+                            'qr' => 'temp/' . $cod . '.png',
                             'isUser' => 0
                         ];
 
@@ -330,9 +326,7 @@ class CreateMembers extends Component
             $codU = Str::uuid();
             $qrU = config('app.url') . '/admin/events/qr/' . $codU;
 
-            //QrCode::format('png')->size(150)->generate($qrU, public_path('temp/' . $codU . 'png'));
-           /*  $qrCodePng = QrCode::size(150)->generate($qrU);
-            file_put_contents(public_path('temp/' . $codU . '.png'), $qrCodePng); */
+          
             $this->createImgQr($qrU, $codU);
             $this->img[] = $codU;
 
@@ -473,8 +467,6 @@ class CreateMembers extends Component
     public function createImgQr($qr, $cod)
     {
         // Genera el código QR en formato SVG
-        $qrCodeSvg = QrCode::size(150)->generate($qr, 'temp/' . $cod . '.svg');
-
-      
+        $qrCodeSvg = QrCode::format('png')->size(150)->generate($qr, 'temp/' . $cod . '.png');
     }
 }
