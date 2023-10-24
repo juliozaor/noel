@@ -44,7 +44,7 @@ class ReservationController extends Controller
         $reservations = Reservation::with('programming')->where('user_id', $user->id)->get();
 
         if (count($reservations) >= 1) {
-            if ($user->profile->is_collaborator == 1) {
+            if ($user->profile && $user->profile->is_collaborator == 1) {
                 return response()->json([
                     'status' => false,
                     'message' => 'El usuario es un colaborador y ya tiene una reserva en el sistema',
