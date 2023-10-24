@@ -108,7 +108,12 @@
                     {{ $code['name'] }}
                 </div>
                 <div class="imagen-qr">
-                    {!! QrCode::size(150)->generate($code['qr']) !!}
+                    {{-- <img src="data:image/svg+xml;base64,{{ base64_encode(QrCode::size(150)->generate($code['qr'])) }}" alt="Código QR"> --}}
+
+                    {{-- {!! QrCode::size(150)->generate($code['qr']) !!} --}}
+                  {{-- <img src="{{ $message->embed(public_path($code['qr'])) }}" alt="Código QR"> --}}
+                  <img src="{{public_path($code['qr'])}}" alt="{{ $code['name'] }}">
+
 
                 </div>
 
