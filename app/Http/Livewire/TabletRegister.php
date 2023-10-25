@@ -61,15 +61,15 @@ class TabletRegister extends Component
         $programmingsQuery->where('state', 1);
         $dateInitial = $this->begin;
         $dateEnd = $this->end;
-
-        $programmings = $programmingsQuery->where(function ($query) use ($dateInitial, $dateEnd) {
+        
+        $programmingsDB = $programmingsQuery->where(function ($query) use ($dateInitial, $dateEnd) {
             $query->whereBetween('initial_date', [$dateInitial, $dateEnd]);
-        })->orderBy($this->sort, $this->direction)
-            ->paginate($this->cant, ['*'], 'registersPage');
-
-        $this->count = $programmings->count();
-
-
+        })->orderBy($this->sort, $this->direction);
+        
+        
+        $this->count = $programmingsDB->count();
+            
+        $programmings = $programmingsDB->paginate($this->cant, ['*'], 'registersPage');
 
         return view('livewire.tablet-register', compact('programmings'));
     }

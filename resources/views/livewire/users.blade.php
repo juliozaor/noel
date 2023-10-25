@@ -52,7 +52,7 @@
                                             <i class="fas fa-sort ml-1 mt-1"></i>
                                         </th>
 
-                                        <th colspan="2">Acciones</th>
+                                        <th colspan="3">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -75,6 +75,14 @@
                                                             src="{{ asset('/assets/icons/trash.svg') }}" alt="editar"
                                                             style="max-width: 15px" /></button>
                                                 </td>
+
+                                            {{--     <td>
+
+                                                    <button wire:click="openReservation({{ $user->id }})"><img
+                                                            src="{{ asset('/assets/icons/registerEvents.svg') }}" alt="reservas"
+                                                            style="max-width: 15px" /></button>
+                                                            
+                                                </td> --}}
 
                                             </tr>
                                         @endforeach
@@ -265,7 +273,47 @@
 </x-dialog-modal-j>
 
 
+{{-- Modal reservas --}}
+<x-dialog-modal-j wire:model="openReservationsUser">
+    <x-slot name="title">
+        <div class="d-flex justify-content-between">
+            <div>
+                Reservas encontradas
+            </div>
+           
+            <button wire:click=closeReservation class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </x-slot>
+    <x-slot name="content">
+        <div class="d-flex pt-4 px-6 ps-4 pe-4 ">
+            <div class="mensajeMembers p-4">
+                <strong>Resultados encontrados:</strong><br>
+                
+            </div>
+        </div>
+      
 
+
+    </x-slot>
+
+
+
+    <x-slot name="footer" class="bg-success">
+       {{--  <x-secondary-button wire:click=closeReservation>
+            Cancelar
+        </x-secondary-button>
+        <x-danger-button wire:click=saveUpdateContinue>
+            Guardar cambios
+        </x-danger-button> --}}
+
+    </x-slot>
+</x-dialog-modal-j>
 
 
     @push('js')

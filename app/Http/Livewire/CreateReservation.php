@@ -55,7 +55,7 @@ class CreateReservation extends Component
             $reservation = Reservation::with('programming')->with('user')
                 ->where('user_id', $this->userId)
                 ->where('programming_id', $this->programmationId)
-                ->where('programming_id','<>', 1)
+                ->where('programming_id', '<>', 1)
                 ->first();
             if ($reservation) {
                 $programmings = Programming::where('id', $this->programmationId)->get();
@@ -76,7 +76,7 @@ class CreateReservation extends Component
                 $this->programmings = $programmings;
             } else {
                 $programmings = Programming::where('quota_available', '>=', 1)
-                ->where('id','<>', 1)->get();
+                    ->where('id', '<>', 1)->get();
                 if (sizeof($programmings)) {
                     $this->quotaAvailable = $programmings[0]->quota_available;
                     $this->selectedProgramming =  $programmings[0]->id;
@@ -100,44 +100,49 @@ class CreateReservation extends Component
     public function save()
     {
         $this->validate();
-
-        $difference = $this->quota - $this->reserverdQuota;
-
-        if($difference > $this->quotaAvailable){
-            session()->flash('message', "No hay suficiente cupo disponible");
-            return;
-        }
-
         try {
-            $programming = Programming::findOrfail($this->selectedProgramming);
-            $date = date('Y-m-d');
-            $time = date('H:i:s');
-            if (
-                $date > $programming->initial_date ||
-                ($date == $programming->initial_date && $time > $programming->initial_time)
-            ) {
-                session()->flash('message', 'Ya paso la fecha para este evento');
+
+
+            $difference = $this->quota - $this->reserverdQuota;
+
+            if ($difference > $this->quotaAvailable) {
+                session()->flash('message', "No hay suficiente cupo disponible");
                 return;
             }
-        } catch (\Throwable $th) {
-            session()->flash('message', 'No se encontro la programación');
-            return;
-        }
 
-        if ($this->wait == 1) {
-            $this->saveWaiting();
-        } else {
-            $this->saveReservation();
+            try {
+                $programming = Programming::findOrfail($this->selectedProgramming);
+                $date = date('Y-m-d');
+                $time = date('H:i:s');
+                if (
+                    $date > $programming->initial_date ||
+                    ($date == $programming->initial_date && $time > $programming->initial_time)
+                ) {
+                    session()->flash('message', 'Ya paso la fecha para este evento');
+                    return;
+                }
+            } catch (\Throwable $th) {
+                session()->flash('message', 'No se encontro la programación');
+                return;
+            }
+
+            if ($this->wait == 1) {
+                $this->saveWaiting();
+            } else {
+                $this->saveReservation();
+            }
+        } catch (\Throwable $th) {
+            dd($th);
         }
     }
 
     public function openModalCreateUser()
     {
-       // $this->resetDates();
-       $this->openReservation = false;
-       if ($this->wait === 1) {
-           $params = [
-               'reservationId' => $this->reservationId
+        // $this->resetDates();
+        $this->openReservation = false;
+        if ($this->wait === 1) {
+            $params = [
+                'reservationId' => $this->reservationId
             ];
             $this->emitTo('create-waiting', 'openResrv', $params);
         } else {
@@ -183,15 +188,17 @@ class CreateReservation extends Component
 
     public function saveWaiting()
     {
-       
+        try {
+         
+
         $user = User::findOrFail($this->userId);
         $date = date('Y-m-d');
         $time = date('H:i:s');
         if ($this->editReservation) {
             $isreservation = Reservation::where('programming_id', 1)
-            ->where('user_id', $this->userId)
-            ->where('id', $this->reservationId)->first();
-            if ($isreservation){
+                ->where('user_id', $this->userId)
+                ->where('id', $this->reservationId)->first();
+            if ($isreservation) {
                 $isreservation->quota = $this->quota;
                 $isreservation->save();
                 $this->openModalMembers($isreservation->id);
@@ -244,17 +251,23 @@ class CreateReservation extends Component
         $this->programmationId = 1;
 
         $this->openModalMembers($reservation->id);
+        
+        } catch (\Throwable $th) {
+            dd($th);
+        }
     }
 
     public function saveReservation()
     {
+        try {
+            
         $user = User::findOrFail($this->userId);
         $date = date('Y-m-d');
         $time = date('H:i:s');
 
         if ($this->editReservation) {
 
-            
+
 
 
             $isreservation = Reservation::where('programming_id', $this->selectedProgramming)
@@ -322,7 +335,8 @@ class CreateReservation extends Component
         $this->programmationId = $this->selectedProgramming;
         //Siguiente paso
         $this->openModalMembers($reservation->id);
-
-
+    } catch (\Throwable $th) {
+        dd($th);
+    }
     }
 }

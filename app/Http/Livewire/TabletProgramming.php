@@ -60,14 +60,15 @@ class TabletProgramming extends Component
         $dateInitial = $this->begin;
         $dateEnd = $this->end;
 
-        $programmings = $programmingsQuery->where(function ($query) use ($dateInitial, $dateEnd) {
+        $programmingsDB = $programmingsQuery->where(function ($query) use ($dateInitial, $dateEnd) {
             $query->whereBetween('initial_date', [$dateInitial, $dateEnd]);
         })
-        ->orderBy($this->sort, $this->direction)
-            ->paginate($this->cant);
+        ->orderBy($this->sort, $this->direction);
+            
 
-        $this->count = $programmings->count();
+        $this->count = $programmingsDB->count();
 
+        $programmings = $programmingsDB->paginate($this->cant);
 
         return view('livewire.tablet-programming', compact('programmings'));
     }

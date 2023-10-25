@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Profile;
 use App\Models\User;
+use App\Models\Reservation;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
@@ -20,10 +21,14 @@ class Users extends Component
     public $page = 1;
 
     public $openEditRegister = false;
+    public $openReservationsUser = false;
     public $document, $name, $cell, $address, $neighborhood, $birth, $eps, $reference, $email;
     public $profile;
     public $experience2022;
     public $epsState = 0;
+
+    public $reservations;
+
 
     protected $listeners = ['confirmDelete', 'render'];
 
@@ -149,6 +154,18 @@ class Users extends Component
         $this->openEditRegister = true;
     }
 
+    public function openReservation($document)
+    {
+        $this->searchReservations($document);
+        $this->openReservationsUser = true;
+    }
+
+    public function searchReservations($document)
+    {
+        $this->reservations = Reservation::where('user_id',$document)->with('programming')->get();
+       // dd($this->reservations);
+    }
+
     public function searchProfile()
     {
         $profile = Profile::where('document', $this->document)->with('user')->first();
@@ -225,6 +242,12 @@ class Users extends Component
     public function close()
     {
         $this->openEditRegister = false;
+        $this->resetDatesIn();
+    }
+
+    public function closeReservation()
+    {
+        $this->openReservationsUser = false;
         $this->resetDatesIn();
     }
 }
