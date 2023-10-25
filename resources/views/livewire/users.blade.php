@@ -76,13 +76,15 @@
                                                             style="max-width: 15px" /></button>
                                                 </td>
 
-                                            {{--     <td>
+                                                <td>
 
-                                                    <button wire:click="openReservation({{ $user->id }})"><img
-                                                            src="{{ asset('/assets/icons/registerEvents.svg') }}" alt="reservas"
+                                                    <button wire:click="openReservation({{ $user->document }}, 
+                                                        {{ $user->id }})"><img
+                                                            src="{{ asset('/assets/icons/registerEvents.svg') }}" 
+                                                            alt="reservas"
                                                             style="max-width: 15px" /></button>
                                                             
-                                                </td> --}}
+                                                </td>
 
                                             </tr>
                                         @endforeach
@@ -278,7 +280,7 @@
     <x-slot name="title">
         <div class="d-flex justify-content-between">
             <div>
-                Reservas encontradas
+                Reservas encontradas 
             </div>
            
             <button wire:click=closeReservation class="text-gray-500 hover:text-gray-700">
@@ -294,10 +296,70 @@
         <div class="d-flex pt-4 px-6 ps-4 pe-4 ">
             <div class="mensajeMembers p-4">
                 <strong>Resultados encontrados:</strong><br>
-                
+                {{ $name }} - {{$document}}
             </div>
+
         </div>
       
+        <div class="container-table d-flex table-responsive pt-2 px-4">
+            <table class="table table-striped fs-12px">
+                <thead>
+                    <tr>
+                        <th scope="col" class="cursor-pointer" wire:click="orderReservation('programmings.initial_date')">
+                            Fecha
+                            <i class="fas fa-sort ml-1 mt-1"></i>
+                        </th>
+                        <th scope="col" class="cursor-pointer" wire:click="orderReservation('programmings.initial_time')">
+                            Hora
+                            <i class="fas fa-sort ml-1 mt-1"></i>
+                        </th>
+                        <th scope="col" class="cursor-pointer" wire:click="orderReservation('reservations.quota')">
+                            Cupos reservados
+                            <i class="fas fa-sort ml-1 mt-1"></i>
+                        </th>
+                        
+    
+                        <th colspan="2">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if ($reservations && count($reservations) > 0)
+                    @foreach ($reservations as $reservation)
+                    <tr>
+                        <td>{{ $reservation->initial_date }}</td>
+                        <td>{{ $reservation->initial_time  }}</td>
+                        <td>{{ $reservation->quota }}</td>
+                        <td>
+                                    
+                            <button wire:click="editRegisterUser({{ $reservation->user_id}}, {{ $reservation->id }})"><img
+                                    src="{{ asset('/assets/icons/edit.svg') }}" alt="editar"
+                                    style="max-width: 15px" /></button>
+                        </td>
+                        <td>                                    
+
+                                    <button wire:click="deleteReservation({{ $reservation->id }})"><img
+                                        src="{{ asset('/assets/icons/trash.svg') }}" alt="editar"
+                                        style="max-width: 15px" /></button>
+                        </td>
+                        
+                    </tr>
+                @endforeach
+                @else
+                            <td colspan="6">
+                                <label class="d-flex justify-content-center fs-14px">
+                                    No se encontraron datos
+                                </label>
+                            </td>
+                        @endif
+                  
+                
+               
+    
+                </tbody>
+    
+            </table>
+            
+        </div>
 
 
     </x-slot>
@@ -342,5 +404,34 @@
 
             });
         </script>
+         <script>
+            Livewire.on('delReservationUser', reservationId => {
+                Swal.fire({
+                    title: 'Se eliminará la reserva',
+                    text: "¿Esta seguro de eliminar la reserva?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, eliminar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        Livewire.emitTo('users','confirmDeletereservation',reservationId)
+                        Swal.fire(
+                            'Eliminado!',
+                            'la reserva ha sido eliminada.',
+                            'success'
+                        )
+                    }
+                });
+
+            });
+        </script>
+        <script>
+            Livewire.on('reiniciar', function () {
+                location.reload();
+            });
+    </script>
     @endpush
 </div>

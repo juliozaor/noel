@@ -92,8 +92,6 @@ class CreateUser extends Component
 
         $this->validate();
 
-        $appUrl = config('app.url'). '/api/auth';
-
         $collaborator = Collaborators::where('document', $this->document)->first();
 
         $validation = ValidateUsers::findOrFail(1);
@@ -108,38 +106,40 @@ class CreateUser extends Component
 
         $profile = Profile::where('document', $this->document)->with('user')->first();
         if ($profile) {
+
+
             $user = User::find($profile->user_id);
             $this->userId = $user->id;
-            $apiUrl = $appUrl . '/update/' . $user->id;
 
-            $token = $user->createToken('Authorization')->plainTextToken;
+            $user->name = $this->name;
+            $user->save();
 
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token,
-            ])->put($apiUrl, [
-                "name" => $this->name,
-                'cell' => $this->cell,
-                'address' => $this->address,
-                'neighborhood' => $this->neighborhood,
-                'birth' => $this->birth,
-                'eps' => $this->eps ?? '',
-                'reference' => $this->reference ?? '',
-                'experience2022' => $this->experience2022 ?? false
-            ]);
+            $profile = $user->profile;
 
-            // Verificar la respuesta de la API
-            if ($response->successful()) {
-                // La solicitud fue exitosa, puedes manejar la respuesta aquí
-                $data = $response->json(); // Convierte la respuesta JSON en un array
-                //return $data;
-            }
+            // Actualiza los campos del perfil
+            $profile->cell = $this->cell;
+            $profile->address = $this->address;
+            $profile->neighborhood = $this->neighborhood;
+            $profile->birth = $this->birth;
+            $profile->eps = $this->eps ?? '';
+            $profile->reference = $this->reference ?? '';
+            $profile->experience2022 = $this->experience2022 ?? false;
+
+            // Guarda los cambios en el perfil
+            $profile->save();
+
+
         } else {
-
-            $apiUrl = $appUrl . '/register';
-            $response = Http::post($apiUrl, [
+            $user = new User([
                 "name" => $this->name,
                 "email" => strtolower($this->email),
-                "password" => $this->document,
+                "password" => Hash::make($this->document)
+            ]);
+    
+            $user->save();
+            $user->assignRole('User');
+    
+            $profile = new Profile([
                 'document' => $this->document,
                 'cell' => $this->cell,
                 'address' => $this->address,
@@ -147,15 +147,13 @@ class CreateUser extends Component
                 'birth' => $this->birth,
                 'eps' => $this->eps ?? '',
                 'reference' => $this->reference ?? '',
-                'experience2022' => $this->experience2022 ?? false
+                'experience2022' => $this->experience2022 ?? false,
+                'is_collaborator' => $collaborator ? true : false,
             ]);
+            $user->profile()->save($profile);
 
-            // Verificar la respuesta de la API
-            if ($response->successful()) {
-
-                $data = $response->json();
-                $this->userId = $data['data']['id'];
-            }
+            $this->userId = $user->id;
+          
         }
 
         //Siguiente paso

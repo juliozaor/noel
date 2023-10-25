@@ -20,17 +20,20 @@ class Users extends Component
     public $cant = 5;
     public $page = 1;
 
+    public $sortReservation = 'programmings.initial_date';
+    public $directionReservation = 'asc';
+
     public $openEditRegister = false;
     public $openReservationsUser = false;
     public $document, $name, $cell, $address, $neighborhood, $birth, $eps, $reference, $email;
     public $profile;
     public $experience2022;
     public $epsState = 0;
-
+    public $userId;
     public $reservations;
 
 
-    protected $listeners = ['confirmDelete', 'render'];
+    protected $listeners = ['confirmDelete', 'render', 'confirmDeletereservation'];
 
     protected function rules()
     {
@@ -90,6 +93,21 @@ class Users extends Component
         }
     }
 
+    public function orderReservation($sort)
+    {
+
+        if ($this->sortReservation == $sort) {
+            if ($this->directionReservation == 'desc') {
+                $this->directionReservation = 'asc';
+            } else {
+                $this->directionReservation = 'desc';
+            }
+        } else {
+            $this->sortReservation = $sort;
+            $this->directionReservation = 'asc';
+        }
+    }
+
     private function searchUsers()
     {
         try {
@@ -101,7 +119,7 @@ class Users extends Component
                     $query->where('role_id', $roleID);
                 })
                 ->where('profiles.document', '<>', '')
-                ->select('users.id', 'users.name', 'profiles.document','profiles.is_collaborator', 'profiles.cell')
+                ->select('users.id', 'users.name', 'profiles.document', 'profiles.is_collaborator', 'profiles.cell')
                 ->orderBy($this->sort, $this->direction);
 
             if (!empty($this->search)) {
@@ -142,6 +160,7 @@ class Users extends Component
     public function render()
     {
         $this->searchUsers();
+        $this->searchReservations();
         return view('livewire.users', [
             'users' => $this->users
         ]);
@@ -154,17 +173,55 @@ class Users extends Component
         $this->openEditRegister = true;
     }
 
-    public function openReservation($document)
+    public function openReservation($document, $userId)
     {
-        $this->searchReservations($document);
+        $this->document = $document;
+        $this->userId = $userId;
+        $this->searchProfile();
+        $this->searchReservations();
         $this->openReservationsUser = true;
     }
 
-    public function searchReservations($document)
+    public function searchReservations()
     {
-        $this->reservations = Reservation::where('user_id',$document)->with('programming')->get();
-       // dd($this->reservations);
+        $this->reservations = Reservation::leftJoin('programmings', 'reservations.programming_id', '=', 'programmings.id')
+            ->select('programmings.initial_date', 'programmings.initial_time', 'reservations.quota', 'reservations.user_id', 'reservations.id')
+            ->where('user_id', $this->userId)
+            ->orderBy($this->sortReservation, $this->directionReservation)
+            ->get();
     }
+
+    public function deleteReservation($reservationId)
+    {
+          $this->emit('delReservationUser', $reservationId);
+    }
+
+    public function confirmDeletereservation($reservationId)
+    {
+        $reservation = Reservation::find($reservationId);
+
+        // Si se encontró la resrva, elimínalo
+        if ($reservation) {
+            $idProgramming = $reservation->programming_id;
+            $reservation->delete();
+            $this->emitTo('users', 'render');
+            // $this->resetDatesInAll();
+        }
+        $this->emit('reiniciar');
+    }
+
+    public function editRegisterUser($document, $reservationId)
+    {
+        $reservation = Reservation::find($reservationId);
+        $params = [
+            'document' => $document,
+            'programmationId' =>  $reservation->programming_id
+        ];
+
+        $this->emitTo('create-user', 'openEdit',  $params);
+        $this->openReservationsUser = false;
+    }
+
 
     public function searchProfile()
     {
@@ -195,34 +252,28 @@ class Users extends Component
 
         $this->validate();
         try {
-            $appUrl = config('app.url') . '/api/auth';
 
             $profile = Profile::where('document', $this->document)->with('user')->first();
             if ($profile) {
+
                 $user = User::find($profile->user_id);
-                $apiUrl = $appUrl . '/update/' . $user->id;
 
-                $token = $user->createToken('Authorization')->plainTextToken;
+                $user->name = $this->name;
+                $user->save();
 
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $token,
-                ])->put($apiUrl, [
-                    "name" => $this->name,
-                    'cell' => $this->cell,
-                    'address' => $this->address,
-                    'neighborhood' => $this->neighborhood,
-                    'birth' => $this->birth,
-                    'eps' => $this->eps ?? '',
-                    'reference' => $this->reference ?? '',
-                    'experience2022' => $this->experience2022 ?? false
-                ]);
+                $profile = $user->profile;
 
-                // Verificar la respuesta de la API
-                if ($response->successful()) {
-                    // La solicitud fue exitosa, puedes manejar la respuesta aquí
-                    $data = $response->json(); // Convierte la respuesta JSON en un array
-                    //return $data;
-                }
+                // Actualiza los campos del perfil
+                $profile->cell = $this->cell;
+                $profile->address = $this->address;
+                $profile->neighborhood = $this->neighborhood;
+                $profile->birth = $this->birth;
+                $profile->eps = $this->eps ?? '';
+                $profile->reference = $this->reference ?? '';
+                $profile->experience2022 = $this->experience2022 ?? false;
+
+                // Guarda los cambios en el perfil
+                $profile->save();
             }
         } catch (\Throwable $th) {
             dd($th);

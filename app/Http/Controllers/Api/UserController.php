@@ -41,6 +41,7 @@ class UserController extends Controller
         }
 
         $profileUser = Profile::where('document', $request->document)->first();
+
         if ($profileUser) {
             return response()->json([
                 'status' => false,
@@ -170,9 +171,7 @@ class UserController extends Controller
 
             // Actualiza los campos del usuario
             $user->name = $request->name;
-            /*  $user->email = strtolower($request->email);
-            $user->password = Hash::make($request->document); // Asegúrate de que esta sea la lógica adecuada */
-
+        
             // Guarda los cambios en el usuario
             $user->save();
 
