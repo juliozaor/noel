@@ -25,7 +25,7 @@ class Users extends Component
     public $experience2022;
     public $epsState = 0;
 
-    protected $listeners = ['confirmDelete','render'];
+    protected $listeners = ['confirmDelete', 'render'];
 
     protected function rules()
     {
@@ -87,33 +87,32 @@ class Users extends Component
 
     private function searchUsers()
     {
-try {
-    $roleID = 2;
+        try {
+            $roleID = 2;
 
-        $usersQuery = User::leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
-        
-            ->whereHas('roles', function ($query) use ($roleID) {
-                $query->where('role_id', $roleID);
-            })
-            ->where('profiles.document','<>', '')
-            ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell')
-            ->orderBy($this->sort, $this->direction);
+            $usersQuery = User::leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
 
-        if (!empty($this->search)) {
-            $search = '%' . $this->search . '%';
-            $usersQuery->where(function ($query) use ($search) {
-                $query->orWhere('users.name', 'like', $search)
-                    ->orWhere('profiles.document', 'like', $search)
-                    ->orWhere('profiles.cell', 'like', $search);
-            });
+                ->whereHas('roles', function ($query) use ($roleID) {
+                    $query->where('role_id', $roleID);
+                })
+                ->where('profiles.document', '<>', '')
+                ->select('users.id', 'users.name', 'profiles.document','profiles.is_collaborator', 'profiles.cell')
+                ->orderBy($this->sort, $this->direction);
+
+            if (!empty($this->search)) {
+                $search = '%' . $this->search . '%';
+                $usersQuery->where(function ($query) use ($search) {
+                    $query->orWhere('users.name', 'like', $search)
+                        ->orWhere('profiles.document', 'like', $search)
+                        ->orWhere('profiles.cell', 'like', $search);
+                });
+            }
+
+            $this->count = $usersQuery->count();
+            $this->users = $usersQuery->paginate($this->cant, ['*'], 'listPage', $this->page);
+        } catch (\Throwable $th) {
+            dd($th);
         }
-
-        $this->count = $usersQuery->count();
-        $this->users = $usersQuery->paginate($this->cant, ['*'], 'listPage', $this->page);
-} catch (\Throwable $th) {
-    dd($th);
-}
-       
     }
 
     public function deleteUser($userId)
@@ -178,44 +177,44 @@ try {
     {
 
         $this->validate();
-try {
-    $appUrl = config('app.url').'/api/auth';
+        try {
+            $appUrl = config('app.url') . '/api/auth';
 
-    $profile = Profile::where('document', $this->document)->with('user')->first();
-    if ($profile) {
-        $user = User::find($profile->user_id);
-        $apiUrl = $appUrl . '/update/' . $user->id;
+            $profile = Profile::where('document', $this->document)->with('user')->first();
+            if ($profile) {
+                $user = User::find($profile->user_id);
+                $apiUrl = $appUrl . '/update/' . $user->id;
 
-        $token = $user->createToken('Authorization')->plainTextToken;
+                $token = $user->createToken('Authorization')->plainTextToken;
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->put($apiUrl, [
-            "name" => $this->name,
-            'cell' => $this->cell,
-            'address' => $this->address,
-            'neighborhood' => $this->neighborhood,
-            'birth' => $this->birth,
-            'eps' => $this->eps ?? '',
-            'reference' => $this->reference ?? '',
-            'experience2022' => $this->experience2022 ?? false
-        ]);
+                $response = Http::withHeaders([
+                    'Authorization' => 'Bearer ' . $token,
+                ])->put($apiUrl, [
+                    "name" => $this->name,
+                    'cell' => $this->cell,
+                    'address' => $this->address,
+                    'neighborhood' => $this->neighborhood,
+                    'birth' => $this->birth,
+                    'eps' => $this->eps ?? '',
+                    'reference' => $this->reference ?? '',
+                    'experience2022' => $this->experience2022 ?? false
+                ]);
 
-        // Verificar la respuesta de la API
-        if ($response->successful()) {
-            // La solicitud fue exitosa, puedes manejar la respuesta aquí
-            $data = $response->json(); // Convierte la respuesta JSON en un array
-            //return $data;
+                // Verificar la respuesta de la API
+                if ($response->successful()) {
+                    // La solicitud fue exitosa, puedes manejar la respuesta aquí
+                    $data = $response->json(); // Convierte la respuesta JSON en un array
+                    //return $data;
+                }
+            }
+        } catch (\Throwable $th) {
+            dd($th);
         }
-    }
-} catch (\Throwable $th) {
-    dd($th);
-}
-      
+
 
         $this->openEditRegister = false;
         $this->resetDatesIn();
-        $this->emit('alert', 'Usuario actualizado','success');
+        $this->emit('alert', 'Usuario actualizado', 'success');
     }
 
     public function resetDatesIn()

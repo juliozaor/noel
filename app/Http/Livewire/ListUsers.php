@@ -60,7 +60,7 @@ class ListUsers extends Component
         })
         ->where('profiles.document','<>', '')
         ->where('reservations.programming_id','<>',$this->programmingId)
-            ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell')
+            ->select('users.id', 'users.name', 'profiles.document','profiles.is_collaborator', 'profiles.cell')
             ->orderBy($this->sort, $this->direction);
 
         if (!empty($this->search)) {

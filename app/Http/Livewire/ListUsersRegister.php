@@ -61,7 +61,7 @@ class ListUsersRegister extends Component
                 $query->where('role_id', $roleID);
             })
             ->where('profiles.document','<>', '')
-            ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell', 'reservations.quota')
+            ->select('users.id', 'users.name', 'profiles.document', 'profiles.cell','profiles.is_collaborator','reservations.quota')
             ->orderBy($this->sort, $this->direction);
 
         if (!empty($this->search)) {
