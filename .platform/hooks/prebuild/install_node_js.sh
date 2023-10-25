@@ -3,7 +3,7 @@
 # Install  Node  alongside with the paired NPM release
 NODE_VERSION="18"
 
-if [[ ! "$(node --version)" =~ "v$NODE_VERSION" ]]; then
+if ! command -v node &> /dev/null || [[ ! "$(node --version)" =~ "v$NODE_VERSION" ]]; then
     # Remove existing Node.js and npm if not version 18
     sudo yum remove -y nodejs npm
 
