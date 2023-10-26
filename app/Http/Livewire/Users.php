@@ -183,7 +183,8 @@ class Users extends Component
     public function searchReservations()
     {
         $this->reservations = Reservation::leftJoin('programmings', 'reservations.programming_id', '=', 'programmings.id')
-            ->select('programmings.initial_date', 'programmings.initial_time', 'reservations.quota', 'reservations.user_id', 'reservations.id')
+            ->select('programmings.initial_date', 'programmings.initial_time', 
+            'reservations.quota', 'reservations.user_id', 'reservations.id as id', 'programmings.id as idProgramming')
             ->where('user_id', $this->userId)
             ->orderBy($this->sortReservation, $this->directionReservation)
             ->get();
@@ -211,6 +212,17 @@ class Users extends Component
     public function editRegisterUser($document, $reservationId)
     {
         $reservation = Reservation::find($reservationId);
+        if($reservation->programming_id == 1){
+            
+            $params = [
+                'userId' => $this->userId,
+                'email' => strtolower($this->email),
+                'wait' => true,
+                'editReservation' => true,
+                'programmationId' => 1,
+                'reservationId' => $reservation->id
+            ];
+        }else{
         $params = [
             'userId' => $this->userId,
             'email' => strtolower($this->email),
@@ -218,6 +230,7 @@ class Users extends Component
             'programmationId' => $reservation->programming_id
         ];
 
+    }
         $this->emitTo('create-reservation', 'open',  $params);
          $this->openReservationsUser = false;
 

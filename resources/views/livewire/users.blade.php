@@ -324,6 +324,11 @@
                                 Cupos reservados
                                 <i class="fas fa-sort ml-1 mt-1"></i>
                             </th>
+                            <th scope="col" class="cursor-pointer"
+                                wire:click="orderReservation('programmings.id')">
+                                Tipo de reserva
+                                <i class="fas fa-sort ml-1 mt-1"></i>
+                            </th>
 
 
                             <th colspan="2">Acciones</th>
@@ -337,6 +342,13 @@
                                     <td>{{ $reservation->initial_time }}</td>
                                     <td>{{ $reservation->quota }}</td>
                                     <td>
+                                        @if ($reservation->idProgramming == 1)
+                                        Lista de Espera
+                                        @else
+                                        Inscripción Programada
+                                        @endif
+                                    </td>
+                                    <td>
 
                                         <button
                                             wire:click="editRegisterUser({{ $reservation->user_id }}, {{ $reservation->id }})"><img
@@ -349,6 +361,7 @@
                                                 src="{{ asset('/assets/icons/trash.svg') }}" alt="editar"
                                                 style="max-width: 15px" /></button>
                                     </td>
+
 
                                 </tr>
                             @endforeach

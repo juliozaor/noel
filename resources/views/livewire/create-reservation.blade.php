@@ -6,7 +6,7 @@
 
     <x-dialog-modal wire:model="openReservation">
         <x-slot name="title">
-            Crear nueva reservación <span class="font-medium text-red-600">- Todos los campos son obligatorios</span>
+            Crear nueva reservación <span class="font-medium text-red-600">- Todos los campos son obligatorios</span>            
         </x-slot>
         <x-slot name="content">
             @if ($wait == 0 )

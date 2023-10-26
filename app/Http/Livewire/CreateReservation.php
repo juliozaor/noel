@@ -52,21 +52,39 @@ class CreateReservation extends Component
     public function loadReservations()
     {
         if ($this->editReservation) {
-            $reservation = Reservation::with('programming')->with('user')
-                ->where('user_id', $this->userId)
-                ->where('programming_id', $this->programmationId)
-                ->where('programming_id', '<>', 1)
-                ->first();
-            if ($reservation) {
-                $programmings = Programming::where('id', $this->programmationId)->get();
+            if ($this->programmationId == 1) {
+                $reservation = Reservation::with('programming')->with('user')
+                    ->where('user_id', $this->userId)
+                    ->where('programming_id', $this->programmationId)
+                    ->first();
+                    if ($reservation) {
+                        $programmings = Programming::where('id', $this->programmationId)->get();
+    
+    
+                        $this->quotaAvailable = $programmings[0]->quota_available;
+                        $this->selectedProgramming =  $programmings[0]->id;
+                        $this->quota = $reservation->quota;
+                        $this->reserverdQuota = $reservation->quota;
+    
+                        $this->programmings = $programmings;
+                    }
+            } else {
+                $reservation = Reservation::with('programming')->with('user')
+                    ->where('user_id', $this->userId)
+                    ->where('programming_id', $this->programmationId)
+                    ->where('programming_id', '<>', 1)
+                    ->first();
+                if ($reservation) {
+                    $programmings = Programming::where('id', $this->programmationId)->get();
 
 
-                $this->quotaAvailable = $programmings[0]->quota_available;
-                $this->selectedProgramming =  $programmings[0]->id;
-                $this->quota = $reservation->quota;
-                $this->reserverdQuota = $reservation->quota;
+                    $this->quotaAvailable = $programmings[0]->quota_available;
+                    $this->selectedProgramming =  $programmings[0]->id;
+                    $this->quota = $reservation->quota;
+                    $this->reserverdQuota = $reservation->quota;
 
-                $this->programmings = $programmings;
+                    $this->programmings = $programmings;
+                }
             }
         } else {
             if ($this->programmationId) {
@@ -189,69 +207,68 @@ class CreateReservation extends Component
     public function saveWaiting()
     {
         try {
-         
-
-        $user = User::findOrFail($this->userId);
-        $date = date('Y-m-d');
-        $time = date('H:i:s');
-        if ($this->editReservation) {
-            $isreservation = Reservation::where('programming_id', 1)
-                ->where('user_id', $this->userId)
-                ->where('id', $this->reservationId)->first();
-            if ($isreservation) {
-                $isreservation->quota = $this->quota;
-                $isreservation->save();
-                $this->openModalMembers($isreservation->id);
-                return;
-            }
-        }
 
 
-        $reservations = Reservation::with('programming')->where('user_id', $this->userId)->get();
-        if (count($reservations) >= 1) {
-            if ($user->profile->is_collaborator == 1) {
-                session()->flash('message', 'El usuario es un colaborador y ya tiene una reserva en el sistema');
-                return;
-            }
-
-            $programmingId = 1;
-            $hasProgramming = $reservations->contains(function ($reservation) use ($programmingId) {
-                return $reservation->programming && $reservation->programming->id === $programmingId;
-            });
-
-            if ($hasProgramming) {
-                session()->flash('message', 'Ya el usuario se encuentra en lista de espera');
-                return;
-            }
-
-            foreach ($reservations as $reservation) {
-                if (
-                    $date < $reservation->programming->initial_date ||
-                    ($date == $reservation->programming->initial_date &&
-                        $time < $reservation->programming->initial_time)
-                ) {
-                    session()->flash('message', 'El usuario tiene una reserva activa');
+            $user = User::findOrFail($this->userId);
+            $date = date('Y-m-d');
+            $time = date('H:i:s');
+            if ($this->editReservation) {
+                $isreservation = Reservation::where('programming_id', 1)
+                    ->where('user_id', $this->userId)
+                    ->where('id', $this->reservationId)->first();
+                if ($isreservation) {
+                    $isreservation->quota = $this->quota;
+                    $isreservation->save();
+                    $this->openModalMembers($isreservation->id);
                     return;
                 }
             }
-        }
 
-        if ($user->profile->is_collaborator == 1 && $this->quota > 5) {
-            session()->flash('message', 'El usuario no puede tener mas de 5 cupos');
-            return;
-        }
 
-        $reservation = new Reservation();
-        $reservation->quota = $this->quota;
-        $reservation->programming_id = 1;
-        $reservation->user_id = $this->userId;
-        $reservation->reservation_date = now();
-        $reservation->save();
+            $reservations = Reservation::with('programming')->where('user_id', $this->userId)->get();
+            if (count($reservations) >= 1) {
+                if ($user->profile->is_collaborator == 1) {
+                    session()->flash('message', 'El usuario es un colaborador y ya tiene una reserva en el sistema');
+                    return;
+                }
 
-        $this->programmationId = 1;
+                $programmingId = 1;
+                $hasProgramming = $reservations->contains(function ($reservation) use ($programmingId) {
+                    return $reservation->programming && $reservation->programming->id === $programmingId;
+                });
 
-        $this->openModalMembers($reservation->id);
-        
+                if ($hasProgramming) {
+                    session()->flash('message', 'Ya el usuario se encuentra en lista de espera');
+                    return;
+                }
+
+                foreach ($reservations as $reservation) {
+                    if (
+                        $date < $reservation->programming->initial_date ||
+                        ($date == $reservation->programming->initial_date &&
+                            $time < $reservation->programming->initial_time)
+                    ) {
+                        session()->flash('message', 'El usuario tiene una reserva activa');
+                        return;
+                    }
+                }
+            }
+
+            if ($user->profile->is_collaborator == 1 && $this->quota > 5) {
+                session()->flash('message', 'El usuario no puede tener mas de 5 cupos');
+                return;
+            }
+
+            $reservation = new Reservation();
+            $reservation->quota = $this->quota;
+            $reservation->programming_id = 1;
+            $reservation->user_id = $this->userId;
+            $reservation->reservation_date = now();
+            $reservation->save();
+
+            $this->programmationId = 1;
+
+            $this->openModalMembers($reservation->id);
         } catch (\Throwable $th) {
             dd($th);
         }
@@ -260,83 +277,83 @@ class CreateReservation extends Component
     public function saveReservation()
     {
         try {
-            
-        $user = User::findOrFail($this->userId);
-        $date = date('Y-m-d');
-        $time = date('H:i:s');
 
-        if ($this->editReservation) {
+            $user = User::findOrFail($this->userId);
+            $date = date('Y-m-d');
+            $time = date('H:i:s');
 
-
+            if ($this->editReservation) {
 
 
-            $isreservation = Reservation::where('programming_id', $this->selectedProgramming)
-                ->where('user_id', $this->userId)->first();
-            if ($isreservation) {
-                $programming = Programming::find($this->selectedProgramming);
-                $programming->quota_available =
-                    ($programming->quota_available + $isreservation->quota) - $this->quota;
-                $programming->save();
 
-                $isreservation->quota = $this->quota;
-                $isreservation->save();
 
-                $this->openModalMembers($isreservation->id);
-                return;
-            }
-        }
+                $isreservation = Reservation::where('programming_id', $this->selectedProgramming)
+                    ->where('user_id', $this->userId)->first();
+                if ($isreservation) {
+                    $programming = Programming::find($this->selectedProgramming);
+                    $programming->quota_available =
+                        ($programming->quota_available + $isreservation->quota) - $this->quota;
+                    $programming->save();
 
-        $reservations = Reservation::with('programming')->where('user_id', $this->userId)->get();
-        if (count($reservations) >= 1) {
+                    $isreservation->quota = $this->quota;
+                    $isreservation->save();
 
-            $programmingId = $this->selectedProgramming;
-            $hasProgramming = $reservations->contains(function ($reservation) use ($programmingId) {
-                return $reservation->programming && $reservation->programming->id === $programmingId;
-            });
-
-            if ($hasProgramming) {
-                session()->flash('message', 'Ya existe una reserva para esta programacion');
-                return;
-            }
-
-            if ($user->profile->is_collaborator == 1) {
-                session()->flash('message', 'El usuario es un colaborador y ya tiene una reserva en el sistema');
-                return;
-            }
-
-            foreach ($reservations as $reservation) {
-                if (
-                    $date < $reservation->programming->initial_date ||
-                    ($date == $reservation->programming->initial_date &&
-                        $time < $reservation->programming->initial_time)
-                ) {
-                    session()->flash('message', 'El usuario tiene una reserva activa');
+                    $this->openModalMembers($isreservation->id);
                     return;
                 }
             }
+
+            $reservations = Reservation::with('programming')->where('user_id', $this->userId)->get();
+            if (count($reservations) >= 1) {
+
+                $programmingId = $this->selectedProgramming;
+                $hasProgramming = $reservations->contains(function ($reservation) use ($programmingId) {
+                    return $reservation->programming && $reservation->programming->id === $programmingId;
+                });
+
+                if ($hasProgramming) {
+                    session()->flash('message', 'Ya existe una reserva para esta programacion');
+                    return;
+                }
+
+                if ($user->profile->is_collaborator == 1) {
+                    session()->flash('message', 'El usuario es un colaborador y ya tiene una reserva en el sistema');
+                    return;
+                }
+
+                foreach ($reservations as $reservation) {
+                    if (
+                        $date < $reservation->programming->initial_date ||
+                        ($date == $reservation->programming->initial_date &&
+                            $time < $reservation->programming->initial_time)
+                    ) {
+                        session()->flash('message', 'El usuario tiene una reserva activa');
+                        return;
+                    }
+                }
+            }
+
+            if ($user->profile->is_collaborator == 1 && $this->quota > 5) {
+                session()->flash('message', 'El usuario no puede tener mas de 5 cupos');
+                return;
+            }
+
+            $reservation = new Reservation();
+            $reservation->quota = $this->quota;
+            $reservation->programming_id = $this->selectedProgramming;
+            $reservation->user_id = $this->userId;
+            $reservation->reservation_date = now();
+            $reservation->save();
+
+            $programming = Programming::find($this->selectedProgramming);
+            $programming->quota_available -= $this->quota;
+            $programming->save();
+
+            $this->programmationId = $this->selectedProgramming;
+            //Siguiente paso
+            $this->openModalMembers($reservation->id);
+        } catch (\Throwable $th) {
+            dd($th);
         }
-
-        if ($user->profile->is_collaborator == 1 && $this->quota > 5) {
-            session()->flash('message', 'El usuario no puede tener mas de 5 cupos');
-            return;
-        }
-
-        $reservation = new Reservation();
-        $reservation->quota = $this->quota;
-        $reservation->programming_id = $this->selectedProgramming;
-        $reservation->user_id = $this->userId;
-        $reservation->reservation_date = now();
-        $reservation->save();
-
-        $programming = Programming::find($this->selectedProgramming);
-        $programming->quota_available -= $this->quota;
-        $programming->save();
-
-        $this->programmationId = $this->selectedProgramming;
-        //Siguiente paso
-        $this->openModalMembers($reservation->id);
-    } catch (\Throwable $th) {
-        dd($th);
-    }
     }
 }
