@@ -231,3 +231,25 @@ color:#fff !important;
   display: flex;
   align-items: center;
 }
+.botonAzul{
+  background-color: #ffffff00;
+  box-shadow: 0px 3px 10px #0000005C;
+  border: 1px solid #0096D8!important;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0px;
+  color: #0096D8!important;
+}
+.botonAzul:hover{
+  background: #202256!important;
+  color: #ffffff!important;
+
+}
+.contenedorGrafica{
+  display: block;
+    box-sizing: border-box;
+    height: 388px;
+    width: 776px;
+}

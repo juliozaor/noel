@@ -467,7 +467,7 @@ class CreateMembers extends Component
     public function createImgQr($qr, $cod)
     {
         // Genera el código QR en formato SVG
-        $qrCodeSvg = QrCode::format('png')->size(150)->generate($qr, 'temp/' . $cod . '.png');
+        $qrCodeSvg = QrCode::format('png')->size(200)->generate($qr, 'temp/' . $cod . '.png');
     }
 
     public function deleteImgQr($codes){

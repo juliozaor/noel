@@ -35,7 +35,7 @@
       </span>
     </a>
 
-   {{--  <hr>
+    <hr>
     <a href="{{ route('admin.events.inform') }}" class="link_side {{request()->routeIs('admin.events.inform') ? 'active':''}}">
         <span class="me-2">
           <img draggable="false" src="{{ asset('/assets/icons/reports.svg') }}"[alt]="module._nombreMostrar">
@@ -43,7 +43,7 @@
         <span class="fs-12px fw-semibold">
         Reportes
       </span>
-    </a> --}}
+    </a>
 
    {{--  <hr>      
     <a href="{{ route('admin.events.qr') }}" class="link_side {{request()->routeIs('admin.events.qr') ? 'active':''}}">
