@@ -27,6 +27,14 @@
                         <span class="text-white">
                             Administrar eventos
                         </span>
+                        @else
+                    @if (request()->routeIs('admin.events.inform'))
+                        <img class="img-fluid me-2" src="{{ asset('/assets/icons/hReports.svg') }}">
+
+                        <span class="text-white">
+                            Reportes
+                        </span>
+                    @endif
                     @endif
                 @endif
             @endif

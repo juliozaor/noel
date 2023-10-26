@@ -9,6 +9,7 @@ Route::middleware('can:administrador')->group(function () {
   Route::get('events/register', [EventController::class, 'indexRegister'])
   ->name('admin.events.register');
   Route::get('events/users', [EventController::class, 'users'])->name('admin.events.users');
+  Route::get('events/informs', [EventController::class, 'inform'])->name('admin.events.inform');
   Route::get('events/qr/{token}', [EventController::class, 'readQr'])->name('admin.events.qr');
   
   Route::resource('events', EventController::class)->names('admin.events')->only([

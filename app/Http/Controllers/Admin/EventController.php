@@ -51,6 +51,11 @@ class EventController extends Controller
         return view('admin.events.edit', compact('event'));
     }
 
+    public function inform()
+    {
+        return view('admin.events.inform');
+    }
+
     public function readQr(Request $request)
     {
         $token = $request->token;
