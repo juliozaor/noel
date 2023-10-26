@@ -24,6 +24,9 @@
                 <div class="col-md-2 mt-2">
                     @livewire('bulk-load', ['title' => 'Carga masiva de usuarios', 'view' => 'users', 'label' => 'Carga masiva'])
                 </div>
+                @livewire('create-reservation')
+                @livewire('create-members')
+                @livewire('register-user-in-event')
 
             </div>
         </div>
@@ -33,5 +36,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @livewire('users', ['title' => 'Lista de usuarios'])
         </div>
+      
     </div>
 </x-app-layout>

@@ -19,81 +19,33 @@
     body {
     font-family: Montserrat, Helvetica, sans-serif;
 }
-
-    .encabeado {
-        height: 55px;
-        background-color: red;
-        color: white;
-        display: flex;
-        align-items: center;
-    }
-
-    .encabeado span {
-        margin-left: 20px;
-        font-weight: 600;
-    }
-
-    .card-qr {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        background-color: #EEEEEE;
-        margin: 10px;
-        border-radius: 12px;
-        padding: 20px;
-    }
-
-    .titulo-card h3 {
-        color: red;
-    }
-
-    .card-body {
-        margin: 10px 20px;
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .qr {
-        padding: 10px;
-        border-radius: 5px;
-        background-color: white;
-        max-width: 200px;
-    }
-
-    .titulo-qr {
-        font-weight: 400;
-        font-size: 16px;
-        margin-bottom: 10px;
-    }
-
-    .footer {
-        margin: 20px 25px
-    }
-    .imagen img{
-    width: 100%;
-  }
+  
 </style>
 
 <body>
-    <div class="imagen">
-        <img src="https://tysa.co/noel/header.png" alt="">
+    <div>
+        <img src="{{ asset('/assets/img/header.png') }}" alt="" style="width: 100%;">
       </div>
-    <div class="encabeado">
+    <div >
         @foreach ($codes as $code)
             @if ($code['isUser'] == 1)
-                <span>Hola, {{ $code['name'] }}</span>
+                <span style="margin-left: 20px; font-weight: 600;font-size: 24px;">Hola, {{ $code['name'] }}</span>
             @endif
         @endforeach
 
 
     </div>
 
-    <div class="card-qr">
-        <div class="titulo-card">
+    <div style="
+    text-align: center;
+    background-color: #EEEEEE;
+    margin: 10px;
+    border-radius: 12px;
+    padding: 20px;">
+        <div>
             @foreach ($codes as $code)
                 @if ($code['isUser'] == 1)
-                    <h3> Información de tu reserva</h3>
+                    <h3 style="color: red;"> Información de tu reserva</h3>
                     <p>{{ $code['quota'] }} cupos</p>
                     <p><strong>Fecha: {{ $code['date'] }} - Hora: {{ $code['time'] }}</strong></p>
                     <p>Imprime o presenta el codigo QR correspondiente a cada miembro</p>
@@ -101,21 +53,20 @@
             @endforeach
         </div>
     </div>
-    <div class="card-body">
+    <div style=" margin: 10px 20px;display: flex;flex-wrap: wrap;">
         @foreach ($codes as $code)
-            <div class="qr">
-                <div class="titulo-qr">
+            <div style="padding: 10px;border-radius: 5px;background-color: white;max-width: 200px;">
+                <div style="font-weight: 400;font-size: 16px;margin-bottom: 10px;">
                     {{ $code['name'] }}
                 </div>
-                <div class="imagen-qr">
+                <div style="margin: 20px 25px">
                     {{-- <img src="data:image/svg+xml;base64,{{ base64_encode(QrCode::size(150)->generate($code['qr'])) }}" alt="Código QR"> --}}
 
                     {{-- {!! QrCode::size(150)->generate($code['qr']) !!} --}}
                   {{-- <img src="{{ $message->embed(public_path($code['qr'])) }}" alt="Código QR"> --}}
-                  <img src="https://backoffice.navidadesnoel.com/{{$code['qr']}}" alt="{{ $code['name'] }}">
+                {{--   <img src="https://backoffice.navidadesnoel.com/{{$code['qr']}}" alt="{{ $code['name'] }}"> --}}
 
-                  <img src="/{{$code['qr']}}" alt="{{ $code['name'] }}">
-
+                <img src="{{ asset('/$code["qr"]') }}" alt="{{ $code['name'] }}">
 
                 </div>
 
@@ -123,7 +74,7 @@
         @endforeach
     </div>
 
-    <div class="footer">
+    <div style="margin: 20px 25px">
         <p><strong>RECOMENDACIONES DE INGRESO</strong></p>
         <p>Para disfrutar de esta divertida experiencia de forma segura, ten en cuenta las siguientes recomendaciones:
         </p>

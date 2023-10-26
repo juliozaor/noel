@@ -21,34 +21,22 @@
 }
 
 
-    .card {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        background-color: #EEEEEE;
-        margin: 10px;
-        border-radius: 12px;
-        padding: 20px;
-        margin-top: 20px
-    }
-
-    .titulo-card h3 {
-        color: red;
-    }
-
-
-    .imagen img{
-    width: 100%;
-  }
 </style>
 
 <body>
-    <div class="imagen">
-        <img src="https://tysa.co/noel/header.png" alt="">
+    <div>
+        <img src="{{ asset('/assets/img/header.png') }}" alt="" style="width: 100%;">
       </div>
 
-    <div class="card">
+    <div style="display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #EEEEEE;
+    margin: 10px;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px">
         <div class="titulo-card">
            <h3>Reservas para el día: <strong>{{$date}}</strong></h3>
         </div>

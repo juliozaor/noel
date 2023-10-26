@@ -329,7 +329,6 @@ class CreateMembers extends Component
           
             $this->createImgQr($qrU, $codU);
             $this->img[] = $codU;
-
             $qrCode = new QrCodes([
                 'document' => $user->profile->document,
                 'is_user' => 1,
@@ -355,13 +354,14 @@ class CreateMembers extends Component
                 $correo = new ReservationVerification($this->codes);
 
                 $respose = Mail::to($this->email)->send($correo);
+               // $this->deleteImgQr($this->img);
                 //  dd($this->img);
                 // dd($this->email,$respose);
             }
 
             $this->emitTo('tablet-register', 'render');
             $this->emit('alert', 'reservacion actualizada con éxito', 'success');
-            //$this->resetDates();
+            $this->resetDates();
             $this->emit('reiniciar');
             $this->openMembers = false;
             $this->resetDatesInAll();
@@ -396,7 +396,7 @@ class CreateMembers extends Component
     {
         $this->reset([
             'reservationId', 'reservation', 'quota', 'minor', 'nameMember',
-            'documentMember', 'name', 'document', 'email', 'codes'
+            'documentMember', 'name', 'document', 'email', 'codes', 'img'
         ]);
     }
 
@@ -468,5 +468,15 @@ class CreateMembers extends Component
     {
         // Genera el código QR en formato SVG
         $qrCodeSvg = QrCode::format('png')->size(150)->generate($qr, 'temp/' . $cod . '.png');
+    }
+
+    public function deleteImgQr($codes){
+        foreach ($codes as $cod) {
+            try {
+                unlink('temp/' . $cod . '.png');
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
     }
 }

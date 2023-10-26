@@ -18,7 +18,7 @@
           Validar entrada
         </div>
         <div class="card-body">
-          <p class="card-text">Codigo no válido o ya fue usado</p>
+          <p class="card-text">Este código ya fue usado</p>
         </div>
       </div>
     @endif

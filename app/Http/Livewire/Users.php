@@ -5,8 +5,6 @@ namespace App\Http\Livewire;
 use App\Models\Profile;
 use App\Models\User;
 use App\Models\Reservation;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
 class Users extends Component
@@ -193,7 +191,7 @@ class Users extends Component
 
     public function deleteReservation($reservationId)
     {
-          $this->emit('delReservationUser', $reservationId);
+        $this->emit('delReservationUser', $reservationId);
     }
 
     public function confirmDeletereservation($reservationId)
@@ -214,12 +212,15 @@ class Users extends Component
     {
         $reservation = Reservation::find($reservationId);
         $params = [
-            'document' => $document,
-            'programmationId' =>  $reservation->programming_id
+            'userId' => $this->userId,
+            'email' => strtolower($this->email),
+            'editReservation' => true,
+            'programmationId' => $reservation->programming_id
         ];
 
-        $this->emitTo('create-user', 'openEdit',  $params);
-        $this->openReservationsUser = false;
+        $this->emitTo('create-reservation', 'open',  $params);
+         $this->openReservationsUser = false;
+
     }
 
 
