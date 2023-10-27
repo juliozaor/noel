@@ -13,82 +13,90 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
 
     public function store(Request $request)
     {
-        $rules = [
-            'name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'unique:users', 'email', 'max:100', 'string'],
-            'password' => ['required', 'string'],
-            'document' => ['integer'],
-            'cell' => ['integer'],
-            'address' => ['string'],
-            'neighborhood' => ['string'],
-            'birth' => ['required', 'date', 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')],
-        ];
+        try{
+                    $rules = [
+                'name' => ['required', 'string', 'max:100'],
+                'email' => ['required', 'unique:users', 'email', 'max:100', 'string'],
+                'password' => ['required', 'string'],
+                'document' => ['integer'],
+                'cell' => ['integer'],
+                'address' => ['string'],
+                'neighborhood' => ['string'],
+                'birth' => ['required', 'date', 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')],
+            ];
 
 
 
-        $validator = Validator::make($request->input(), $rules);
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()->all()
-            ], 400);
-        }
-
-        $profileUser = Profile::where('document', $request->document)->first();
-
-        if ($profileUser) {
-            return response()->json([
-                'status' => false,
-                'errors' => ['Ya hay un usuario registrado con este documento']
-            ], 409);
-        }
-        $collaborator = Collaborators::where('document', $request->document)->first();
-
-        $validation = ValidateUsers::findOrFail(1);
-
-        if ($validation && $validation->status == 0) {
-            if (!$collaborator) {
+            $validator = Validator::make($request->input(), $rules);
+            if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
-                    'errors' => 'En el momento no está habilitado el registro'
-                ], 401);
+                    'errors' => $validator->errors()->all()
+                ], 400);
             }
+
+            $profileUser = Profile::where('document', $request->document)->first();
+
+            if ($profileUser) {
+                return response()->json([
+                    'status' => false,
+                    'errors' => ['Ya hay un usuario registrado con este documento']
+                ], 409);
+            }
+            $collaborator = Collaborators::where('document', $request->document)->first();
+
+            $validation = ValidateUsers::findOrFail(1);
+
+            if ($validation && $validation->status == 0) {
+                if (!$collaborator) {
+                    return response()->json([
+                        'status' => false,
+                        'errors' => 'En el momento no está habilitado el registro'
+                    ], 401);
+                }
+            }
+
+            $user = new User([
+                "name" => $request->name,
+                "email" => strtolower($request->email),
+                "password" => Hash::make($request->password)
+            ]);
+
+            $user->save();
+            $role = Role::where('name', 'User')->first();
+            $user->assignRole($role);
+            $profile = new Profile([
+                'document' => $request->document,
+                'cell' => $request->cell,
+                'address' => $request->address,
+                'neighborhood' => $request->neighborhood,
+                'birth' => $request->birth,
+                'eps' => $request->eps ?? '',
+                'reference' => $request->reference ?? '',
+                'experience2022' => $request->experience2022 ?? false,
+                'is_collaborator' => $collaborator ? true : false,
+            ]);
+            $user->profile()->save($profile);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User created successfully',
+                'data' => $user,
+                'token' => $user->createToken('Authorization')->plainTextToken
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $user = new User([
-            "name" => $request->name,
-            "email" => strtolower($request->email),
-            "password" => Hash::make($request->password)
-        ]);
-
-        $user->save();
-        $user->assignRole('User');
-
-        $profile = new Profile([
-            'document' => $request->document,
-            'cell' => $request->cell,
-            'address' => $request->address,
-            'neighborhood' => $request->neighborhood,
-            'birth' => $request->birth,
-            'eps' => $request->eps ?? '',
-            'reference' => $request->reference ?? '',
-            'experience2022' => $request->experience2022 ?? false,
-            'is_collaborator' => $collaborator ? true : false,
-        ]);
-        $user->profile()->save($profile);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'User created successfully',
-            'data' => $user,
-            'token' => $user->createToken('Authorization')->plainTextToken
-        ], 200);
     }
 
     public function me()
@@ -171,7 +179,7 @@ class UserController extends Controller
 
             // Actualiza los campos del usuario
             $user->name = $request->name;
-        
+
             // Guarda los cambios en el usuario
             $user->save();
 
