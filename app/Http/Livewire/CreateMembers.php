@@ -242,7 +242,8 @@ class CreateMembers extends Component
 
                     $profileUser = Profile::where('document', $this->documentMember[$key])->first();
                     if ($profileUser) {
-                        $reservations = Reservation::with('programming')->where('user_id', $profileUser->user_id)->get();
+                        $reservations = Reservation::with('programming')
+                        ->where('user_id', $profileUser->user_id)->get();
                         foreach ($reservations as $reservation) {
                             if (
                                 $date < $reservation->programming->initial_date ||

@@ -46,7 +46,7 @@ Route::get('auth/reset-pass/{token}', function (string $token) {
 
 
 
-Route::middleware(['auth:sanctum', 'can:api'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('user/me', [UserController::class, 'me'])->name('api.me');
     Route::post('auth/logout', [UserController::class, 'logout'])->name('auth.logout');
     // Members

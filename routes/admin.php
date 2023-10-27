@@ -3,24 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\EventController;
-Route::middleware('can:administrador')->group(function () {
-  
+
+Route::middleware(['auth:sanctum','can:administrador'])->group(function () {
+
   Route::get('', [HomeController::class, 'index']);
   Route::get('events/register', [EventController::class, 'indexRegister'])
-  ->name('admin.events.register');
+    ->name('admin.events.register');
   Route::get('events/users', [EventController::class, 'users'])->name('admin.events.users');
   Route::get('events/informs', [EventController::class, 'inform'])->name('admin.events.inform');
   Route::get('events/qr/{token}', [EventController::class, 'readQr'])->name('admin.events.qr');
-  
+
   Route::resource('events', EventController::class)->names('admin.events')->only([
-    'index','create','show','edit'
+    'index', 'create', 'show', 'edit'
   ]);
-
-  
 });
-
-
-
-
-
-
