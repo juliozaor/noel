@@ -54,7 +54,7 @@
                         <div style="text-align: center; margin-right: 30px; margin-left: 20px;">
                             <h3 style="color:red;margin: 0;padding: 0;font-size: 26px;"> Información de tu reserva</h3>
                             <p style="font-size: 26px;margin: 0px;"><strong>{{ $code['quota'] }} cupos</strong></p>
-                            <p style="margin: 0;"><stron style="font-size: 23px;">Fecha: {{ date('d-m-Y', strtotime($code['date'])) }}</strong></p>
+                            <p style="margin: 0;"><strong style="font-size: 23px;">Fecha: {{ date('d-m-Y', strtotime($code['date'])) }}</strong></p>
                             <p style="margin: 0;"><strong style="font-size: 23px;">Hora: {{ date('h:i A', strtotime($code['time'])) }}</strong></p>
                         <p style="font-size: 20px;margin: 0;">Presenta el codigo QR correspondiente a cada acompañante al momento del ingreso</p>
                         </div>
