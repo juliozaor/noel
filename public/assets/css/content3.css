@@ -253,3 +253,9 @@ color:#fff !important;
     height: 388px;
     width: 776px;
 }
+
+.text-custom-yellow-500 {
+  color: #fde68a !important;
+  --tw-text-opacity: 1 !important;
+  color: rgba(245, 158, 11, var(--tw-text-opacity))!important; 
+}
