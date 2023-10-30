@@ -19,11 +19,11 @@ class TabletProgramming extends Component
     public $openEditProgramming = false;
     public $hour;
     public $count = 0;
-    public $begin = '2023-08-01';
-    public $end = '2024-03-20';
+    public $begin = '2023-11-01';
+    public $end = '2023-12-31';
     public $all = 0;
 
-    public $cant = '5';
+    public $cant = '10';
     protected $queryString = [
         'cant' => ['except' => '10'],
         'sort' => ['except' => 'id'],
