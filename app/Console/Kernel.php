@@ -12,12 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->call(function () {
-
-          //  $currentDate = date('Y-m-d');
-            \Illuminate\Support\Facades\Http::get('/admin/export');
-        })->dailyAt('00:01');
+        $schedule->command('app:send-export-reservation')->dailyAt('00:01');
     }
 
     /**
