@@ -91,11 +91,8 @@
                                     @if ($programmings->count())
                                         @foreach ($programmings as $programming)
                                             <tr>
-
-
                                                 <td>{{ $programming->id }}</td>
                                                 <td>{{ $programming->initial_date }}</td>
-
                                                 <td>{{ \Carbon\Carbon::parse($programming->initial_time)->format('h:i A') }}
                                                 </td>
                                                 <td>{{ $programming->quota }}</td>

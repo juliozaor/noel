@@ -2,73 +2,80 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Profile;
 use App\Models\Programming;
+use App\Models\QrCodes;
 use App\Models\Reservation;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class InformReservations extends Component
 {
     public $selectedDate;
-    public $selectedTime;
-    public $cuposTotales;
-    public $cuposReservados;
-    public $cuposConfirmados;
+    public $estadisticasDia;
+    public $estadisticasMes;
+    public $estadisticasTotal;
 
     public function getChartData()
     {
-        // Validar que se hayan seleccionado fecha y hora
-        if (!$this->selectedDate || !$this->selectedTime) {
-            $this->reset(['cuposTotales', 'cuposReservados', 'cuposConfirmados']);
-            session()->flash('message', 
-            'No se encontro información, seleccione la fecha y hora de un evento existente');
+        // Validar que se hayan seleccionado fecha 
+        if (!$this->selectedDate) {
+            $this->reset([
+                'estadisticasMes',
+                'estadisticasDia'
+            ]);
+            session()->flash(
+                'message',
+                'No se encontro información, seleccione la fecha de un evento existente'
+            );
             return;
         }
-
-        // Calcular la fecha y hora seleccionadas
-        // $selectedDateTime = "{$this->selectedDate} {$this->selectedTime}";
-
-        // Consultar la tabla 'programmings' para obtener la cantidad de cupos totales
-        $programming = Programming::where('initial_date', $this->selectedDate)
-            ->where('initial_time', $this->selectedTime)->first();
-        if ($programming) {
-            # code...
-            $cuposTotales = $programming->quota;
-
-
-            $cuposReservados = $programming->reservation()->sum('quota');
-            // Consultar la tabla 'reservations' para obtener la suma de cuotas de las reservas
-
-
-
-            // Consultar la tabla 'reservations' para obtener la suma de cuotas de las reservas confirmadas
-            $cuposConfirmados = Reservation::where('programming_id', $programming->id)
-                ->where('confirmed', 1)
-                ->sum('quota');
-
+        //get month from $this->selectedDate
+        $month = date('m', strtotime($this->selectedDate));
+        // consultar la tabla programing y adicionar retornar cuando cupos han reservado y cuantos qr han asistido
+        $allProgrammingbyDay = Programming::withCount(['reservation','qrCodes' => function ($query) {$query->where('status_qr', 0);}])
+                                            ->withSum('reservation', 'quota')
+                                            ->where('initial_date', $this->selectedDate)->get();
+        $monthStats = [
+            'Mes' =>$month,
+            'Cupos_Disponibles' => Programming::where('id', '<>', 1)
+                ->whereMonth('initial_date', '=', $month)
+                ->sum('quota'),
+            'Personas_Registradas' => Profile::whereMonth('created_at', '<=',  $month)
+                ->count(),
+            'Reservaciones' => Reservation::whereMonth('created_at', '<=',  $month)
+                ->count(),
+            'Cupos_Reservados' => Reservation::whereMonth('created_at', '<=',  $month)
+                ->sum('quota'),
+            'Asistencias' => QrCodes::where('status_qr', 0)
+                ->whereMonth('updated_at', '=',  $month)
+                ->count(),
+        ];
+        if ($allProgrammingbyDay) {
             // Pasar los datos a la vista
-            $this->cuposTotales = $cuposTotales;
-            $this->cuposReservados = $cuposReservados;
-            $this->cuposConfirmados = $cuposConfirmados;
-
-
+            $this->estadisticasMes = $monthStats;
+            $this->estadisticasDia = $allProgrammingbyDay;
             $this->emit(
                 'chartDataUpdated',
                 [
-                    'cuposTotales' => $this->cuposTotales,
-                    'cuposReservados' => $this->cuposReservados,
-                    'cuposConfirmados' => $this->cuposConfirmados
+                    'estadisticasMes' => $this->estadisticasMes,
+                    'estadisticasDia' => $this->estadisticasDia
                 ]
             );
-        }else{
-            $this->reset(['cuposTotales', 'cuposReservados', 'cuposConfirmados']);
-            session()->flash('message',
-            'No se encontro información, seleccione una fecha y hora de un evento existente');
-           
+        } else {
+            $this->reset([
+                'estadisticasDia',
+                'estadisticasMes'
+            ]);
+            session()->flash(
+                'message',
+                'No se encontro información, seleccione una fecha y hora de un evento existente'
+            );
         }
     }
-
     public function render()
     {
+        $this->selectedDate = !$this->selectedDate ? date('Y-m-d') : $this->selectedDate;
         return view('livewire.inform-reservations');
     }
 }

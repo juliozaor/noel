@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Programming extends Model
 {
@@ -26,5 +27,9 @@ class Programming extends Model
 
     public function reservation() {
         return $this->hasMany('App\Models\Reservation');
+    }
+    public function qrCodes(): HasManyThrough
+    {
+        return $this->hasManyThrough(QrCodes::class, Reservation::class);
     }
 }

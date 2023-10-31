@@ -6,16 +6,19 @@ use App\Models\Profile;
 use App\Models\User;
 use App\Models\Reservation;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class Users extends Component
 {
+    use WithPagination;
+    
     public $title;
     protected $users;
     public $search = '';
     public $sort = 'users.name';
     public $direction = 'asc';
     public $count = 0;
-    public $cant = 5;
+    public $cant = 10;
     public $page = 1;
 
     public $sortReservation = 'programmings.initial_date';
