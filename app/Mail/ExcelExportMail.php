@@ -29,7 +29,7 @@ class ExcelExportMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Excel Export Mail',
+            subject: 'Exporte Reservas - Experiencia Navidad Noel 2023 ' . $this->date,
         );
     }
 
@@ -51,8 +51,7 @@ class ExcelExportMail extends Mailable
     public function attachments(): array
     {
         return [
-            Attachment::fromData(fn () => $this->filePath, 'Reservas.csv')
-                    ->withMime('text/csv'),
+            Attachment::fromData(fn () => $this->filePath, 'Plantilla_HSM.xlsx')->withMime('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         ];
     }
 }

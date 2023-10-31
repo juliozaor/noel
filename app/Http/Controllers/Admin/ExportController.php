@@ -23,8 +23,8 @@ class ExportController extends Controller
                 $fecha = new DateTime($date);
                 $fecha->modify('+1 day');
                 $nuevaFecha = $fecha->format('Y-m-d');
-                Excel::store(new ProgrammingExport($nuevaFecha), 'reservas.csv');
-                $file = Storage::disk('local')->get('reservas.csv');
+                Excel::store(new ProgrammingExport($nuevaFecha), 'reservas.xlsx');
+                $file = Storage::disk('local')->get('reservas.xlsx');
 
                 foreach ($emails as $element) {
                     Mail::to($element->email)->send(new ExcelExportMail($file, $nuevaFecha));
@@ -34,7 +34,6 @@ class ExportController extends Controller
             }
         } catch (\Throwable $th) {
             return $th;
-            //throw $th;
         }
     }
 
@@ -45,6 +44,6 @@ class ExportController extends Controller
         $fecha->modify('+1 day'); // Sumar un día
 
         $nuevaFecha = $fecha->format('Y-m-d');
-        return Excel::download(new ProgrammingExport($nuevaFecha), 'reservas.csv');
+        return Excel::download(new ProgrammingExport($nuevaFecha), 'reservas.xlsx');
     }
 }
