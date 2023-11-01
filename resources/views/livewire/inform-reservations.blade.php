@@ -33,40 +33,40 @@
                     <!-- Card 1 -->
                     <div class="md:w-1/2 lg:w-1/3 xl:w-1/5 px-4 mb-4">
                         <div class="bg-white rounded-lg shadow-lg p-6">
-                            <div class="text-2xl font-semibold">{{$estadisticasMes['Cupos_Disponibles']}}</div>
-                            <div class="text-3xl font-bold">Cupos Disponibles</div>
+                            <div class="text-3xl font-bold">{{$estadisticasMes['Cupos_Disponibles']}}</div>
+                            <div class="text-base font-semibold">Cupos Disponibles</div>
                         </div>
                     </div>
                 
                     <!-- Card 2 -->
                     <div class="md:w-1/2 lg:w-1/3 xl:w-1/5 px-4 mb-4">
                         <div class="bg-white rounded-lg shadow-lg p-6">
-                            <div class="text-2xl font-semibold">{{$estadisticasMes['Personas_Registradas']}}</div>
-                            <div class="text-3xl font-bold">Personas Registradas</div>
+                            <div class="text-3xl font-bold">{{$estadisticasMes['Personas_Registradas']}}</div>
+                            <div class="text-base font-semibold">Personas Registradas</div>
                         </div>
                     </div>
                 
                     <!-- Card 3 -->
                     <div class="md:w-1/2 lg:w-1/3 xl:w-1/5 px-4 mb-4">
                         <div class="bg-white rounded-lg shadow-lg p-6">
-                            <div class="text-2xl font-semibold">{{$estadisticasMes['Reservaciones']}}</div>
-                            <div class="text-3xl font-bold">Reservaciones</div>
+                            <div class="text-3xl font-bold">{{$estadisticasMes['Reservaciones']}}</div>
+                            <div class="text-base font-semibold">Reservaciones</div>
                         </div>
                     </div>
                 
                     <!-- Card 4 -->
                     <div class="md:w-1/2 lg:w-1/3 xl:w-1/5 px-4 mb-4">
                         <div class="bg-white rounded-lg shadow-lg p-6">
-                            <div class="text-2xl font-semibold">{{$estadisticasMes['Cupos_Reservados']}}</div>
-                            <div class="text-3xl font-bold">Cupos Reservados</div>
+                            <div class="text-3xl font-bold">{{$estadisticasMes['Cupos_Reservados']}}</div>
+                            <div class="text-base font-semibold">Cupos Reservados</div>
                         </div>
                     </div>
                 
                     <!-- Card 5 -->
                     <div class="md:w-1/2 lg:w-1/3 xl:w-1/5 px-4 mb-4">
                         <div class="bg-white rounded-lg shadow-lg p-6">
-                            <div class="text-2xl font-semibold">{{$estadisticasMes['Asistencias']}}</div>
-                            <div class="text-3xl font-bold">Asistencias</div>
+                            <div class="text-3xl font-bold">{{$estadisticasMes['Asistencias']}}</div>
+                            <div class="text-base font-semibold">Asistencias</div>
                         </div>
                     </div>
                 </div>
