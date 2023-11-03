@@ -11,6 +11,7 @@ Route::middleware(['auth:sanctum','can:administrador'])->group(function () {
     ->name('admin.events.register');
   Route::get('events/users', [EventController::class, 'users'])->name('admin.events.users');
   Route::get('events/informs', [EventController::class, 'inform'])->name('admin.events.inform');
+  Route::get('events/read_qr', [EventController::class, 'readQrWithImages'])->name('admin.events.readqr');
   Route::get('events/qr/{token}', [EventController::class, 'readQr'])->name('admin.events.qr');
 
   Route::resource('events', EventController::class)->names('admin.events')->only([

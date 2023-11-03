@@ -18,7 +18,7 @@
     <hr>      
         <a href="{{ route('admin.events.register') }}" class="link_side {{request()->routeIs('admin.events.register') ? 'active':''}}">
         <span class="me-2">
-          <img draggable="false" src="{{ asset('/assets/icons/registerEvents.svg') }}"[alt]="module._nombreMostrar">
+          <img draggable="false" src="{{ asset('/assets/icons/ticket.svg') }}"[alt]="module._nombreMostrar">
         </span>
         <span class="fs-12px fw-semibold">
         Registro a eventos
@@ -44,6 +44,14 @@
         Reportes
       </span>
     </a>
+    <a href="{{ route('admin.events.readqr') }}" class="link_side {{request()->routeIs('admin.events.readqr') ? 'active':''}}">
+      <span class="me-2">
+        <img draggable="false" src="{{ asset('/assets/icons/qr.svg') }}"[alt]="module._nombreMostrar">
+      </span>
+      <span class="fs-12px fw-semibold">
+      Leer Qr
+    </span>
+  </a>
 
    {{--  <hr>      
     <a href="{{ route('admin.events.qr') }}" class="link_side {{request()->routeIs('admin.events.qr') ? 'active':''}}">

@@ -61,4 +61,8 @@ class EventController extends Controller
         $token = $request->token;
         return view('admin.events.qr', compact('token'));
     }
+    public function readQrWithImages()
+    {
+        return view('admin.events.qrimage');
+    }
 }
