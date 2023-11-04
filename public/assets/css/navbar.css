@@ -38,6 +38,23 @@ color: white;
   display: none;
 }
 
+.active_mobile {
+  color: #ececec;
+  background: #4dd234;
+  border-radius: 10px;
+}
+
+.link_side_mobile:hover {
+  color: #ececec;
+  background: #4dd234;
+  border-radius: 10px;
+}
+
+.link_side_mobile {
+  display: flex;
+  padding: 10px;
+}
+
 @media (max-width: 1024px) {
   .navbar{
       padding-left: 10px !important;

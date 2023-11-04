@@ -1,104 +1,31 @@
-{{-- <nav class="navbar bg-light w-100 pe-3">
-    <div class="container-fluid d-flex">
-       
-    </div>
-</nav> --}}
 <nav x-data="{ open: false }" class="navbar bg-light w-100 pe-3">
 
     <div class="container-fluid d-flex ">
         <!-- Navigation Links -->
-        <div class="d-flex align-items-center">
-            @if (request()->routeIs('admin.events.users'))
-                <img class="img-fluid me-2" src="{{ asset('/assets/icons/hUser.svg') }}">
+        @php
+            $routeName = request()
+                ->route()
+                ->getName();
+            $routeData = [
+                'admin.events.users' => ['icon' => 'hUser.svg', 'text' => 'Administrar usuarios'],
+                'admin.events.register' => ['icon' => 'hticket.svg', 'text' => 'Registro a eventos'],
+                'admin.events.index' => ['icon' => 'hEvent.svg', 'text' => 'Administrar eventos'],
+                'admin.events.inform' => ['icon' => 'hReports.svg', 'text' => 'Reportes'],
+                'admin.events.readqr' => ['icon' => 'hqr.svg', 'text' => 'Leer QR'],
+            ];
+        @endphp
+
+        @isset($routeData[$routeName])
+            <div class="d-flex align-items-center">
+                <img class="img-fluid me-2" src="{{ asset('/assets/icons/' . $routeData[$routeName]['icon']) }}">
                 <span class="text-white">
-                    Administrar usuarios
+                    {{ $routeData[$routeName]['text'] }}
                 </span>
-            @else
-                @if (request()->routeIs('admin.events.register'))
-                    <img class="img-fluid me-2" src="{{ asset('/assets/icons/hReg.svg') }}">
-
-                    <span class="text-white">
-                        Registro a eventos
-                    </span>
-                @else
-                    @if (request()->routeIs('admin.events.index'))
-                        <img class="img-fluid me-2" src="{{ asset('/assets/icons/hEvent.svg') }}">
-
-                        <span class="text-white">
-                            Administrar eventos
-                        </span>
-                        @else
-                    @if (request()->routeIs('admin.events.inform'))
-                        <img class="img-fluid me-2" src="{{ asset('/assets/icons/hReports.svg') }}">
-
-                        <span class="text-white">
-                            Reportes
-                        </span>
-                    @endif
-                    @endif
-                @endif
-            @endif
-
-        </div>
+            </div>
+        @endisset
 
 
         <div class="hidden sm:flex sm:items-center sm:ml-6">
-         {{--    <!-- Teams Dropdown -->
-            @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
-                <div class="ml-3 relative">
-                    <x-dropdown align="right" width="60">
-                        <x-slot name="trigger">
-                            <span class="inline-flex rounded-md">
-                                
-                                <button type="button"
-                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
-                                   ddd {{ Auth::user()->currentTeam->name }}
-
-                                    <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
-                                    </svg>
-                                </button>
-                            </span>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            <div class="w-60">
-                                <!-- Team Management -->
-                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                    {{ __('Manage Team') }}
-                                </div>
-
-                                <!-- Team Settings -->
-                                <x-dropdown-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}">
-                                    {{ __('Team Settings') }}
-                                </x-dropdown-link>
-
-                                @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-                                    <x-dropdown-link href="{{ route('teams.create') }}">
-                                        {{ __('Create New Team') }}
-                                    </x-dropdown-link>
-                                @endcan
-
-                                <!-- Team Switcher -->
-                                @if (Auth::user()->allTeams()->count() > 1)
-                                    <div class="border-t border-gray-200"></div>
-
-                                    <div class="block px-4 py-2 text-xs text-gray-400">
-                                        {{ __('Switch Teams') }}
-                                    </div>
-
-                                    @foreach (Auth::user()->allTeams() as $team)
-                                        <x-switchable-team :team="$team" />
-                                    @endforeach
-                                @endif
-                            </div>
-                        </x-slot>
-                    </x-dropdown>
-                </div>
-            @endif
- --}}
             <!-- Settings Dropdown -->
             <div class="ml-3 relative">
                 <x-dropdown align="right" width="48">
@@ -113,7 +40,7 @@
                             <span class="d-flex align-items-center">
                                 <span class="text-white me-2"> <b>Hola</b>, {{ Auth::user()->name }} </span>
                                 <img class="img-fluid  items" src="{{ asset('/assets/icons/icono-usuario.svg') }}">
-                         
+
                             </span>
                         @endif
                     </x-slot>
@@ -152,7 +79,7 @@
         <!-- Hamburger -->
         <div class="-mr-2 flex items-center sm:hidden">
             <button @click="open = ! open"
-                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                class="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-red-600 focus:outline-none focus:bg-red-600 focus:text-black transition duration-150 ease-in-out">
                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                     <path :class="{ 'hidden': open, 'inline-flex': !open }" class="inline-flex" stroke-linecap="round"
                         stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -164,35 +91,70 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden burguer">
+    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden burguer w-100">
         <div class="pt-2 pb-3 space-y-1">
-         
-            <a href="{{ route('admin.events.users') }}" class="link_side {{request()->routeIs('admin.events.users') ? 'active':''}}">
-           
-            <span class="fs-12px fw-semibold">
-            Administrar usuarios
-          </span>
-        </a>
-       
-            <a href="{{ route('admin.events.register') }}" class="link_side {{request()->routeIs('admin.events.register') ? 'active':''}}">
-           
-            <span class="fs-12px fw-semibold">
-            Registro a eventos
-          </span>
-        </a>
-       
-            <a href="{{ route('admin.events.index') }}" class="link_side {{request()->routeIs('admin.events.index') ? 'active':''}}">
-            
-            <span class="fs-12px fw-semibold">
-            Administrar eventos
-          </span>
-        </a>
+
+            <div class="d-flex flex-column m-4">
+                <hr>
+                <a href="{{ route('admin.events.users') }}"
+                    class="link_side_mobile {{ request()->routeIs('admin.events.users') ? 'active_mobile' : '' }}">
+                    <span class="me-2">
+                        <img draggable="false" src="{{ asset('/assets/icons/hUser.svg') }}"[alt]="module._nombreMostrar">
+                    </span>
+                    <span class="fs-12px fw-semibold">
+                        Administrar usuarios
+                    </span>
+                </a>
+        
+                <hr>
+                <a href="{{ route('admin.events.register') }}"
+                    class="link_side_mobile {{ request()->routeIs('admin.events.register') ? 'active_mobile' : '' }}">
+                    <span class="me-2">
+                        <img draggable="false" src="{{ asset('/assets/icons/hticket.svg') }}"[alt]="module._nombreMostrar">
+                    </span>
+                    <span class="fs-12px fw-semibold">
+                        Registro a eventos
+                    </span>
+                </a>
+        
+                <hr>
+                <a href="{{ route('admin.events.index') }}"
+                    class="link_side_mobile {{ request()->routeIs('admin.events.index') ? 'active_mobile' : '' }}">
+                    <span class="me-2">
+                        <img draggable="false" src="{{ asset('/assets/icons/hEvent.svg') }}"[alt]="module._nombreMostrar">
+                    </span>
+                    <span class="fs-12px fw-semibold">
+                        Administrar eventos
+                    </span>
+                </a>
+        
+                <hr>
+                <a href="{{ route('admin.events.inform') }}"
+                    class="link_side_mobile {{ request()->routeIs('admin.events.inform') ? 'active_mobile' : '' }}">
+                    <span class="me-2">
+                        <img draggable="false" src="{{ asset('/assets/icons/hReports.svg') }}"[alt]="module._nombreMostrar">
+                    </span>
+                    <span class="fs-12px fw-semibold">
+                        Reportes
+                    </span>
+                </a>
+                <hr>
+                <a href="{{ route('admin.events.readqr') }}"
+                    class="link_side_mobile {{ request()->routeIs('admin.events.readqr') ? 'active_mobile' : '' }}">
+                    <span class="me-2">
+                        <img draggable="false" src="{{ asset('/assets/icons/hqr.svg') }}"[alt]="module._nombreMostrar">
+                    </span>
+                    <span class="fs-12px fw-semibold">
+                        Leer Qr
+                    </span>
+                </a>
+            </div>
         </div>
 
 
 
 
-        
+
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
@@ -206,7 +168,7 @@
 
                 <div>
                     <div class="font-medium text-base">{{ Auth::user()->name }}</div>
-                   {{--  <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div> --}}
+                    {{--  <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div> --}}
                 </div>
             </div>
 
@@ -226,7 +188,8 @@
                 <form method="POST" action="{{ route('logout') }}" x-data>
                     @csrf
 
-                    <x-responsive-nav-link href="{{ route('logout') }}" @click.prevent="$root.submit();"  class="burguer">
+                    <x-responsive-nav-link href="{{ route('logout') }}" @click.prevent="$root.submit();"
+                        class="burguer">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
