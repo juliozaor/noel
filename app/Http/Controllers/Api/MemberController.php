@@ -138,7 +138,8 @@ class MemberController extends Controller
                     $dateUser = [
                         'name' => $memberRequest['name'],
                         'qr' => 'temp/' . $cod . '.png',
-                        'isUser' => 0
+                        'isUser' => 0,
+                        'code'=>$cod
                     ];
 
                     $codes[] = $dateUser;
@@ -164,7 +165,8 @@ class MemberController extends Controller
                 'isUser' => 1,
                 'quota' => $reservation->quota,
                 'date' => $reservation->programming->initial_date,
-                'time' => $reservation->programming->initial_time
+                'time' => $reservation->programming->initial_time,
+                'code'=>$codU
 
             ];
 
@@ -288,7 +290,8 @@ class MemberController extends Controller
                 $dateUser = [
                     'name' => $memberRequest['name'],
                     'qr' => 'temp/' . $cod . '.png',
-                    'isUser' => 0
+                    'isUser' => 0,
+                    'code'=>$cod
                 ];
 
                 $codes[] = $dateUser;
@@ -313,7 +316,8 @@ class MemberController extends Controller
             'isUser' => 1,
             'quota' => $reservation->quota,
             'date' => $reservation->programming->initial_date,
-            'time' => $reservation->programming->initial_time
+            'time' => $reservation->programming->initial_time,
+            'code'=>$codU
         ];
 
         $codes[] = $dateUserU;

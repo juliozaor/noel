@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Profile;
 use App\Models\Programming;
+use App\Models\QrCodes;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ReservationController extends Controller
 {
@@ -264,5 +266,23 @@ class ReservationController extends Controller
                 'quota_available' => $newQuotaAvailable
             ]);
         }
+    }
+
+    public function generateQrbyCode($code)
+    {
+        $url = config('app.url') . '/admin/events/qr/';
+        $reservation = QrCodes::where('code', $code)->first();
+        if ($reservation) {
+            $qrCode = QrCode::format('png')->size(150)->generate($url.$reservation->code,'temp/' . $reservation->code . '.png');
+            return response()->json([
+                'status' => true,
+                'message' => 'Qr generado',
+                'data' => config('app.url') .'/temp/' . $reservation->code . '.png'
+            ], 200);
+        }
+        return response()->json([
+            'status' => false,
+            'message' => 'No se encontro la reserva'
+        ], 404);
     }
 }
