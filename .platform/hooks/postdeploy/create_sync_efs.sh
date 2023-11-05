@@ -21,5 +21,3 @@ fi
 echo "Creando nuevo enlace simbólico en $SYMLINK apuntando a $TARGET"
 sudo ln -s "$TARGET" /var/app/current/public
    
-sudo chmod 775 /var/app/current/public/ -R
-sudo chmod 775 /efs -R
