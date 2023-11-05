@@ -6,11 +6,10 @@
 # to some folders that should be writable, such as the storage/
 # or bootstrap/cache/, for example.
 
-php artisan storage:link
-sudo chmod -R 777 storage/
-sudo chmod -R 777 bootstrap/cache/
-sudo chmod -R 777 public
-sudo chmod -R 775 /efs
+sudo chmod -R 777 var/app/current/storage/
+sudo chmod -R 777 var/app/current/bootstrap/cache/
+sudo chmod -R 777 var/app/current/public/
+sudo chmod -R 777 /efs
 
 # Storage Symlink Creation
 php artisan storage:link
