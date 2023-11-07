@@ -43,9 +43,9 @@ class InformReservations extends Component
                 ->sum('quota'),
             'Personas_Registradas' => Profile::whereMonth('created_at', '<=',  $month)
                 ->count(),
-            'Reservaciones' => Reservation::whereMonth('created_at', '<=',  $month)
+            'Reservaciones' => Reservation::whereMonth('created_at', '<=',  $month)->where('programming_id', '<>', 1)
                 ->count(),
-            'Cupos_Reservados' => Reservation::whereMonth('created_at', '<=',  $month)
+            'Cupos_Reservados' => Reservation::whereMonth('created_at', '<=',  $month)->where('programming_id', '<>', 1)
                 ->sum('quota'),
             'Asistencias' => QrCodes::where('status_qr', 0)
                 ->whereMonth('updated_at', '=',  $month)
