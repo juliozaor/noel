@@ -20,8 +20,6 @@ use Illuminate\Support\Facades\Mail;
 /* Route::get('/bienvenido', function () {
     return view('welcome');
 }); */
-Route::get('/admin/export', [ExportController::class, 'export'])->name('admin.export');
-Route::get('/admin/download', [ExportController::class, 'download'])->name('admin.download');
 
 Route::middleware([
     'auth:sanctum',
