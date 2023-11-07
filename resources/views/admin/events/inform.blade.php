@@ -1,5 +1,22 @@
 <x-app-layout>
-    <x-slot name="header">       
+    <x-slot name="header">
+        <div class="container flex justify-end">
+            <div class="mr-2 mt-2">
+                @can('superAministrador')
+                    <a href="{{ route('admin.downloadInform') }}" class="btn botonRojo" target="_blank">Descargar Informe General</a>
+                @endcan
+            </div>
+            <div class="mr-2 mt-2">
+                @can('superAministrador')
+                    <a href="{{ route('admin.sendReport') }}" class="btn botonRojo" target="_blank">Enviar correo Reservas</a>
+                @endcan
+            </div>
+            <div class="mt-2">
+                @can('superAministrador')
+                    <a href="{{ route('admin.downloadReport') }}" class="btn botonRojo" target="_blank">Descargar Exporte Reservas</a>
+                @endcan
+            </div>
+        </div>
     </x-slot>
 
     <div>

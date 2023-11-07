@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exports\ProgrammingExport;
+use App\Exports\ProgrammingExportInfo;
 use App\Http\Controllers\Controller;
 use App\Mail\ExcelExportMail;
 use App\Models\EmailsAdmins;
@@ -11,6 +12,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
@@ -19,7 +21,7 @@ use function Laravel\Prompts\text;
 
 class ExportController extends Controller
 {
-    public function export()
+    public function sendEmail()
     {
         try {
             $emails = EmailsAdmins::where('status', 1)->select('email')->get();
@@ -48,7 +50,7 @@ class ExportController extends Controller
         }
     }
 
-    public function download(Request $request)
+    public function downloadReport(Request $request)
     {
         try{
             if($request->date){
@@ -61,6 +63,15 @@ class ExportController extends Controller
             }
             $nuevaFecha = $fecha->format('Y-m-d');
             return Excel::download(new ProgrammingExport($nuevaFecha), "reservas_$nuevaFecha.xlsx");
+        }catch(\Throwable $th){
+            return 'Error al descargar el archivo';
+        }
+        
+    }
+    public function downloadInform()
+    {
+        try{
+            return Excel::download(new ProgrammingExportInfo(), "ExperienciaNavidadEsNoel.xlsx");
         }catch(\Throwable $th){
             return 'Error al descargar el archivo';
         }

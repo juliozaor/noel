@@ -28,7 +28,7 @@ class SendExportReservation extends Command
     public function handle()
     {
         $exportController = new ExportController();
-        $exportController->export();
+        $exportController->sendEmail();
         $this->info('Data export process completed.');
 
     }
