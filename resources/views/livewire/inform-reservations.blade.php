@@ -28,43 +28,53 @@
         <div class="row">
             <div class="col">
                 @if ($estadisticasMes)
-                <h2 class="text-xl font-semibold m-4">Estadísticas Generales - {{ \Carbon\Carbon::parse($selectedDate)->locale('es')->format('F'); }}</h2>
+                <h2 class="text-xl font-semibold m-4">Estadísticas Generales - {{ \Carbon\Carbon::parse($selectedDate)->locale('es-ES')->format('F'); }}</h2>
                 <div class="flex flex-wrap -mx-4  mt-10">
                     <!-- Card 1 -->
-                    <div class="md:w-1/2 lg:w-1/3 xl:w-1/5 px-4 mb-4">
-                        <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="w-full md:w-1/2 lg:w-1/4 xl:w-1/6 px-1 mb-4">
+                        <div class="bg-white rounded-lg shadow-lg p-2 text-center">
                             <div class="text-3xl font-bold">{{$estadisticasMes['Cupos_Disponibles']}}</div>
                             <div class="text-base font-semibold">Cupos Disponibles</div>
                         </div>
                     </div>
                 
                     <!-- Card 2 -->
-                    <div class="md:w-1/2 lg:w-1/3 xl:w-1/5 px-4 mb-4">
-                        <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="w-full md:w-1/2 lg:w-1/4 xl:w-1/6 px-1 mb-4">
+                        <div class="bg-white rounded-lg shadow-lg p-2 text-center">
                             <div class="text-3xl font-bold">{{$estadisticasMes['Personas_Registradas']}}</div>
                             <div class="text-base font-semibold">Personas Registradas</div>
                         </div>
                     </div>
                 
                     <!-- Card 3 -->
-                    <div class="md:w-1/2 lg:w-1/3 xl:w-1/5 px-4 mb-4">
-                        <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="w-full md:w-1/2 lg:w-1/4 xl:w-1/6 px-1 mb-4">
+                        <div class="bg-white rounded-lg shadow-lg p-2 text-center">
                             <div class="text-3xl font-bold">{{$estadisticasMes['Reservaciones']}}</div>
                             <div class="text-base font-semibold">Reservaciones</div>
+                            <div class="text-sm">*(solo titulares)</div>
                         </div>
                     </div>
-                
+                    
                     <!-- Card 4 -->
-                    <div class="md:w-1/2 lg:w-1/3 xl:w-1/5 px-4 mb-4">
-                        <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="w-full md:w-1/2 lg:w-1/4 xl:w-1/6 px-1 mb-4">
+                        <div class="bg-white rounded-lg shadow-lg p-2 text-center">
                             <div class="text-3xl font-bold">{{$estadisticasMes['Cupos_Reservados']}}</div>
                             <div class="text-base font-semibold">Cupos Reservados</div>
+                            <div class="text-sm">*(incluye miembros)</div>
                         </div>
                     </div>
-                
-                    <!-- Card 5 -->
-                    <div class="md:w-1/2 lg:w-1/3 xl:w-1/5 px-4 mb-4">
-                        <div class="bg-white rounded-lg shadow-lg p-6">
+
+                     <!-- Card 5 -->
+                     <div class="w-full md:w-1/2 lg:w-1/4 xl:w-1/6 px-1 mb-4">
+                        <div class="bg-white rounded-lg shadow-lg p-2 text-center">
+                            <div class="text-3xl font-bold">{{$estadisticasMes['Lista_Espera']}}</div>
+                            <div class="text-base font-semibold">Lista de Espera</div>
+                        </div>
+                    </div>
+
+                    <!-- Card 6-->
+                    <div class="w-full md:w-1/2 lg:w-1/4 xl:w-1/6 px-1 mb-4">
+                        <div class="bg-white rounded-lg shadow-lg p-2 text-center">
                             <div class="text-3xl font-bold">{{$estadisticasMes['Asistencias']}}</div>
                             <div class="text-base font-semibold">Asistencias</div>
                         </div>

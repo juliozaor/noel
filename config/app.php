@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
+setlocale(LC_TIME, 'es_ES');
 return [
 
     /*
