@@ -276,10 +276,16 @@ class Users extends Component
                 $user = User::find($profile->user_id);
 
                 $user->name = $this->name;
+                //valida que el email no exista
+                $userExist = User::where('email', strtolower($this->email))->where('id', '<>', $user->id)->first();
+                if ($userExist) {
+                    $this->emit('alert', 'El correo ya esta registrado', 'error');
+                    return false;
+                }
+                $user->email = strtolower($this->email);
                 $user->save();
 
                 $profile = $user->profile;
-
                 // Actualiza los campos del perfil
                 $profile->cell = $this->cell;
                 $profile->address = $this->address;
@@ -293,7 +299,8 @@ class Users extends Component
                 $profile->save();
             }
         } catch (\Throwable $th) {
-            dd($th);
+            $this->emit('alert', 'Error al actualizar el usuario, valida con el administrador', 'error');
+            return false;
         }
 
 

@@ -176,7 +176,7 @@
                 </div>
                 <div class="mr-2 w-25">
                     <x-label value="Correo electrónico empresarial" />
-                    <x-input type="text" class="w-100" wire:model.defer="email" disabled />
+                    <x-input type="text" class="w-100" wire:model.defer="email" />
                     <x-input-error for="email" />
                 </div>
                 <div class="mr-2 w-25">
