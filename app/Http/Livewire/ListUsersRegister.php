@@ -4,15 +4,18 @@ namespace App\Http\Livewire;
 
 use App\Models\User;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class ListUsersRegister extends Component
 {
+    use WithPagination;
+
     protected $users;
     public $search = '';
     public $sort = 'users.name';
     public $direction = 'asc';
     public $count = 0;
-    public $cant = 5;
+    public $cant = 10;
     public $page = 1;
     
     public $programmingId;

@@ -92,46 +92,9 @@
 
     </div>
     @if ($users && $users->hasPages())
-
-        <div class="card-footer d-flex justify-content-end " wire:key="list-wait">
-            <ul class="pagination">
-                {{-- Botón "Anterior" --}}
-                @if ($users->onFirstPage())
-                    <li class="page-item disabled">
-                        <span class="page-link">Anterior</span>
-                    </li>
-                @else
-                    <li class="page-item">
-                        <a class="page-link" href="#" wire:click="previousPage">Anterior</a>
-                    </li>
-                @endif
-
-                {{-- Enlaces de páginas --}}
-                @for ($page = 1; $page <= $users->lastPage(); $page++)
-                    @if ($page == $users->currentPage())
-                        <li class="page-item active">
-                            <span class="page-link">{{ $page }}</span>
-                        </li>
-                    @else
-                        <li class="page-item">
-                            <a class="page-link" href="#"
-                                wire:click="gotoPage({{ $page }})">{{ $page }}</a>
-                        </li>
-                    @endif
-                @endfor
-
-                {{-- Botón "Siguiente" --}}
-                @if ($users->hasMorePages())
-                    <li class="page-item">
-                        <a class="page-link" href="#" wire:click="nextPage">Siguiente</a>
-                    </li>
-                @else
-                    <li class="page-item disabled">
-                        <span class="page-link">Siguiente</span>
-                    </li>
-                @endif
-            </ul>
-        </div>
+    <div class="card-footer d-flex justify-content-end " wire:key="list-wait">
+        {{ $users->links() }}
+    </div>
     @endif
     <div class="d-flex justify-content-between footer-wait">
         <div>

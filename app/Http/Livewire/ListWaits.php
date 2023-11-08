@@ -10,15 +10,18 @@ use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Illuminate\Support\Str;
+use Livewire\WithPagination;
 
 class ListWaits extends Component
 {
+    use WithPagination;
+    
     protected $users;
     public $search = '';
     public $sort = 'users.name';
     public $direction = 'asc';
     public $count = 0;
-    public $cant = 5;
+    public $cant = 10;
     public $page = 1;
     public $addUser = [];
     public $totalQuota = 0;

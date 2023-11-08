@@ -1,8 +1,7 @@
 <div>
     <div class="contenedor pt-2 px-4 pb-4">
         <div class="barraBusqueda">
-            <input type="text" class="form-control" placeholder="Buscar..." 
-            wire:model="search">
+            <input type="text" class="form-control" placeholder="Buscar..." wire:model="search">
         </div>
         <div>
             <button class="totales" disabled>
@@ -14,8 +13,7 @@
             <span class="fs-12px d-flex align-items-center mx-2" id="registrosTotales">Registros por
                 página</span>
             <span class="texto-gris fs-12px fw-bold align-items-center">
-                <select wire:model="cant" class="form-select sm"
-                name="" id="">
+                <select wire:model="cant" class="form-select sm" name="" id="">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="15">15</option>
@@ -45,82 +43,47 @@
                         <i class="fas fa-sort ml-1 mt-1"></i>
                     </th>
 
-                    <th scope="col" >Acciones</th>
+                    <th scope="col">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @if ($users && count($users) > 0)
-                @foreach ($users as $user)
-                <tr>
-                    <td>{{ $user->document }}</td>
-                    <td>{{ $user->name }}</td>
-                    <td>{{ $user->is_collaborator == 1?'Colaborador':'Usuario' }}</td>
-                    <td>{{ $user->cell }}</td>
-                    <td>
-                                
-                        <button wire:click="editRegisterUser({{ $user->document}})"><img
-                                src="{{ asset('/assets/icons/usermas.svg') }}" alt="editar"
-                                style="max-width: 15px" /></button>
+                    @foreach ($users as $user)
+                        <tr>
+                            <td>{{ $user->document }}</td>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->is_collaborator == 1 ? 'Colaborador' : 'Usuario' }}</td>
+                            <td>{{ $user->cell }}</td>
+                            <td>
+
+                                <button wire:click="editRegisterUser({{ $user->document }})"><img
+                                        src="{{ asset('/assets/icons/usermas.svg') }}" alt="editar"
+                                        style="max-width: 15px" /></button>
+                            </td>
+
+                        </tr>
+                    @endforeach
+                @else
+                    <td colspan="6">
+                        <label class="d-flex justify-content-center fs-14px">
+                            No se encontraron datos
+                        </label>
                     </td>
-                    
-                </tr>
-            @endforeach
-            @else
-                        <td colspan="6">
-                            <label class="d-flex justify-content-center fs-14px">
-                                No se encontraron datos
-                            </label>
-                        </td>
-                    @endif
-              
-            
-           
+                @endif
+
+
+
 
             </tbody>
 
         </table>
-        
-    </div>
-    @if ($users && $users->hasPages())
 
-    <div class="card-footer d-flex justify-content-end " wire:key="list-users">
-        <ul class="pagination">
-            {{-- Botón "Anterior" --}}
-            @if ($users->onFirstPage())
-                <li class="page-item disabled">
-                    <span class="page-link">Anterior</span>
-                </li>
-            @else
-                <li class="page-item">
-                    <a class="page-link" href="#" wire:click="previousPage">Anterior</a>
-                </li>
-            @endif
-    
-            {{-- Enlaces de páginas --}}
-            @for ($page = 1; $page <= $users->lastPage(); $page++)
-                @if ($page == $users->currentPage())
-                    <li class="page-item active">
-                        <span class="page-link">{{ $page }}</span>
-                    </li>
-                @else
-                    <li class="page-item">
-                        <a class="page-link" href="#"
-                        wire:click="gotoPage({{ $page }})">{{ $page }}</a>
-                    </li>
-                @endif
-            @endfor
-    
-            {{-- Botón "Siguiente" --}}
-            @if ($users->hasMorePages())
-                <li class="page-item">
-                    <a class="page-link" href="#" wire:click="nextPage">Siguiente</a>
-                </li>
-            @else
-                <li class="page-item disabled">
-                    <span class="page-link">Siguiente</span>
-                </li>
-            @endif
-        </ul>
     </div>
-@endif
+
+
+    @if ($users && $users->hasPages())
+        <div class="card-footer d-flex justify-content-end " wire:key="list-users">
+            {{ $users->links() }}
+        </div>
+    @endif
 </div>
