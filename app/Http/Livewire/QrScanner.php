@@ -39,7 +39,7 @@ class QrScanner extends Component
             return;
         }
         if ($this->qrcode) {
-            $this->reservation = QrCodes::where('code', $this->qrcode)->first();
+            $this->reservation = QrCodes::with('reservation.programming')->where('code', $this->qrcode)->first();
             if ($this->reservation) {
                 $this->isValid = $this->reservation->status_qr == 1 ? true : false;
                 if ($this->reservation->is_user == 1) {

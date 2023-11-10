@@ -17,4 +17,9 @@ class QrCodes extends Model
         'code',
         'reservation_id'
     ];
+
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class);
+    }
 }
