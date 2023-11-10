@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\ProgrammingExport;
 use App\Exports\ProgrammingExportInfo;
+use App\Exports\ProgrammingExportWaitList;
 use App\Http\Controllers\Controller;
 use App\Mail\ExcelExportMail;
+use App\Mail\ExcelExportMailWaitList;
 use App\Models\EmailsAdmins;
 use App\Models\Programming;
+use App\Models\Reservation;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -40,7 +43,7 @@ class ExportController extends Controller
                 foreach ($emails as $element) {
                     Mail::to($element->email)->send($emailBody);
                 }
-                
+
                 return 'Correo enviado con archivo adjunto ';
             }else{
                 return 'No hay correos para enviar';
@@ -66,7 +69,7 @@ class ExportController extends Controller
         }catch(\Throwable $th){
             return 'Error al descargar el archivo';
         }
-        
+
     }
     public function downloadInform()
     {
@@ -75,6 +78,32 @@ class ExportController extends Controller
         }catch(\Throwable $th){
             return 'Error al descargar el archivo';
         }
-        
+    }
+    public function sendEmailWaitList()
+    {
+        try {
+            $date = date('Y-m-d');
+            $fecha = new DateTime($date);
+            $nuevaFecha = $fecha->format('Y-m-d');
+            $emails = EmailsAdmins::where('status', 1)->select('email')->get();
+            if ($emails) {
+                $reservations = Reservation::where('programming_id', 1)->where('state', 1)->get();
+                if (count($reservations) == 0) {
+                    return 'No hay lista de espera para la fecha';
+                }
+                $storeExcel = Excel::store(new ProgrammingExportWaitList(), 'ListaEspera_HSM.xlsx');
+                $file = Storage::disk('public')->get('ListaEspera_HSM.xlsx');
+                $emailBody = new ExcelExportMailWaitList($file, $nuevaFecha);
+                foreach ($emails as $element) {
+                    Mail::to($element->email)->send($emailBody);
+                }
+
+                return 'Correo enviado con archivo adjunto ';
+            } else {
+                return 'No hay correos para enviar';
+            }
+        } catch (\Throwable $th) {
+            return 'Error al enviar el correo';
+        }
     }
 }
