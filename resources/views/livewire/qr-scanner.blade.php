@@ -47,22 +47,54 @@
                         <strong>{{ $user['document'] }}</strong>
                     </div>
                     <div class="card-body">
-                        <svg class="h-20 w-20 text-green-600  mx-auto" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                            <polyline points="22 4 12 14.01 9 11.01" />
-                        </svg>
                         @if (isset($this->reservation->reservation->programming->initial_date))
-                            Fecha Evento:
-                            {{ date('d-m-Y', strtotime($this->reservation->reservation->programming->initial_date)) }}
-                            Hora Evento:
-                            {{ date('h:i A', strtotime($this->reservation->reservation->programming->initial_time)) }}
+                            <div class="text-base">
+                                Fecha Evento:
+                                <b>{{ date('d-m-Y', strtotime($this->reservation->reservation->programming->initial_date)) }}</b>
+                                Hora Evento:
+                                <b>{{ date('h:i A', strtotime($this->reservation->reservation->programming->initial_time)) }}</b>
+                            </div>
+                            @if (date('d-m-Y', strtotime($this->reservation->reservation->programming->initial_date)) < date('d-m-Y'))
+                                <svg class="h-20 w-20 text-custom-yellow-500  mx-auto" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                </svg>
+                                <div class="text-base font-bold my-2">
+                                    Este QR es de un evento que ya no está disponible
+                                </div>
+                            @elseif (date('d-m-Y', strtotime($this->reservation->reservation->programming->initial_date)) > date('d-m-Y'))
+                                <svg class="h-20 w-20 text-indigo-600 mx-auto" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                </svg>
+                                <div class="text-base font-bold my-2">
+                                    Este QR es de un evento que aun no esta disponible
+                                </div>
+                            @else
+                                <svg class="h-20 w-20 text-green-600  mx-auto" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                </svg>
+                                <p class="card-text my-2">Al hacer clic en el siguiente botón, el codigo qr será deshabilitado</p>
+                                <a href="#" class="btn btn-primary"
+                                    wire:click="save({{ $reservation->id }})">Permitir
+                                    Acceso</a>
+                            @endif
                         @else
                             Evento Desconocido
-                        @endif
-                        <p class="card-text">Al hacer clic en aceptar el codigo qr será deshabilitado</p>
 
-                        <a href="#" class="btn btn-primary" wire:click="save({{ $reservation->id }})">Aceptar</a>
+                            <p class="card-text my-2">Al hacer clic en el siguiente botón, el codigo qr será deshabilitado</p>
+                            <a href="#" class="btn btn-warn" wire:click="save({{ $reservation->id }})">Permitir
+                                Acceso</a>
+                        @endif
+
+
                     </div>
                 </div>
             @else
@@ -105,8 +137,8 @@
                 Leyendo el QR
             </div>
             <div class="card-body">
-                <svg class="h-20 w-20 text-custom-gray mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="h-20 w-20 text-custom-gray mx-auto" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" />
                     <line x1="12" y1="8" x2="12" y2="12" />
                     <line x1="12" y1="16" x2="12.01" y2="16" />
