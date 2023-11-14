@@ -79,7 +79,7 @@ class ReservationController extends Controller
             }
         }
 
-        if ($user->profile->is_collaborator == 1 && $request->quota > 5) {
+        if ($request->quota > 5) {
             return response()->json([
                 'status' => false,
                 'message' => 'El usuario no puede tener mas de 5 cupos',
@@ -101,14 +101,14 @@ class ReservationController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Reservation created successfully',
+                'message' => 'Reservación creada exitosamente',
                 "data" => $reservation
             ], 200);
         }
 
         return response()->json([
             'status' => false,
-            'message' => 'no slots available',
+            'message' => 'no hay cupos disponibles',
         ], 400);
     }
 

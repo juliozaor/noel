@@ -13,7 +13,7 @@
             </div>
             <div class="mt-2">
                 @can('superAministrador')
-                    <a href="{{ route('admin.downloadReport') }}" class="btn botonRojo" target="_blank">Descargar Exporte Reservas</a>
+                    <a href="{{ route('admin.downloadDetail') }}" class="btn botonRojo" target="_blank">Descargar Exporte Reservas</a>
                 @endcan
             </div>
         </div>

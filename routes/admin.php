@@ -20,4 +20,5 @@ Route::middleware(['auth:sanctum','can:administrador'])->group(function () {
   Route::get('sendEmailReport', [ExportController::class, 'sendEmail'])->name('admin.sendReport');
   Route::get('downloadReport', [ExportController::class, 'downloadReport'])->name('admin.downloadReport');
   Route::get('downloadInform', [ExportController::class, 'downloadInform'])->name('admin.downloadInform');
+  Route::get('downloadDetail', [ExportController::class, 'downloadDetail'])->name('admin.downloadDetail');
 });

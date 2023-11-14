@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\ProgrammingExport;
 use App\Exports\ProgrammingExportInfo;
+use App\Exports\ProgrammingExportDetail;
 use App\Exports\ProgrammingExportWaitList;
 use App\Http\Controllers\Controller;
 use App\Mail\ExcelExportMail;
@@ -104,6 +105,14 @@ class ExportController extends Controller
             }
         } catch (\Throwable $th) {
             return 'Error al enviar el correo';
+        }
+    }
+    public function downloadDetail()
+    {
+        try{
+            return Excel::download(new ProgrammingExportDetail(), "ExperienciaNavidadEsNoel_detalle.xlsx");
+        }catch(\Throwable $th){
+            return 'Error al descargar el archivo';
         }
     }
 }

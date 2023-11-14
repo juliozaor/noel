@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('app:send-export-reservation')->dailyAt('00:01');
-        $schedule->command('app:send-export-wait-list')->dailyAt('00:15');
+        // $schedule->command('app:send-export-wait-list')->dailyAt('00:15');
     }
 
     /**
