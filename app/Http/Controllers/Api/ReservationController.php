@@ -156,6 +156,7 @@ class ReservationController extends Controller
                 });
                 $reservationData[] = [
                     'id' => $reservation->id,
+                    'eventoId'=> $programming->id,
                     'fecha' => $programming->initial_date,
                     'hora' => $programming->initial_time,
                     'cupos' => $reservation->quota,
