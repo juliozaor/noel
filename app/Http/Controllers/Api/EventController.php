@@ -13,12 +13,12 @@ class EventController extends Controller
      */
     public function index()
     {
-        $events = Event::select('events.id','events.name','programmings.initial_date')
+        $events = Event::select('events.id','events.name','programmings.initial_date','programmings.state')
         ->selectRaw('SUM(programmings.quota_available) as quota_available')
         ->join('programmings', 'events.id', '=', 'programmings.event_id')
         ->where('programmings.waiting','<>',1)
-        ->where('programmings.state',1)
-        ->groupBy('events.id','programmings.initial_date','events.name')
+        // ->where('programmings.state',1)
+        ->groupBy('events.id','programmings.initial_date','programmings.state','events.name')
         ->get();
         return $events;
     }
