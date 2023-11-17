@@ -23,7 +23,7 @@ class UserController extends Controller
         try{
                     $rules = [
                 'name' => ['required', 'string', 'max:100'],
-                'email' => ['required', 'unique:users', 'email', 'max:100', 'string'],
+                'email' => ['required', 'unique:users', 'email:rfc,dns', 'max:100', 'string'],
                 'password' => ['required', 'string'],
                 'document' => ['integer'],
                 'cell' => ['integer'],
@@ -39,6 +39,13 @@ class UserController extends Controller
                 return response()->json([
                     'status' => false,
                     'errors' => $validator->errors()->all()
+                ], 400);
+            }
+            $domain = substr(strrchr(strtolower($request->email), "@"), 1);
+            if (!checkdnsrr($domain, "MX")) {
+                return response()->json([
+                    'status' => false,
+                    'errors' => ['El correo no es válido']
                 ], 400);
             }
 
