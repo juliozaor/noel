@@ -8,6 +8,7 @@ use App\Models\Profile;
 use App\Models\Programming;
 use App\Models\QrCodes;
 use App\Models\Reservation;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -242,23 +243,51 @@ class ReservationController extends Controller
 
     public function destroy($id)
     {
-        $user = auth()->user();
-        $reservation = Reservation::with('programming')->findOrFail($id);
-        $idProgramming = $reservation->programming_id;
-        $correo = new ReservationDeletedConfirmation([
-            'date'=> $reservation->programming->initial_date,
-            'time'=> $reservation->programming->initial_time,
-            'quota'=> $reservation->quota,
-            'name'=> $user->name,
-        ]);
-        $reservation->delete();
-        Mail::to($user->email)->send($correo);
-        $this->updateProgrammingQuota($idProgramming);
+        try {
+            $user = auth()->user();
+            $reservation = Reservation::with('programming')->findOrFail($id);
+            $idProgramming = $reservation->programming_id;
+            if ($reservation->programming->initial_date < date('Y-m-d')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No se puede eliminar una reserva de un evento que ya paso',
+                ], 400);
+            }
+            if ($idProgramming == 1) {
+                $reservation->delete();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Reservation delete successfully'
+                ], 200);
+            }
+            if ($reservation->user_id != $user->id) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No se puede eliminar una reserva que no le pertenece',
+                ], 400);
+            }
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Reservation delete successfully'
-        ], 200);
+            $correo = new ReservationDeletedConfirmation([
+                'date' => $reservation->programming->initial_date,
+                'time' => $reservation->programming->initial_time,
+                'quota' => $reservation->quota,
+                'name' => $user->name,
+            ]);
+            $reservation->delete();
+            Mail::to($user->email)->send($correo);
+            $this->updateProgrammingQuota($idProgramming);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Reservation delete successfully'
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No se pudo eliminar la reserva',
+                'detail' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function updateProgrammingQuota($programmingId)
@@ -293,6 +322,4 @@ class ReservationController extends Controller
             'message' => 'No se encontro la reserva'
         ], 404);
     }
-
-    
 }
