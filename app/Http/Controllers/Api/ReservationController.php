@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ReservationDeletedConfirmation;
 use App\Models\Profile;
 use App\Models\Programming;
 use App\Models\QrCodes;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ReservationController extends Controller
@@ -112,8 +114,6 @@ class ReservationController extends Controller
         ], 400);
     }
 
-
-
     public function confirmet(string $reservation)
     {
         $reservationUpdate = Reservation::findOrFail($reservation);
@@ -135,8 +135,6 @@ class ReservationController extends Controller
         ], 200);
     }
 
-
-
     public function perUser(int $userId)
     {
         $reservations = Reservation::where('user_id', $userId)->with('member')->get();
@@ -156,11 +154,11 @@ class ReservationController extends Controller
                 });
                 $reservationData[] = [
                     'id' => $reservation->id,
-                    'eventoId'=> $programming->id,
+                    'eventoId' => $programming->id,
                     'fecha' => $programming->initial_date,
                     'hora' => $programming->initial_time,
                     'cupos' => $reservation->quota,
-                    'listaEspera' => $programming->id>1?false:true,
+                    'listaEspera' => $programming->id > 1 ? false : true,
                     'miembros' => $membersData
                 ];
             }
@@ -244,10 +242,19 @@ class ReservationController extends Controller
 
     public function destroy($id)
     {
-        $reservation = Reservation::findOrFail($id);
+        $user = auth()->user();
+        $reservation = Reservation::with('programming')->findOrFail($id);
         $idProgramming = $reservation->programming_id;
+        $correo = new ReservationDeletedConfirmation([
+            'date'=> $reservation->programming->initial_date,
+            'time'=> $reservation->programming->initial_time,
+            'quota'=> $reservation->quota,
+            'name'=> $user->name,
+        ]);
         $reservation->delete();
+        Mail::to($user->email)->send($correo);
         $this->updateProgrammingQuota($idProgramming);
+
         return response()->json([
             'status' => true,
             'message' => 'Reservation delete successfully'
@@ -274,11 +281,11 @@ class ReservationController extends Controller
         $url = config('app.url') . '/admin/events/qr/';
         $reservation = QrCodes::where('code', $code)->first();
         if ($reservation) {
-            $qrCode = QrCode::format('png')->size(150)->generate($url.$reservation->code,'temp/' . $reservation->code . '.png');
+            $qrCode = QrCode::format('png')->size(150)->generate($url . $reservation->code, 'temp/' . $reservation->code . '.png');
             return response()->json([
                 'status' => true,
                 'message' => 'Qr generado',
-                'data' => config('app.url') .'/temp/' . $reservation->code . '.png'
+                'data' => config('app.url') . '/temp/' . $reservation->code . '.png'
             ], 200);
         }
         return response()->json([
@@ -286,4 +293,6 @@ class ReservationController extends Controller
             'message' => 'No se encontro la reserva'
         ], 404);
     }
+
+    
 }
