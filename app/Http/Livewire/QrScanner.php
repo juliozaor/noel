@@ -97,5 +97,6 @@ class QrScanner extends Component
             'qrcode' => $this->qrcode,
         ]
     );
+    $this->getInformationQR();
     }
 }

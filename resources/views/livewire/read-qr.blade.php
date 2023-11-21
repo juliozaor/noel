@@ -7,11 +7,55 @@
           Validar entrada de <strong>{{$name }}</strong>, con identificación <strong>{{$document}}</strong>
         </div>
         <div class="card-body">
-          <svg class="h-20 w-20 text-green-600  mx-auto"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />  <polyline points="22 4 12 14.01 9 11.01" /></svg>
-          <p class="card-text">Al hacer clic en aceptar el codigo qr será deshabilitado</p>
+          @if (isset($this->qrCodes->reservation->programming->initial_date))
+              <div class="text-base">
+                  Fecha Evento:
+                  <b>{{ date('d-m-Y', strtotime($this->qrCodes->reservation->programming->initial_date)) }}</b>
+                  Hora Evento:
+                  <b>{{ date('h:i A', strtotime($this->qrCodes->reservation->programming->initial_time)) }}</b>
+              </div>
+              @if (date('Y-m-d', strtotime($this->qrCodes->reservation->programming->initial_date)) < date('Y-m-d'))
+                  <svg class="h-20 w-20 text-custom-yellow-500  mx-auto" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                      <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  <div class="text-base font-bold my-2">
+                      Este QR es de un evento que ya no está disponible
+                  </div>
+              @elseif (date('Y-m-d', strtotime($this->qrCodes->reservation->programming->initial_date)) > date('Y-m-d'))
+                  <svg class="h-20 w-20 text-indigo-600 mx-auto" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                      <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  <div class="text-base font-bold my-2">
+                      Este QR es de un evento que aun no esta disponible
+                  </div>
+              @else
+                  <svg class="h-20 w-20 text-green-600  mx-auto" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                      <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  <p class="card-text my-2">Al hacer clic en el siguiente botón, el codigo qr será deshabilitado</p>
+                  <a href="#" class="btn btn-primary"
+                      wire:click="save({{ $qrCodes->id }})">Permitir
+                      Acceso</a>
+              @endif
+          @else
+              Evento Desconocido
 
-          <a href="#" class="btn btn-primary" wire:click="save({{ $qrCodes->id }})">Aceptar</a>
-        </div>
+              <p class="card-text my-2">Al hacer clic en el siguiente botón, el codigo qr será deshabilitado</p>
+              <a href="#" class="btn btn-warn" wire:click="save({{ $qrCodes->id }})">Permitir
+                  Acceso</a>
+          @endif
+
+
+      </div>
       </div>
 
       @else

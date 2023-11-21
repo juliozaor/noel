@@ -54,7 +54,7 @@
                                 Hora Evento:
                                 <b>{{ date('h:i A', strtotime($this->reservation->reservation->programming->initial_time)) }}</b>
                             </div>
-                            @if (date('d-m-Y', strtotime($this->reservation->reservation->programming->initial_date)) < date('d-m-Y'))
+                            @if (date('Y-m-d', strtotime($this->reservation->reservation->programming->initial_date)) < date('Y-m-d'))
                                 <svg class="h-20 w-20 text-custom-yellow-500  mx-auto" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -64,7 +64,7 @@
                                 <div class="text-base font-bold my-2">
                                     Este QR es de un evento que ya no está disponible
                                 </div>
-                            @elseif (date('d-m-Y', strtotime($this->reservation->reservation->programming->initial_date)) > date('d-m-Y'))
+                            @elseif (date('Y-m-d', strtotime($this->reservation->reservation->programming->initial_date)) > date('Y-m-d'))
                                 <svg class="h-20 w-20 text-indigo-600 mx-auto" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">

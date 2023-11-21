@@ -18,7 +18,7 @@ class ReadQr extends Component
     public $isValid = false;
 
     public function mount(){
-        $this->qrCodes = QrCodes::where('code', $this->token)->first();
+        $this->qrCodes = QrCodes::with('reservation.programming')->where('code', $this->token)->first();
         if($this->qrCodes){
             $this->isValid = $this->qrCodes->status_qr == 1 ? true : false;
             if ($this->qrCodes->is_user == 1) {
