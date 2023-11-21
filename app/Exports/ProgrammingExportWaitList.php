@@ -32,7 +32,8 @@ class ProgrammingExportWaitList implements FromView
                             $reservations[] = [
                                 'destination' => '57'.$destination,
                                 'Fecha' => $programming->initial_date,
-                                'Hora' =>$programming->initial_time
+                                'Hora' =>$programming->initial_time,
+                                'Cupos' =>$reserevationSql->quota
                             ];
                         }
                     }
