@@ -165,6 +165,7 @@ class UserController extends Controller
 
         $rules = [
             'name' => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', 'string'],
             'cell' => ['integer'],
             'address' => ['string'],
             'neighborhood' => ['string'],
@@ -183,6 +184,15 @@ class UserController extends Controller
 
         try {
             $user = User::find($request->userId);
+            //check if email exist in another user
+            $userEmail = User::where('email', $request->email)->first();
+            if ($userEmail && $userEmail->id != $user->id) {
+                return response()->json([
+                    'status' => false,
+                    'errors' => ['Ya hay un usuario registrado con este correo']
+                ], 409);
+            }
+            $user->email = $request->email;
 
             // Actualiza los campos del usuario
             $user->name = $request->name;
