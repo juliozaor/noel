@@ -114,9 +114,9 @@
                 alternativas de transporte sostenible, porque no se permitirá el ingreso de vehículos al interior de la
                 Compañía, ni
                 tampoco podrán estacionarse en la calle #4.</li>
-            <li>Si vienes en vehículo propio, podrás estacionarlo en el parqueadero de Coltabaco, ubicado en la Cra 50 No. 5
+            {{-- <li>Si vienes en vehículo propio, podrás estacionarlo en el parqueadero de Coltabaco, ubicado en la Cra 50 No. 5
                 -
-                175, y en el Parqueadero habilitado ubicado en la Calle #2.</li>
+                175, y en el Parqueadero habilitado ubicado en la Calle #2.</li> --}}
         </ul>
         
 
