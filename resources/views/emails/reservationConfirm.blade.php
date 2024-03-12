@@ -45,26 +45,7 @@
     border-radius: 12px;
     padding: 20px;">
         <div>
-            @foreach ($codes as $code)
-                @if ($code['isUser'] == 1)
-                <div style="display: flex;
-                text-align: center;
-                align-items: center;
-                justify-content: center;"> 
-                        <div style="text-align: center; margin-right: 30px; margin-left: 20px;">
-                            <h3 style="color:red;margin: 0;padding: 0;font-size: 26px;"> Información de tu reserva</h3>
-                            <p style="font-size: 26px;margin: 0px;"><strong>{{ $code['quota'] }} cupos</strong></p>
-                            <p style="margin: 0;"><strong style="font-size: 23px;">Fecha: {{ date('d-m-Y', strtotime($code['date'])) }}</strong></p>
-                            <p style="margin: 0;"><strong style="font-size: 23px;">Hora: {{ date('h:i A', strtotime($code['time'])) }}</strong></p>
-                        <p style="font-size: 20px;margin: 0;">Presenta el codigo QR correspondiente a cada acompañante al momento del ingreso</p>
-                        </div>
-                        <div >
-                            <img src="https://backoffice.navidadesnoel.com/{{$code['qr']}}" alt="{{ $code['name'] }}">
-                        </div>
-                    </div>
-                   
-                @endif
-            @endforeach
+          
         </div>
         <div style="margin-top: 20px;">
             <span style="color: #7a7979;
@@ -77,18 +58,7 @@
             text-align: left;">Acompañantes registrados</span>
             <hr>
             <div style="margin:10px 10px;display:flex;background: white;border-radius: 16px;">
-                @foreach ($codes as $code)
-                @if ($code['isUser'] == 0)
-                    <div style="padding: 10px;border-radius: 5px;background-color: white;max-width: 200px;">
-                        <div style="margin: 10px 10px">
-                         <img src="https://backoffice.navidadesnoel.com/{{$code['qr']}}" alt="{{ $code['name'] }}">
-                        </div>
-                        <div style="font-weight: 400;font-size: 18px;margin-bottom: 10px; text-align: center;">
-                            {{ $code['name'] }}
-                        </div>
-                    </div>
-                    @endif
-                @endforeach
+                
             </div>
         </div>
     </div>
